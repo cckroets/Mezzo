@@ -7,7 +7,7 @@ import roboguice.fragment.RoboFragment;
  *
  * @author curtiskroetsch
  */
-public abstract class BaseFragment extends RoboFragment {
+public abstract class BaseMezzoFragment extends RoboFragment {
 
 
 }
