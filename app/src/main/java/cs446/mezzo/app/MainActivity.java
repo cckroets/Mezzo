@@ -1,12 +1,19 @@
-package cs446.mezzo;
+package cs446.mezzo.app;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.inject.Inject;
 
-public class MainActivity extends ActionBarActivity {
+import cs446.mezzo.R;
+import roboguice.activity.RoboActionBarActivity;
+
+
+public class MainActivity extends RoboActionBarActivity {
+
+    @Inject
+    MezzoPlayer mMezzoPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +34,7 @@ public class MainActivity extends ActionBarActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        final int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
