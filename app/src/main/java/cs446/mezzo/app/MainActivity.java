@@ -8,7 +8,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListView;
 
 import com.google.inject.Inject;
 
@@ -26,7 +25,7 @@ public class MainActivity extends BaseMezzoActivity {
     DrawerLayout mNavDrawer;
 
     @InjectView(R.id.drawer_list)
-    ListView mNavDrawerList;
+    View mNavDrawerList;
 
     @Inject
     MezzoPlayer mMezzoPlayer;
