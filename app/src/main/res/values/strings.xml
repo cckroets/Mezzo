@@ -4,5 +4,6 @@
     <string name="app_name">Mezzo</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="drawer_title">Mezzo Navigation</string>
 
 </resources>

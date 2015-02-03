@@ -7,6 +7,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ListView;
 
 import com.google.inject.Inject;
 
@@ -23,6 +25,9 @@ public class MainActivity extends BaseMezzoActivity {
     @InjectView(R.id.drawer_layout)
     DrawerLayout mNavDrawer;
 
+    @InjectView(R.id.drawer_list)
+    ListView mNavDrawerList;
+
     @Inject
     MezzoPlayer mMezzoPlayer;
 
@@ -32,7 +37,20 @@ public class MainActivity extends BaseMezzoActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setSupportActionBar(mToolbar);
-        mDrawerToggle = new ActionBarDrawerToggle(this, mNavDrawer, R.string.app_name, R.string.app_name);
+        setFragment(MainFragment.create());
+        mDrawerToggle = new ActionBarDrawerToggle(this, mNavDrawer, R.string.app_name, R.string.app_name) {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                getSupportActionBar().setTitle(R.string.drawer_title);
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                getSupportActionBar().setTitle(getVisibleFragment().getTitle());
+            }
+        };
         mNavDrawer.setDrawerListener(mDrawerToggle);
     }
 
@@ -57,21 +75,24 @@ public class MainActivity extends BaseMezzoActivity {
     }
 
     @Override
+    public int getFragmentContainerId() {
+        return R.id.fragment_container;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
 
-        final int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                // TODO: Open Settings Page here.
+                break;
+            default:
+                return true;
         }
 
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 }
