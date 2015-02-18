@@ -5,8 +5,6 @@ import android.app.Application;
 
 import com.google.inject.AbstractModule;
 
-import cs446.mezzo.app.MezzoPlayer;
-
 /**
  * @author curtiskroetsch
  */
@@ -18,6 +16,6 @@ public class MezzoModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(MezzoPlayer.class).toInstance(new MezzoPlayer());
+        // Put bindings here.
     }
 }

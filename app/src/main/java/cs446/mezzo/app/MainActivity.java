@@ -28,7 +28,7 @@ public class MainActivity extends BaseMezzoActivity {
     View mNavDrawerList;
 
     @Inject
-    MezzoPlayer mMezzoPlayer;
+    MusicService mMezzoPlayer;
 
     ActionBarDrawerToggle mDrawerToggle;
 

@@ -3,5 +3,13 @@ package cs446.mezzo.app;
 /**
  * @author curtiskroetsch
  */
-public class MezzoPlayer {
+public interface MezzoPlayer {
+
+    void play();
+
+    void pause();
+
+    void next();
+
+    void prev();
 }
