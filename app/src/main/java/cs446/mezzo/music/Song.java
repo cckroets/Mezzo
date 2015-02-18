@@ -1,29 +1,25 @@
 package cs446.mezzo.music;
 
+import android.content.ContentUris;
+import android.net.Uri;
+import android.provider.MediaStore;
+
 /**
  * Created by ulkarakhundzada on 2015-02-16.
  */
 public class Song {
 
     private long mId;
-    private String mTitle;
-    private String mArtist;
 
-    public Song(long songID, String songTitle, String songArtist) {
+    public Song(long songID) {
         mId = songID;
-        mTitle = songTitle;
-        mArtist = songArtist;
     }
 
-    public long getID() {
+    public long getId() {
         return mId;
     }
 
-    public String getTitle() {
-        return mTitle;
-    }
-
-    public String getArtist() {
-        return mArtist;
+    public Uri getDataSource() {
+        return ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, mId);
     }
 }

@@ -1,106 +1,126 @@
 package cs446.mezzo.app;
 
-import java.util.ArrayList;
-import android.content.ContentUris;
+import android.content.Intent;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.Binder;
-import android.os.PowerManager;
+import android.os.IBinder;
 import android.util.Log;
+
+import com.google.inject.Inject;
+import com.squareup.otto.Subscribe;
+
+import cs446.mezzo.events.EventBus;
+import cs446.mezzo.events.control.PauseToggleEvent;
+import cs446.mezzo.events.control.PlayNextEvent;
+import cs446.mezzo.events.control.PlayPrevEvent;
+import cs446.mezzo.events.control.RepeatToggleEvent;
+import cs446.mezzo.events.control.SelectSongEvent;
+import cs446.mezzo.events.control.ShuffleToggleEvent;
+import cs446.mezzo.music.SongPlayer;
+import roboguice.service.RoboService;
 
 /**
  * Created by ulkarakhundzada on 2015-02-17.
  */
-public class MusicService extends android.app.Service implements
-        android.media.MediaPlayer.OnPreparedListener, android.media.MediaPlayer.OnErrorListener,
-        android.media.MediaPlayer.OnCompletionListener {
+public class MusicService extends RoboService
+        implements AudioManager.OnAudioFocusChangeListener {
 
-    //media player
-    private MediaPlayer player;
-    //song list
-    private ArrayList<Song> songs;
-    //current position
-    private int songPosn;
-    private final android.os.IBinder musicBind = new MusicBinder();
+    private static final String TAG = MusicService.class.getName();
 
+    @Inject
+    SongPlayer mSongPlayer;
 
-    public void onCompletion(MediaPlayer mp) {
-    }
-    public boolean onError(MediaPlayer mp, int a, int b) {
-        return false;
-    }
+    @Inject
+    AudioManager mAudioManager;
 
     @Override
-    public android.os.IBinder onBind(android.content.Intent arg0) {
-        // TODO Auto-generated method stub
-        return musicBind;
-    }
-
-    @Override
-    public boolean onUnbind(android.content.Intent intent){
-        player.stop();
-        player.release();
-        return false;
-    }
-
-    @Override
-    public void onPrepared(MediaPlayer mp) {
-        //start playback
-        mp.start();
-    }
-
-
-    public void onCreate(){
-        //create the service
+    public void onCreate() {
         super.onCreate();
-        //initialize position
-        songPosn=0;
-        //create player
-        player = new MediaPlayer();
-        initMusicPlayer();
+        EventBus.register(this);
+        mAudioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
     }
 
-    public void initMusicPlayer(){
-        player.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
-        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        player.setOnPreparedListener(this);
-        player.setOnCompletionListener(this);
-        player.setOnErrorListener(this);
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 
-    public void setList(ArrayList<Song> theSongs){
-        songs=theSongs;
+    @Override
+    public void onDestroy() {
+        EventBus.unregister(this);
+        mSongPlayer.releaseResources();
+        super.onDestroy();
     }
 
-    public class MusicBinder extends Binder {
-        MusicService getService() {
-            return MusicService.this;
+    @Subscribe
+    public void onPauseToggleEvent(PauseToggleEvent event) {
+        mSongPlayer.togglePause();
+    }
+
+    @Subscribe
+    public void onPlayNextEvent(PlayNextEvent event) {
+        mSongPlayer.playNext();
+    }
+
+    @Subscribe
+    public void onPlayPrevEvent(PlayPrevEvent event) {
+        mSongPlayer.playPrevious();
+    }
+
+    @Subscribe
+    public void onRepeatToggleEvent(RepeatToggleEvent event) {
+        mSongPlayer.setRepeat(!mSongPlayer.getRepeatMode());
+    }
+
+    @Subscribe
+    public void onShuffleToggleEvent(ShuffleToggleEvent event) {
+        mSongPlayer.setShuffle(!mSongPlayer.getShuffleMode());
+    }
+
+    @Subscribe
+    public void onSongSelected(SelectSongEvent event) {
+        mSongPlayer.setPlaylist(event.getPlaylist());
+        mSongPlayer.setSong(event.getStartIndex());
+    }
+
+    @Override
+    public void onAudioFocusChange(int focusChange) {
+        switch (focusChange) {
+            case AudioManager.AUDIOFOCUS_GAIN:
+                // resume playback
+                if (mSongPlayer.isPaused()) {
+                    mSongPlayer.togglePause();
+                }
+                mSongPlayer.setVolumeHigh();
+                break;
+
+            case AudioManager.AUDIOFOCUS_LOSS:
+                // Lost focus for an unbounded amount of time: stop playback and release media player
+                if (!mSongPlayer.isPaused()) {
+                    mSongPlayer.togglePause();
+                }
+                mSongPlayer.releaseResources();
+                break;
+
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                // Lost focus for a short time, but we have to stop
+                // playback. We don't release the media player because playback
+                // is likely to resume
+                if (!mSongPlayer.isPaused()) {
+                    mSongPlayer.togglePause();
+                }
+                break;
+
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                // Lost focus for a short time, but it's ok to keep playing
+                // at an attenuated level
+                if (!mSongPlayer.isPaused()) {
+                    mSongPlayer.setVolumeLow();
+                }
+                break;
+
+            default:
+                Log.w(TAG, "invalid focusChange = " + focusChange);
+                break;
         }
-    }
-
-    public void playSong(){
-        player.reset();
-        //get song
-        Song playSong = songs.get(songPosn);
-        //get id
-        long currSong = playSong.getID();
-        //set uri
-        Uri trackUri = ContentUris.withAppendedId(
-                android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                currSong);
-
-        try{
-            player.setDataSource(getApplicationContext(), trackUri);
-        }
-        catch(Exception e){
-            Log.e("MUSIC SERVICE", "Error setting data source", e);
-        }
-
-        player.prepareAsync();
-    }
-
-    public void setSong(int songIndex){
-        songPosn=songIndex;
     }
 }
