@@ -22,7 +22,6 @@ import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.control.SelectSongEvent;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.sources.LocalMusicFetcher;
-import cs446.mezzo.sources.SongMetadataRetriever;
 import roboguice.inject.InjectView;
 
 /**
@@ -32,9 +31,6 @@ public class SongsFragment extends BaseMezzoFragment implements AdapterView.OnIt
 
     @Inject
     LocalMusicFetcher mMusicFetcher;
-
-    @Inject
-    SongMetadataRetriever mInfoRetriever;
 
     @InjectView(R.id.song_list)
     ListView mSongView;
@@ -90,8 +86,8 @@ public class SongsFragment extends BaseMezzoFragment implements AdapterView.OnIt
             final TextView artistView = (TextView) songLay.findViewById(cs446.mezzo.R.id.song_artist);
             final Song song = getItem(position);
 
-            songView.setText(mInfoRetriever.getTitle(song));
-            artistView.setText(mInfoRetriever.getArtist(song));
+            songView.setText(song.getTitle());
+            artistView.setText(song.getArtist());
 
             return songLay;
         }

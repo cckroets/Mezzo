@@ -16,7 +16,7 @@ import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.control.PauseToggleEvent;
 import cs446.mezzo.events.playback.SongPlayEvent;
 import cs446.mezzo.music.Song;
-import cs446.mezzo.sources.SongMetadataRetriever;
+import cs446.mezzo.sources.AlbumArtManager;
 import roboguice.fragment.RoboFragment;
 import roboguice.inject.InjectView;
 
@@ -37,8 +37,11 @@ public class MusicControlFragment extends RoboFragment {
     @InjectView(R.id.player_play_btn)
     ImageView mPlayButton;
 
+    @InjectView(R.id.player_view)
+    View mPlayerView;
+
     @Inject
-    SongMetadataRetriever mInfoRetriever;
+    AlbumArtManager mArtManager;
 
     private Song mCurrentSong;
 
@@ -56,6 +59,7 @@ public class MusicControlFragment extends RoboFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mPlayerView.setVisibility(View.GONE);
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,13 +69,14 @@ public class MusicControlFragment extends RoboFragment {
     }
 
     private void updateSongView() {
-        mTitleView.setText(mInfoRetriever.getTitle(mCurrentSong));
-        mArtistView.setText(mInfoRetriever.getArtist(mCurrentSong));
-        mAlbumArtView.setImageBitmap(mInfoRetriever.getAlbumArt(mCurrentSong));
+        mTitleView.setText(mCurrentSong.getTitle());
+        mArtistView.setText(mCurrentSong.getArtist());
+        mAlbumArtView.setImageBitmap(mArtManager.getAlbumArt(mCurrentSong));
     }
 
     @Subscribe
     public void onSongPlayEvent(SongPlayEvent event) {
+        mPlayerView.setVisibility(View.VISIBLE);
         mCurrentSong = event.getSong();
         updateSongView();
     }
