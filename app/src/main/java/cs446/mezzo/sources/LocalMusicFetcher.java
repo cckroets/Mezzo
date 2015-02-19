@@ -1,12 +1,11 @@
 package cs446.mezzo.sources;
 
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
-import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -38,6 +37,8 @@ public class LocalMusicFetcher {
             MediaStore.MediaColumns.DATE_ADDED
     };
 
+    private static String sMusicSelection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
+
     @Inject
     Context mContext;
 
@@ -52,9 +53,7 @@ public class LocalMusicFetcher {
         final List<Song> songs = new ArrayList<Song>();
         final ContentResolver musicResolver = mContext.getContentResolver();
         final Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-
-        final String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
-        final Cursor musicCursor = musicResolver.query(musicUri, sMusicProjection, selection, null, null);
+        final Cursor musicCursor = musicResolver.query(musicUri, sMusicProjection, sMusicSelection, null, null);
 
         if (musicCursor != null && musicCursor.moveToFirst()) {
             final int idColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
@@ -72,9 +71,12 @@ public class LocalMusicFetcher {
                 final String album = musicCursor.getString(albumColumn);
                 final long duration = musicCursor.getLong(durationColumn);
                 final Set<String> genres = getGenres(id);
-                songs.add(new Song(id, title, artist, album, genres, duration, dateAdded));
+                final Song song = new Song(id, title, artist, album, genres, duration, dateAdded);
+                songs.add(song);
+                Log.d("SONG", "title = " + title + ", genres = " + genres);
             }
             while (musicCursor.moveToNext());
+            musicCursor.close();
         }
         return songs;
     }
@@ -92,6 +94,7 @@ public class LocalMusicFetcher {
                 mAllGenres.add(genre);
             } while (genresCursor.moveToNext());
         }
+        genresCursor.close();
         return genres;
     }
 
