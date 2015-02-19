@@ -16,8 +16,9 @@
 
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/drawer_layout"
+        android:layout_weight="1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp">
 
         <FrameLayout
             android:id="@+id/fragment_container"
@@ -32,6 +33,12 @@
             android:layout_gravity="left|start"/>
 
     </android.support.v4.widget.DrawerLayout>
+
+
+    <FrameLayout
+        android:id="@+id/bottom_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
 

@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import cs446.mezzo.events.EventBus;
+import cs446.mezzo.events.playback.SongPlayEvent;
+
 /**
  * @author curtiskroetsch
  */
@@ -101,7 +104,9 @@ public class MezzoPlayer implements SongPlayer,
 
     private void playSong(int songIndex) {
         acquireResources();
+        EventBus.post(new SongPlayEvent(mPlaylist.get(songIndex)));
         try {
+            mMediaPlayer.reset();
             mMediaPlayer.setDataSource(mContext, mPlaylist.get(songIndex).getDataSource());
             mMediaPlayer.prepareAsync();
         } catch (IOException e) {
@@ -193,7 +198,6 @@ public class MezzoPlayer implements SongPlayer,
     @Override
     public void onCompletion(MediaPlayer mp) {
         Log.d(TAG, "On Complete");
-        mMediaPlayer.reset();
         playNext();
     }
 

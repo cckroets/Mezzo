@@ -30,14 +30,11 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity {
     }
 
 
-    protected void setFragment(BaseMezzoFragment fragment) {
+    protected void setFragment(Fragment fragment, @IdRes int containerId) {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(getFragmentContainerId(), fragment, fragment.getTag())
+                .replace(containerId, fragment, fragment.getTag())
                 .commit();
     }
-
-    @IdRes
-    public abstract int getFragmentContainerId();
 
 }

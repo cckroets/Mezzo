@@ -48,7 +48,8 @@ public class MainActivity extends BaseMezzoActivity {
             }
         };
         mNavDrawer.setDrawerListener(mDrawerToggle);
-        setFragment(new SongsFragment());
+        setFragment(new SongsFragment(), R.id.fragment_container);
+        setFragment(new MusicControlFragment(), R.id.bottom_fragment_container);
     }
 
 
@@ -69,11 +70,6 @@ public class MainActivity extends BaseMezzoActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
-    }
-
-    @Override
-    public int getFragmentContainerId() {
-        return R.id.fragment_container;
     }
 
     @Override

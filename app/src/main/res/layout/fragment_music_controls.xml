@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/player_album_art"
+        android:layout_margin="8dp"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        tools:src="@drawable/ic_launcher"
+        tools:background="@android:color/holo_blue_dark" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_gravity="center_vertical"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/player_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            tools:text="Roar" />
+
+        <TextView
+            android:id="@+id/player_artist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            tools:text="Katy Perry"/>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/player_play_btn"
+        android:layout_margin="8dp"
+        android:src="@android:drawable/ic_media_play"
+        android:layout_width="56dp"
+        android:layout_height="56dp" />
+
+</LinearLayout>
