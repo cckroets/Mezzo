@@ -7,18 +7,20 @@ import com.dropbox.client2.ProgressListener;
 import com.dropbox.client2.android.AndroidAuthSession;
 import com.dropbox.client2.exception.DropboxException;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import cs446.mezzo.R;
 import cs446.mezzo.data.AsyncMezzoTask;
 import cs446.mezzo.data.Callback;
 import cs446.mezzo.data.ProgressableCallback;
+import cs446.mezzo.events.EventBus;
+import cs446.mezzo.events.sources.FileDownloadedEvent;
 import cs446.mezzo.music.FileSong;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.sources.MusicSource;
@@ -27,6 +29,7 @@ import roboguice.inject.InjectResource;
 /**
  * @author curtiskroetsch
  */
+@Singleton
 public class DropboxSource extends MusicSource {
 
     private static final String TAG = DropboxSource.class.getName();
@@ -48,7 +51,7 @@ public class DropboxSource extends MusicSource {
     }
 
     @Override
-    public void getAllSongs(Callback<Collection<MusicFile>> callback) {
+    public void getSongsFromSource(Callback<List<MusicFile>> callback) {
         new DBSearchTask(callback).execute();
     }
 
@@ -62,17 +65,18 @@ public class DropboxSource extends MusicSource {
         return mDropboxName;
     }
 
-    private class DBMusicFile implements MusicFile {
+    @Override
+    protected void download(MusicFile musicFile, File file, ProgressableCallback<Song> callback) {
+        final DropboxAPI.Entry entry = ((DBMusicFile) musicFile).mEntry;
+        new DBDownloadTask(file, entry, callback).execute();
+    }
 
-        private DropboxAPI.Entry mEntry;
+    public class DBMusicFile implements MusicFile {
+
+        DropboxAPI.Entry mEntry;
 
         public DBMusicFile(DropboxAPI.Entry entry) {
             mEntry = entry;
-        }
-
-        @Override
-        public void download(File file, ProgressableCallback<Song> callback) {
-            new DBDownloadTask(file, mEntry, callback).execute();
         }
 
         @Override
@@ -88,18 +92,18 @@ public class DropboxSource extends MusicSource {
 
     /**
      * An Async Task for searching through Dropbox Music.
-     *
+     * <p/>
      * This task will search the entire contents of the user's Dropbox and find
      * all files matching the SEARCH criteria (*.mp3 and *.m4a).
      */
-    private class DBSearchTask extends AsyncMezzoTask<Void, Void, Collection<MusicFile>> {
+    private class DBSearchTask extends AsyncMezzoTask<Void, Void, List<MusicFile>> {
 
-        public DBSearchTask(Callback<Collection<MusicFile>> callback) {
+        public DBSearchTask(Callback<List<MusicFile>> callback) {
             super(callback);
         }
 
         @Override
-        protected Collection<MusicFile> doInBackground(Void... params) {
+        protected List<MusicFile> doInBackground(Void... params) {
 
             final List<DropboxAPI.Entry> results;
             try {
@@ -124,7 +128,7 @@ public class DropboxSource extends MusicSource {
 
     /**
      * An Async Task for Downloading Songs from Dropbox.
-     *
+     * <p/>
      * Given a file to download to, a dropbox entry, this task will download the file
      * from dropbox to the specified local file, and return a Song object.
      */
@@ -169,6 +173,14 @@ public class DropboxSource extends MusicSource {
         @Override
         protected void onProgressUpdate(Float... values) {
             ((ProgressableCallback) getCallback()).onProgress(values[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Song song) {
+            super.onPostExecute(song);
+            if (song != null) {
+                EventBus.post(new FileDownloadedEvent(DropboxSource.this, song, mFile));
+            }
         }
     }
 

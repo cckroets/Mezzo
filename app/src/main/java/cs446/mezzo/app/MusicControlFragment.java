@@ -15,8 +15,8 @@ import cs446.mezzo.R;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.control.PauseToggleEvent;
 import cs446.mezzo.events.playback.SongPlayEvent;
+import cs446.mezzo.music.AlbumArtManager;
 import cs446.mezzo.music.Song;
-import cs446.mezzo.sources.AlbumArtManager;
 import roboguice.fragment.RoboFragment;
 import roboguice.inject.InjectView;
 

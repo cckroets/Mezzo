@@ -6,22 +6,15 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.google.inject.Inject;
 
-import java.io.File;
-import java.util.Collection;
-
 import cs446.mezzo.R;
+import cs446.mezzo.app.library.MusicSourceFragment;
 import cs446.mezzo.app.library.SongsFragment;
-import cs446.mezzo.data.Callback;
-import cs446.mezzo.data.ProgressableCallback;
-import cs446.mezzo.music.Song;
-import cs446.mezzo.sources.MusicSource;
 import cs446.mezzo.sources.dropbox.DropboxSource;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
@@ -35,8 +28,11 @@ public class MainActivity extends BaseMezzoActivity {
     @InjectView(R.id.drawer_layout)
     DrawerLayout mNavDrawer;
 
-    @InjectView(R.id.drawer_list)
-    View mNavDrawerList;
+    @InjectView(R.id.nav_dropbox)
+    View mDropboxButton;
+
+    @InjectView(R.id.nav_my_music)
+    View mLibraryButton;
 
     @Inject
     DropboxSource mDropboxSource;
@@ -64,6 +60,26 @@ public class MainActivity extends BaseMezzoActivity {
         mNavDrawer.setDrawerListener(mDrawerToggle);
         setFragment(new SongsFragment(), R.id.fragment_container);
         setFragment(new MusicControlFragment(), R.id.bottom_fragment_container);
+
+        mDropboxButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setFragment(MusicSourceFragment.create(mDropboxSource), R.id.fragment_container);
+                mNavDrawer.closeDrawers();
+            }
+        });
+        mLibraryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setFragment(new SongsFragment(), R.id.fragment_container);
+                mNavDrawer.closeDrawers();
+            }
+        });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         if (!mDropboxSource.getAuthenticator().isAuthenticated()) {
             mDropboxSource.getAuthenticator().startAuthentication(this);
         }
@@ -72,12 +88,9 @@ public class MainActivity extends BaseMezzoActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mDropboxSource.getAuthenticator().finishAuthentication(this);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
+        if (!mDropboxSource.getAuthenticator().isAuthenticated()) {
+            mDropboxSource.getAuthenticator().finishAuthentication(this);
+        }
     }
 
     @Override

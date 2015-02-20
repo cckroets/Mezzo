@@ -1,4 +1,4 @@
-package cs446.mezzo.sources;
+package cs446.mezzo.music;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -6,8 +6,6 @@ import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 
 import com.google.inject.Inject;
-
-import cs446.mezzo.music.Song;
 
 /**
  * @author curtiskroetsch

@@ -4,10 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 
 import java.io.File;
-import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import cs446.mezzo.data.Callback;
 import cs446.mezzo.data.ProgressableCallback;
+import cs446.mezzo.music.FileSong;
 import cs446.mezzo.music.Song;
 
 /**
@@ -18,31 +21,109 @@ import cs446.mezzo.music.Song;
  */
 public abstract class MusicSource {
 
+    private Set<MusicFile> mDownloading = new HashSet<MusicFile>();
+    private List<MusicFile> mFiles;
+
+
+    public void getAllSongs(final Callback<List<MusicFile>> callback, final boolean refresh) {
+        if (mFiles != null && !refresh) {
+            callback.onSuccess(mFiles);
+            return;
+        }
+        getSongsFromSource(new Callback<List<MusicFile>>() {
+            @Override
+            public void onSuccess(List<MusicFile> data) {
+                mFiles = data;
+                callback.onSuccess(data);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                callback.onFailure(e);
+            }
+        });
+    }
+
+    public void getAllSongs(final Callback<List<MusicFile>> callback) {
+        getAllSongs(callback, false);
+    }
+
     /**
      * Get all of the songs available from the MusicSource.
+     *
      * @param callback
      */
-    public abstract void getAllSongs(Callback<Collection<MusicFile>> callback);
+    protected abstract void getSongsFromSource(Callback<List<MusicFile>> callback);
 
     /**
      * Get the authenticator that should be used to authenticate the music source.
      * Should always return the same authenticator if it contains state.
+     *
      * @return
      */
     public abstract Authenticator getAuthenticator();
 
     /**
      * Get the name of the MusicSource to display in the app, e.g. "Dropbox", "Google Drive"
+     *
      * @return
      */
     public abstract String getName();
 
-
-    public void downloadSong(Context c, MusicFile musicFile, ProgressableCallback<Song> callback) {
-        final File dir = c.getDir(getName(), Context.MODE_PRIVATE);
-        musicFile.download(new File(dir, musicFile.getFileName()), callback);
+    private File getSongFile(Context c, MusicFile file) {
+        return new File(c.getDir(getName(), Context.MODE_PRIVATE), file.getFileName());
     }
 
+    public boolean isDownloading(Context c, MusicFile file) {
+        return mDownloading.contains(file);
+    }
+
+    public boolean exists(Context c, MusicFile file) {
+        return !isDownloading(c, file) && getSongFile(c, file).exists();
+    }
+
+    public Song getSong(Context c, MusicFile file) {
+        final File downloadedFile = getSongFile(c, file);
+        return downloadedFile.exists() ? new FileSong(downloadedFile) : null;
+    }
+
+    /**
+     * Download a specified MusicFile to the device.
+     *
+     * @param c         application context for access to a file directory
+     * @param musicFile the file to be downloaded
+     * @param callback  callback for on completion and progress
+     */
+    public void download(Context c, final MusicFile musicFile, final ProgressableCallback<Song> callback) {
+        mDownloading.add(musicFile);
+        download(musicFile, getSongFile(c, musicFile), new ProgressableCallback<Song>() {
+            @Override
+            public void onProgress(float completion) {
+                callback.onProgress(completion);
+            }
+
+            @Override
+            public void onSuccess(Song data) {
+                mDownloading.remove(musicFile);
+                callback.onSuccess(data);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                mDownloading.remove(musicFile);
+                callback.onFailure(e);
+            }
+        });
+    }
+
+    /**
+     * Download a music file to the device.
+     *
+     * @param musicFile represents the file to download
+     * @param file      the file to download the song to
+     * @param callback  shows progress of the download
+     */
+    protected abstract void download(MusicFile musicFile, File file, ProgressableCallback<Song> callback);
 
     /**
      * An Authenticator that is used to authenticate the User's source of the music.
@@ -70,21 +151,15 @@ public abstract class MusicSource {
 
     /**
      * Represents a File from the Music Source.
-     *
+     * <p/>
      * This file lives on the Cloud of the Music Source, and can be downloaded
      * to the client.
      */
     public interface MusicFile {
 
         /**
-         * Download the file to the device.
-         * @param file the file to download the file to
-         * @param callback shows progress of the download
-         */
-        void download(File file, ProgressableCallback<Song> callback);
-
-        /**
          * Get the filename of the music file that the device should use to store the file.
+         *
          * @return
          */
         String getFileName();
@@ -92,6 +167,7 @@ public abstract class MusicSource {
         /**
          * Get a pretty, human-readable string that represents the song's title.
          * Should not include the extension of the file, or track number.
+         *
          * @return
          */
         String getDisplayName();
