@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import cs446.mezzo.music.LocalSong;
 import cs446.mezzo.music.Song;
 
 /**
@@ -71,7 +72,7 @@ public class LocalMusicFetcher {
                 final String album = musicCursor.getString(albumColumn);
                 final long duration = musicCursor.getLong(durationColumn);
                 final Set<String> genres = getGenres(id);
-                final Song song = new Song(id, title, artist, album, genres, duration, dateAdded);
+                final Song song = new LocalSong(id, title, artist, album, genres, duration, dateAdded);
                 songs.add(song);
                 Log.d("SONG", "title = " + title + ", genres = " + genres);
             }

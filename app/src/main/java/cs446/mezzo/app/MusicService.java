@@ -87,9 +87,6 @@ public class MusicService extends RoboService
         switch (focusChange) {
             case AudioManager.AUDIOFOCUS_GAIN:
                 // resume playback
-                if (mSongPlayer.isPaused()) {
-                    mSongPlayer.togglePause();
-                }
                 mSongPlayer.setVolumeHigh();
                 break;
 
@@ -113,9 +110,7 @@ public class MusicService extends RoboService
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                 // Lost focus for a short time, but it's ok to keep playing
                 // at an attenuated level
-                if (!mSongPlayer.isPaused()) {
-                    mSongPlayer.setVolumeLow();
-                }
+                mSongPlayer.setVolumeLow();
                 break;
 
             default:

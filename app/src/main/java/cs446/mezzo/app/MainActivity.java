@@ -6,12 +6,23 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.inject.Inject;
+
+import java.io.File;
+import java.util.Collection;
+
 import cs446.mezzo.R;
 import cs446.mezzo.app.library.SongsFragment;
+import cs446.mezzo.data.Callback;
+import cs446.mezzo.data.ProgressableCallback;
+import cs446.mezzo.music.Song;
+import cs446.mezzo.sources.MusicSource;
+import cs446.mezzo.sources.dropbox.DropboxSource;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
 
@@ -26,6 +37,9 @@ public class MainActivity extends BaseMezzoActivity {
 
     @InjectView(R.id.drawer_list)
     View mNavDrawerList;
+
+    @Inject
+    DropboxSource mDropboxSource;
 
     ActionBarDrawerToggle mDrawerToggle;
 
@@ -50,8 +64,21 @@ public class MainActivity extends BaseMezzoActivity {
         mNavDrawer.setDrawerListener(mDrawerToggle);
         setFragment(new SongsFragment(), R.id.fragment_container);
         setFragment(new MusicControlFragment(), R.id.bottom_fragment_container);
+        if (!mDropboxSource.getAuthenticator().isAuthenticated()) {
+            mDropboxSource.getAuthenticator().startAuthentication(this);
+        }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mDropboxSource.getAuthenticator().finishAuthentication(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {

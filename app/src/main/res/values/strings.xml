@@ -6,4 +6,6 @@
     <string name="action_settings">Settings</string>
     <string name="drawer_title">Mezzo Navigation</string>
 
+    <string name="music_source_dropbox">Dropbox</string>
+
 </resources>
