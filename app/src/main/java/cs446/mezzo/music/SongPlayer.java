@@ -24,9 +24,9 @@ public interface SongPlayer {
 
     /**
      * Set the seek position of the current song.
-     * @param seekPos value between 0.0 - 1.0
+     * @param seekMs value in ms
      */
-    void setSeek(float seekPos);
+    void setSeek(int seekMs);
 
     /**
      * Set the list of songs that the player should loop through.
@@ -51,6 +51,8 @@ public interface SongPlayer {
      * @return
      */
     Song getCurrentSong();
+
+    int getSeekPosition();
 
     /**
      * Set the shuffle mode of the playlist.

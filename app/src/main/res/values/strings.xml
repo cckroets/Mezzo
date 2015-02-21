@@ -7,5 +7,7 @@
     <string name="drawer_title">Mezzo Navigation</string>
 
     <string name="music_source_dropbox">Dropbox</string>
+    <string name="default_artist">Unknown Artist</string>
+    <string name="default_album">Unknown Album</string>
 
 </resources>

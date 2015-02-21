@@ -1,6 +1,7 @@
 package cs446.mezzo.music;
 
 import android.net.Uri;
+import android.os.Parcelable;
 
 import java.util.Set;
 
@@ -9,7 +10,7 @@ import java.util.Set;
  *
  * Created by ulkarakhundzada on 2015-02-16.
  */
-public interface Song {
+public interface Song extends Parcelable {
 
     String getTitle();
 

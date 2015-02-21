@@ -67,8 +67,7 @@ public class DropboxSource extends MusicSource {
 
     @Override
     protected void download(MusicFile musicFile, File file, ProgressableCallback<Song> callback) {
-        final DropboxAPI.Entry entry = ((DBMusicFile) musicFile).mEntry;
-        new DBDownloadTask(file, entry, callback).execute();
+        new DBDownloadTask(file, musicFile, callback).execute();
     }
 
     public class DBMusicFile implements MusicFile {
@@ -136,11 +135,13 @@ public class DropboxSource extends MusicSource {
 
         private File mFile;
         private DropboxAPI.Entry mEntry;
+        private MusicFile mMusicFile;
 
-        public DBDownloadTask(File file, DropboxAPI.Entry entry, ProgressableCallback<Song> callback) {
+        public DBDownloadTask(File file, MusicFile musicFile, ProgressableCallback<Song> callback) {
             super(callback);
             mFile = file;
-            mEntry = entry;
+            mEntry = ((DBMusicFile) musicFile).mEntry;
+            mMusicFile = musicFile;
         }
 
         @Override
@@ -167,7 +168,7 @@ public class DropboxSource extends MusicSource {
                 return null;
             }
 
-            return new FileSong(mFile, DropboxUtil.getLastModifiedDate(fileInfo));
+            return new FileSong(mMusicFile, mFile, DropboxUtil.getLastModifiedDate(fileInfo));
         }
 
         @Override

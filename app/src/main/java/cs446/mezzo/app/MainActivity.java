@@ -58,20 +58,19 @@ public class MainActivity extends BaseMezzoActivity {
             }
         };
         mNavDrawer.setDrawerListener(mDrawerToggle);
-        setFragment(new SongsFragment(), R.id.fragment_container);
-        setFragment(new MusicControlFragment(), R.id.bottom_fragment_container);
-
+        setInitialFragment(new SongsFragment());
+        setSecondaryFragment(new MusicControlFragment());
         mDropboxButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setFragment(MusicSourceFragment.create(mDropboxSource), R.id.fragment_container);
+                setFragment(MusicSourceFragment.create(mDropboxSource));
                 mNavDrawer.closeDrawers();
             }
         });
         mLibraryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setFragment(new SongsFragment(), R.id.fragment_container);
+                setFragment(new SongsFragment());
                 mNavDrawer.closeDrawers();
             }
         });
@@ -97,6 +96,16 @@ public class MainActivity extends BaseMezzoActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         mDrawerToggle.syncState();
+    }
+
+    @Override
+    protected int getMainFragmentContainer() {
+        return R.id.fragment_container;
+    }
+
+    @Override
+    protected int getSecondaryFragmentContainer() {
+        return R.id.bottom_fragment_container;
     }
 
     @Override

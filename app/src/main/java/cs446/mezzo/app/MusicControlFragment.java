@@ -2,6 +2,7 @@ package cs446.mezzo.app;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,8 +70,11 @@ public class MusicControlFragment extends RoboFragment {
     }
 
     private void updateSongView() {
+        final String artist = TextUtils.isEmpty(mCurrentSong.getArtist()) ?
+                getString(R.string.default_artist) :
+                mCurrentSong.getArtist();
         mTitleView.setText(mCurrentSong.getTitle());
-        mArtistView.setText(mCurrentSong.getArtist());
+        mArtistView.setText(artist);
         mAlbumArtView.setImageBitmap(mArtManager.getAlbumArt(mCurrentSong));
     }
 

@@ -2,6 +2,7 @@ package cs446.mezzo.app.library;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import java.util.List;
 
 import cs446.mezzo.R;
 import cs446.mezzo.app.BaseMezzoFragment;
+import cs446.mezzo.app.NowPlayingFragment;
 import cs446.mezzo.data.Callback;
 import cs446.mezzo.data.ProgressableCallback;
 import cs446.mezzo.events.EventBus;
@@ -55,7 +57,6 @@ public class MusicSourceFragment extends BaseMezzoFragment {
 
     List<Integer> mSongPositions;
     List<Song> mDownloadedSongs;
-
 
     public static MusicSourceFragment create(MusicSource source) {
         final MusicSourceFragment fragment = new MusicSourceFragment();
@@ -120,6 +121,12 @@ public class MusicSourceFragment extends BaseMezzoFragment {
             mSongPositions.add(-search - 1, position);
             mDownloadedSongs.add(-search - 1, song);
         }
+    }
+
+    private void onSongClick(int songIndex) {
+        final Song song = mDownloadedSongs.get(songIndex);
+        getMezzoActivity().setFragment(NowPlayingFragment.create(song));
+        EventBus.post(new SelectSongEvent(mDownloadedSongs, songIndex));
     }
 
     @Override
@@ -212,7 +219,9 @@ public class MusicSourceFragment extends BaseMezzoFragment {
 
         private View getSongView(final int position, View convertView, ViewGroup parent) {
 
-            final View view = (convertView == null) ? mLayoutInflater.inflate(R.layout.view_song, parent, false) : convertView;
+            final View view = (convertView == null) ?
+                    mLayoutInflater.inflate(R.layout.view_song, parent, false) :
+                    convertView;
 
             final TextView songView = (TextView) view.findViewById(cs446.mezzo.R.id.song_title);
             final TextView artistView = (TextView) view.findViewById(cs446.mezzo.R.id.song_artist);
@@ -220,7 +229,9 @@ public class MusicSourceFragment extends BaseMezzoFragment {
             Log.d(TAG, "getSongView " + song.getTitle());
 
             songView.setText(song.getTitle());
-            artistView.setText(song.getArtist());
+            artistView.setText(TextUtils.isEmpty(song.getArtist()) ?
+                    getString(R.string.default_artist) :
+                    song.getArtist());
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -229,7 +240,7 @@ public class MusicSourceFragment extends BaseMezzoFragment {
                     if (songIndex < 0) {
                         songIndex = 0;
                     }
-                    EventBus.post(new SelectSongEvent(mDownloadedSongs, songIndex));
+                    onSongClick(songIndex);
                 }
             });
 

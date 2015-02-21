@@ -2,10 +2,16 @@ package cs446.mezzo.music;
 
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.text.TextUtils;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import cs446.mezzo.sources.MusicSource;
 
 /**
  * A File Song comes from a private file held by the app. Each file was downloaded from
@@ -15,6 +21,23 @@ import java.util.Set;
  */
 public class FileSong implements Song {
 
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public FileSong createFromParcel(Parcel in) {
+            return new FileSong(
+                    in.readString(), // filepath
+                    in.readString(), // title
+                    in.readString(), // artist
+                    in.readString(), // album
+                    new HashSet<String>(Arrays.asList(in.createStringArray())), // genres
+                    in.readLong(), // duration
+                    in.readLong()); // date added
+        }
+
+        public FileSong[] newArray(int size) {
+            return new FileSong[size];
+        }
+    };
+
     private File mFile;
     private String mTitle;
     private String mArtist;
@@ -23,16 +46,28 @@ public class FileSong implements Song {
     private long mDuration;
     private long mDateAdded;
 
-    public FileSong(File file, long dateAdded) {
+    public FileSong(MusicSource.MusicFile musicFile, File file, long dateAdded) {
         mFile = file;
         initFields();
         mDateAdded = dateAdded;
+        if (TextUtils.isEmpty(mTitle)) {
+            mTitle = musicFile.getDisplayName();
+        }
     }
 
-    public FileSong(File file) {
-        mFile = file;
-        initFields();
-        mDateAdded = file.lastModified();
+    public FileSong(MusicSource.MusicFile musicFile, File file) {
+        this(musicFile, file, file.lastModified());
+    }
+
+    private FileSong(String path, String title, String artist, String album,
+                     Set<String> genres, long duration, long dateAdded) {
+        mFile = new File(path);
+        mTitle = title;
+        mArtist = artist;
+        mAlbum = album;
+        mGenres = genres;
+        mDuration = duration;
+        mDateAdded = dateAdded;
     }
 
     private void initFields() {
@@ -82,5 +117,23 @@ public class FileSong implements Song {
     @Override
     public Uri getDataSource() {
         return Uri.fromFile(mFile);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mFile.getAbsolutePath());
+        dest.writeString(mTitle);
+        dest.writeString(mArtist);
+        dest.writeString(mAlbum);
+        final String[] genres = new String[mGenres.size()];
+        mGenres.toArray(genres);
+        dest.writeStringArray(genres);
+        dest.writeLong(mDuration);
+        dest.writeLong(mDateAdded);
     }
 }

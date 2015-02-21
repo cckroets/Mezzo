@@ -84,7 +84,7 @@ public abstract class MusicSource {
 
     public Song getSong(Context c, MusicFile file) {
         final File downloadedFile = getSongFile(c, file);
-        return downloadedFile.exists() ? new FileSong(downloadedFile) : null;
+        return downloadedFile.exists() ? new FileSong(file, downloadedFile) : null;
     }
 
     /**

@@ -91,6 +91,11 @@ public class MezzoPlayer implements SongPlayer,
     }
 
     @Override
+    public int getSeekPosition() {
+        return mMediaPlayer == null ? 0 : mMediaPlayer.getCurrentPosition();
+    }
+
+    @Override
     public void playNext() {
         mCurrentIndex = getNextIndex();
         playSong(getSongIndex());
@@ -128,9 +133,9 @@ public class MezzoPlayer implements SongPlayer,
     }
 
     @Override
-    public void setSeek(float seekPos) {
-        final int seekMilis = (int) ((float) mMediaPlayer.getDuration() * seekPos);
-        mMediaPlayer.seekTo(seekMilis);
+    public void setSeek(int seekMs) {
+        acquireResources();
+        mMediaPlayer.seekTo(seekMs);
     }
 
     @Override
@@ -198,7 +203,9 @@ public class MezzoPlayer implements SongPlayer,
     @Override
     public void onCompletion(MediaPlayer mp) {
         Log.d(TAG, "On Complete");
-        playNext();
+        if (!mp.isLooping()) {
+            playNext();
+        }
     }
 
     @Override
