@@ -1,5 +1,6 @@
 package cs446.mezzo.app;
 
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -20,7 +21,6 @@ import cs446.mezzo.music.AlbumArtManager;
 import cs446.mezzo.music.Song;
 import roboguice.fragment.RoboFragment;
 import roboguice.inject.InjectView;
-
 /**
  * @author curtiskroetsch
  */
@@ -43,8 +43,8 @@ public class MusicControlFragment extends RoboFragment {
 
     @Inject
     AlbumArtManager mArtManager;
-
     private Song mCurrentSong;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,6 +65,12 @@ public class MusicControlFragment extends RoboFragment {
             @Override
             public void onClick(View v) {
                 EventBus.post(new PauseToggleEvent());
+                final AudioManager manager = (AudioManager) getActivity().getSystemService(android.content.Context.AUDIO_SERVICE);
+                if (manager.isMusicActive()) {
+                    mPlayButton.setImageResource(android.R.drawable.ic_media_pause);
+                } else {
+                    mPlayButton.setImageResource(android.R.drawable.ic_media_play);
+                }
             }
         });
     }

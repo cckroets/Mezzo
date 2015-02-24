@@ -5,6 +5,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.PowerManager;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.google.inject.Singleton;
 
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import cs446.mezzo.R;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.playback.SongPlayEvent;
 
