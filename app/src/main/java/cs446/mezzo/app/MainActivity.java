@@ -15,6 +15,8 @@ import com.google.inject.Inject;
 import cs446.mezzo.R;
 import cs446.mezzo.app.library.MusicSourceFragment;
 import cs446.mezzo.app.library.SongsFragment;
+import cs446.mezzo.music.Song;
+import cs446.mezzo.music.SongPlayer;
 import cs446.mezzo.sources.dropbox.DropboxSource;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
@@ -28,11 +30,17 @@ public class MainActivity extends BaseMezzoActivity {
     @InjectView(R.id.drawer_layout)
     DrawerLayout mNavDrawer;
 
+    @InjectView(R.id.nav_now_playing)
+    View mPlayingButton;
+
     @InjectView(R.id.nav_dropbox)
     View mDropboxButton;
 
     @InjectView(R.id.nav_my_music)
     View mLibraryButton;
+
+    @Inject
+    SongPlayer mSongPlayer;
 
     @Inject
     DropboxSource mDropboxSource;
@@ -60,6 +68,16 @@ public class MainActivity extends BaseMezzoActivity {
         mNavDrawer.setDrawerListener(mDrawerToggle);
         setInitialFragment(new SongsFragment());
         setSecondaryFragment(new MusicControlFragment());
+        mPlayingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Song song = mSongPlayer.getCurrentSong();
+                if (song != null) {
+                    setFragment(NowPlayingFragment.create(song));
+                }
+                mNavDrawer.closeDrawers();
+            }
+        });
         mDropboxButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -128,11 +146,11 @@ public class MainActivity extends BaseMezzoActivity {
         }
 
         switch (item.getItemId()) {
-            case R.id.action_settings:
-                // TODO: Open Settings Page here.
-                break;
-            default:
-                return true;
+          case R.id.action_settings:
+              // TODO: Open Settings Page here.
+              break;
+          default:
+              return true;
         }
 
         return false;
