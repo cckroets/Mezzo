@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:clipToPadding="false"
+    android:padding="4dp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <FrameLayout
+        android:elevation="4dp"
+        android:background="@drawable/rounded_white"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:orientation="vertical">
+
+        <com.makeramen.RoundedImageView
+            android:id="@+id/player_album_art"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:riv_border_color="@android:color/black"
+            app:riv_border_width="0dp"
+            app:riv_corner_radius="5dp"
+            app:riv_mutate_background="true"
+            app:riv_oval="false"
+            tools:src="@android:color/holo_orange_dark"/>
+
+        <cs446.mezzo.view.MarqueeTextView
+            style="@style/AudioFileInfoOverlayText"
+            android:id="@+id/player_title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="bottom"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:paddingBottom="1dp"
+            android:singleLine="true"
+            android:background="@drawable/black_rounded_gradient"
+            android:textColor="@color/primary_text_default_material_dark"
+            android:textSize="5pt"
+            tools:text="Blank Space Space"/>
+
+    </FrameLayout>
+</LinearLayout>

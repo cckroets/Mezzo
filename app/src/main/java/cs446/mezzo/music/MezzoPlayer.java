@@ -3,6 +3,8 @@ package cs446.mezzo.music;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.PowerManager;
 import android.util.Log;
 
@@ -14,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 import cs446.mezzo.events.EventBus;
+import cs446.mezzo.events.playback.SeekEvent;
 import cs446.mezzo.events.playback.SongPlayEvent;
 
 /**
@@ -28,8 +31,10 @@ public class MezzoPlayer implements SongPlayer,
     private static final String TAG = MezzoPlayer.class.getName();
     private static final float LOW_VOLUME = 0.1f;
     private static final float MAX_VOLUME = 1.0f;
+    private static final int SEEK_DELAY_MS = 300;
 
     Context mContext;
+    Handler mHandler;
 
     private MediaPlayer mMediaPlayer;
 
@@ -39,7 +44,16 @@ public class MezzoPlayer implements SongPlayer,
     private int mCurrentIndex;
     private boolean mShuffleEnabled;
 
+    private Runnable mSeekRunnable = new Runnable() {
+        @Override
+        public void run() {
+            EventBus.post(new SeekEvent(getSeekPosition()));
+            mHandler.postDelayed(this, SEEK_DELAY_MS);
+        }
+    };
+
     public MezzoPlayer(Context context) {
+        mHandler = new Handler(Looper.getMainLooper());
         mShuffleEnabled = false;
         mCurrentIndex = 0;
         mContext = context;
@@ -73,8 +87,10 @@ public class MezzoPlayer implements SongPlayer,
         acquireResources();
         if (mMediaPlayer.isPlaying()) {
             mMediaPlayer.pause();
+            mHandler.removeCallbacks(mSeekRunnable);
         } else {
             mMediaPlayer.start();
+            mHandler.post(mSeekRunnable);
         }
     }
 
@@ -197,6 +213,7 @@ public class MezzoPlayer implements SongPlayer,
     @Override
     public void onPrepared(MediaPlayer mp) {
         Log.d(TAG, "On Prepared");
+        mHandler.post(mSeekRunnable);
         mMediaPlayer.start();
     }
 

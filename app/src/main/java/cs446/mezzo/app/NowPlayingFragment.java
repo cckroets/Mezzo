@@ -19,21 +19,19 @@ import cs446.mezzo.events.control.PauseToggleEvent;
 import cs446.mezzo.events.control.PlayNextEvent;
 import cs446.mezzo.events.control.PlayPrevEvent;
 import cs446.mezzo.events.control.RepeatToggleEvent;
+import cs446.mezzo.events.control.SeekSetEvent;
 import cs446.mezzo.events.control.ShuffleToggleEvent;
+import cs446.mezzo.events.playback.SeekEvent;
 import cs446.mezzo.events.playback.SongPlayEvent;
 import cs446.mezzo.music.AlbumArtManager;
 import cs446.mezzo.music.MusicUtil;
 import cs446.mezzo.music.Song;
-import cs446.mezzo.music.SongPlayer;
 import roboguice.inject.InjectView;
 
 /**
  * @author curtiskroetsch
  */
 public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnSeekBarChangeListener {
-
-    private static final int SEEK_DELAY_MS = 300;
-    private static final String KEY_SONG = "song";
 
     @InjectView(R.id.player_title)
     TextView mTitle;
@@ -71,36 +69,18 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
     @Inject
     AlbumArtManager mArtManager;
 
-    @Inject
-    SongPlayer mSongPlayer;
-
     Song mSong;
 
-    public static NowPlayingFragment create(Song song) {
-        final NowPlayingFragment fragment = new NowPlayingFragment();
-        final Bundle args = new Bundle();
-        args.putParcelable(KEY_SONG, song);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    boolean mIsUserSeeking;
 
-    Runnable mSeekRunnable = new Runnable() {
-        @Override
-        public void run() {
-            final int seekpos = mSongPlayer.getSeekPosition();
-            mSeekBar.setProgress(seekpos);
-            mSeekPosition.setText(MusicUtil.formatTime(seekpos, mSong.getDuration()));
-            if (isAdded()) {
-                getMezzoActivity().postDelayed(mSeekRunnable, SEEK_DELAY_MS);
-            }
-        }
-    };
+    public static NowPlayingFragment create() {
+        return new NowPlayingFragment();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EventBus.register(this);
-        mSong = getArguments().getParcelable(KEY_SONG);
+        EventBus.register(this); // Also gets a song from SongPlayEvent Producer
         invalidateActionBar();
         getMezzoActivity().hideSecondaryFragment();
     }
@@ -113,7 +93,6 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getMezzoActivity().post(mSeekRunnable);
         mSeekBar.setOnSeekBarChangeListener(this);
         mAlbumArtist.setSelected(true);
         setEventClick(mPauseBtn, new PauseToggleEvent());
@@ -168,11 +147,22 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
 
     @Subscribe
     public void onSongPlayEvent(SongPlayEvent event) {
-        if (mSong == event.getSong()) {
+        if (mSong == null) {
+            mSong = event.getSong();
+        } else if (mSong == event.getSong()) {
             updateSeekbar();
         } else {
             mSong = event.getSong();
             updateSongView();
+        }
+    }
+
+    @Subscribe
+    public void onSeek(SeekEvent event) {
+        if (!mIsUserSeeking) {
+            final int seekpos = event.getSeekPos();
+            mSeekBar.setProgress(seekpos);
+            mSeekPosition.setText(MusicUtil.formatTime(seekpos, mSong.getDuration()));
         }
     }
 
@@ -183,14 +173,13 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
-        getMezzoActivity().removeCallbacks(mSeekRunnable);
+        mIsUserSeeking = true;
     }
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        mSongPlayer.setSeek(seekBar.getProgress());
-        getMezzoActivity().post(mSeekRunnable);
+        mIsUserSeeking = false;
+        EventBus.post(new SeekSetEvent(seekBar.getProgress()));
     }
-
 
 }

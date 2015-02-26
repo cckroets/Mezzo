@@ -44,7 +44,7 @@
             android:paddingLeft="8dp"
             android:singleLine="true"
             android:text="Artist Name - Album"
-            android:textColor="@android:color/secondary_text_dark"
+            android:textColor="@android:color/secondary_text_dark_nodisable"
             android:textSize="9pt"/>
 
         <LinearLayout
