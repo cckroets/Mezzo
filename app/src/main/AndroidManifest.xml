@@ -38,7 +38,8 @@
             </intent-filter>
         </activity>
 
-        <service android:name="cs446.mezzo.app.MusicService"/>
+        <service android:name=".app.MusicService"/>
+        <service android:name=".overlay.OverlayService"/>
     </application>
 
 </manifest>
