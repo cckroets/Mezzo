@@ -97,40 +97,45 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:padding="16dp"
-                android:src="@android:drawable/ic_menu_rotate"/>
+                android:background="@drawable/pressed"
+                android:tint="@color/primary_dark"
+                android:src="@drawable/ic_av_repeat"/>
 
             <ImageView
                 android:id="@+id/player_previous"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:padding="12dp"
-                android:src="@android:drawable/ic_media_previous"/>
+                android:background="@drawable/pressed"
+                android:tint="@color/primary_dark"
+                android:src="@drawable/ic_av_skip_previous"/>
 
             <ImageView
                 android:id="@+id/player_pause"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:padding="4dp"
-                android:src="@android:drawable/ic_media_pause"/>
+                android:background="@drawable/pressed"
+                android:tint="@color/primary_dark"
+                android:src="@drawable/ic_av_pause"/>
 
             <ImageView
                 android:id="@+id/player_next"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:padding="12dp"
-                android:src="@android:drawable/ic_media_next"/>
+                android:background="@drawable/pressed"
+                android:tint="@color/primary_dark"
+                android:src="@drawable/ic_av_skip_next"/>
 
             <ImageView
                 android:id="@+id/player_shuffle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:padding="16dp"
-                android:src="@android:drawable/ic_menu_directions"/>
+                android:background="@drawable/pressed"
+                android:tint="@color/primary_dark"
+                android:src="@drawable/ic_av_shuffle"/>
 
         </LinearLayout>
 
