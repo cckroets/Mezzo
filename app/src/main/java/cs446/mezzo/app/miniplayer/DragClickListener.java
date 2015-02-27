@@ -14,10 +14,11 @@ import cs446.mezzo.overlay.Overlay;
  */
 public class DragClickListener implements View.OnTouchListener {
 
-    private static final int WIGGLE_ROOM = 10;
+    private static final int WIGGLE_ROOM = 15;
 
     private Overlay mOverlay;
     private Display mDisplay;
+    private View mTapTarget;
 
     private int mDeltaX;
     private int mDeltaY;
@@ -28,11 +29,12 @@ public class DragClickListener implements View.OnTouchListener {
         @Override
         public void onAnimationUpdate(ValueAnimator animation) {
             mOverlay.getLayoutParams().x = (Integer) animation.getAnimatedValue();
-            mOverlay.updateView();
+            mOverlay.updateViewLayout();
         }
     };
 
-    public DragClickListener(Overlay overlay) {
+    public DragClickListener(Overlay overlay, View target) {
+        mTapTarget = target;
         mOverlay = overlay;
         mDisplay = mOverlay.getOverlayManager().getWindowManager().getDefaultDisplay();
         setConstraints();
@@ -44,7 +46,7 @@ public class DragClickListener implements View.OnTouchListener {
         }
         final Point point = new Point();
         mDisplay.getSize(point);
-        mMaxY = point.y - mOverlay.getView().getHeight();
+        mMaxY = point.y - mTapTarget.getHeight();
     }
 
     @Override
@@ -86,7 +88,7 @@ public class DragClickListener implements View.OnTouchListener {
     private void moveOverlay(int deltaX, int deltaY) {
         mOverlay.getLayoutParams().x = deltaX;
         mOverlay.getLayoutParams().y = deltaY;
-        mOverlay.updateView();
+        mOverlay.updateViewLayout();
     }
 
     private void moveToSide(View view, MotionEvent event) {
@@ -95,7 +97,7 @@ public class DragClickListener implements View.OnTouchListener {
         final int width = mDisplay.getWidth();
         final int overlayWidth = view.getWidth();
 
-        final int finalPos = (rawX < width / 2) ? 0 : width - overlayWidth;
+        final int finalPos = 0; //(rawX < width / 2) ? 0 : width - overlayWidth;
         final ValueAnimator animator = ValueAnimator.ofInt(xPos, finalPos);
         animator.addUpdateListener(mMagnetUpdateListener);
         animator.start();

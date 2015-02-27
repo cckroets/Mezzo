@@ -34,9 +34,6 @@ public class SongsFragment extends BaseMezzoFragment implements AdapterView.OnIt
     @Inject
     LocalMusicFetcher mMusicFetcher;
 
-    @Inject
-    OverlayManager mOverlayManager;
-
     @InjectView(R.id.song_list)
     ListView mSongView;
 
@@ -69,7 +66,6 @@ public class SongsFragment extends BaseMezzoFragment implements AdapterView.OnIt
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         EventBus.post(new SelectSongEvent(mSongList, position));
-        mOverlayManager.add(new MiniPlayer(((SongAdapter) parent.getAdapter()).getItem(position)));
     }
 
 

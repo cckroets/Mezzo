@@ -17,6 +17,7 @@ import cs446.mezzo.app.library.MusicSourceFragment;
 import cs446.mezzo.app.library.SongsFragment;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.music.SongPlayer;
+import cs446.mezzo.overlay.OverlayService;
 import cs446.mezzo.sources.dropbox.DropboxSource;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
@@ -51,6 +52,7 @@ public class MainActivity extends BaseMezzoActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         startService(new Intent(this, MusicService.class));
+        startService(new Intent(this, OverlayService.class));
         setSupportActionBar(mToolbar);
         mDrawerToggle = new ActionBarDrawerToggle(this, mNavDrawer, R.string.app_name, R.string.app_name) {
             @Override

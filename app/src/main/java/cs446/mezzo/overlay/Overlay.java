@@ -42,6 +42,10 @@ public abstract class Overlay {
         view.setVisibility(View.GONE);
     }
 
+    protected void onDestroy() {
+
+    }
+
     public final void setVisible(boolean isVisible) {
         mIsVisible = isVisible;
     }
@@ -63,11 +67,12 @@ public abstract class Overlay {
     }
 
     public WindowManager.LayoutParams getLayoutParams() {
+        mLayoutParams.flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
         mLayoutParams.gravity = Gravity.LEFT | Gravity.TOP;
         return mLayoutParams;
     }
 
-    public void updateView() {
+    public void updateViewLayout() {
         mOverlayManager.mWindowManager.updateViewLayout(mView, getLayoutParams());
     }
 }
