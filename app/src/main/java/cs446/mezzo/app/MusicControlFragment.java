@@ -80,9 +80,11 @@ public class MusicControlFragment extends RoboFragment {
 
     @Subscribe
     public void onSongPlayEvent(SongPlayEvent event) {
-        mPlayerView.setVisibility(View.VISIBLE);
         mCurrentSong = event.getSong();
-        updateSongView();
+        if (isAdded() && mCurrentSong != null) {
+            mPlayerView.setVisibility(View.VISIBLE);
+            updateSongView();
+        }
     }
 
     @Override

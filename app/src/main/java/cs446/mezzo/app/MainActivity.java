@@ -73,7 +73,7 @@ public class MainActivity extends BaseMezzoActivity {
             public void onClick(View v) {
                 final Song song = mSongPlayer.getCurrentSong();
                 if (song != null) {
-                    setFragment(NowPlayingFragment.create(song));
+                    setFragment(NowPlayingFragment.create());
                 }
                 mNavDrawer.closeDrawers();
             }
