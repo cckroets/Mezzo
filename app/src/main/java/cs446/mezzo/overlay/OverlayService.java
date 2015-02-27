@@ -2,6 +2,8 @@ package cs446.mezzo.overlay;
 
 import android.app.Activity;
 import android.app.Application;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -9,12 +11,14 @@ import android.os.IBinder;
 import com.google.inject.Inject;
 import com.squareup.otto.Subscribe;
 
+import cs446.mezzo.R;
 import cs446.mezzo.app.MainActivity;
 import cs446.mezzo.app.miniplayer.MiniPlayer;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.control.PauseToggleEvent;
 import cs446.mezzo.events.navigation.OpenAppEvent;
 import cs446.mezzo.events.playback.SongPlayEvent;
+import cs446.mezzo.music.Song;
 import roboguice.service.RoboService;
 
 /**
@@ -28,6 +32,8 @@ public class OverlayService extends RoboService implements Application.ActivityL
     Overlay mMiniPlayer;
 
     boolean mSongPlaying;
+
+    int mNotificationId = 1;
 
     @Override
     public void onCreate() {
@@ -53,6 +59,26 @@ public class OverlayService extends RoboService implements Application.ActivityL
 
     @Subscribe
     public void onSongPlay(SongPlayEvent event) {
+        final Song song = event.getSong();
+        String mSongTitle = "";
+        if (song != null) {
+            mSongTitle = song.getTitle();
+        }
+        final Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setAction(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        final PendingIntent pendInt = PendingIntent.getActivity(this, 0,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        final Notification.Builder builder = new Notification.Builder(this);
+        builder.setContentIntent(pendInt)
+                .setSmallIcon(R.drawable.play)
+                .setOngoing(true)
+                .setContentTitle("Mezzo")
+                .setContentText(mSongTitle)
+                .setWhen(0);
+        final Notification not = builder.build();
+        startForeground(mNotificationId , not);
         mSongPlaying = true;
     }
 
@@ -66,6 +92,7 @@ public class OverlayService extends RoboService implements Application.ActivityL
         EventBus.unregister(this);
         getApplication().unregisterActivityLifecycleCallbacks(this);
         super.onDestroy();
+        stopForeground(true);
     }
 
     @Override
