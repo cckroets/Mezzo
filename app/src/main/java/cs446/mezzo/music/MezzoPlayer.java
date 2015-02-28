@@ -33,18 +33,6 @@ public class MezzoPlayer implements SongPlayer,
     private static final float LOW_VOLUME = 0.1f;
     private static final float MAX_VOLUME = 1.0f;
     private static final int SEEK_DELAY_MS = 300;
-
-    Context mContext;
-    Handler mHandler;
-
-    private MediaPlayer mMediaPlayer;
-
-    private List<Song> mPlaylist;
-    private List<Integer> mShuffle;
-
-    private int mCurrentIndex;
-    private boolean mShuffleEnabled;
-
     private Runnable mSeekRunnable = new Runnable() {
         @Override
         public void run() {
@@ -52,6 +40,13 @@ public class MezzoPlayer implements SongPlayer,
             mHandler.postDelayed(this, SEEK_DELAY_MS);
         }
     };
+    private Context mContext;
+    private Handler mHandler;
+    private MediaPlayer mMediaPlayer;
+    private List<Song> mPlaylist;
+    private List<Integer> mShuffle;
+    private int mCurrentIndex;
+    private boolean mShuffleEnabled;
 
     public MezzoPlayer(Context context) {
         mHandler = new Handler(Looper.getMainLooper());

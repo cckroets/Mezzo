@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 
 import com.google.inject.Inject;
 import com.squareup.otto.Subscribe;
@@ -74,15 +75,13 @@ public class OverlayService extends RoboService implements Application.ActivityL
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         final PendingIntent pendInt = PendingIntent.getActivity(this, 0,
                 intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        final Notification.Builder builder = new Notification.Builder(this);
+        final NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         builder.setContentIntent(pendInt)
                 .setSmallIcon(R.drawable.ic_av_play_circle_fill)
                 .setLargeIcon(mArtManager.getAlbumArt(song))
-                .setOngoing(true)
                 .setContentTitle("Mezzo")
-                .setContentText(mSongTitle)
-                .setWhen(0);
-        final Notification not = builder.getNotification();
+                .setContentText(mSongTitle);
+        final Notification not = builder.build();
         startForeground(mNotificationId , not);
     }
 
