@@ -21,6 +21,9 @@ public class AlbumArtManager {
     }
 
     public Bitmap getAlbumArt(Song song) {
+        if (song == null) {
+            return null;
+        }
         final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(mContext, song.getDataSource());
         final byte[] bitmapData = retriever.getEmbeddedPicture();

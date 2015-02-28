@@ -16,6 +16,7 @@ import cs446.mezzo.app.MainActivity;
 import cs446.mezzo.app.player.mini.MiniPlayer;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.navigation.OpenAppEvent;
+import cs446.mezzo.music.AlbumArtManager;
 import cs446.mezzo.music.SongPlayer;
 import cs446.mezzo.events.playback.SongPlayEvent;
 import cs446.mezzo.music.Song;
@@ -31,6 +32,9 @@ public class OverlayService extends RoboService implements Application.ActivityL
 
     @Inject
     SongPlayer mMusicPlayer;
+
+    @Inject
+    AlbumArtManager mArtManager;
 
     Overlay mMiniPlayer;
 
@@ -72,19 +76,14 @@ public class OverlayService extends RoboService implements Application.ActivityL
                 intent, PendingIntent.FLAG_UPDATE_CURRENT);
         final Notification.Builder builder = new Notification.Builder(this);
         builder.setContentIntent(pendInt)
-                .setSmallIcon(R.drawable.play)
+                .setSmallIcon(R.drawable.ic_av_play_circle_fill)
+                .setLargeIcon(mArtManager.getAlbumArt(song))
                 .setOngoing(true)
                 .setContentTitle("Mezzo")
                 .setContentText(mSongTitle)
                 .setWhen(0);
-        final Notification not = builder.build();
+        final Notification not = builder.getNotification();
         startForeground(mNotificationId , not);
-        mSongPlaying = true;
-    }
-
-    @Subscribe
-    public void onPauseToggle(PauseToggleEvent event) {
-        mSongPlaying = !mSongPlaying;
     }
 
     @Override
