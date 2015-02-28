@@ -17,6 +17,7 @@ import java.util.List;
 
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.playback.SeekEvent;
+import cs446.mezzo.events.playback.SongPauseEvent;
 import cs446.mezzo.events.playback.SongPlayEvent;
 
 /**
@@ -88,9 +89,11 @@ public class MezzoPlayer implements SongPlayer,
         if (mMediaPlayer.isPlaying()) {
             mMediaPlayer.pause();
             mHandler.removeCallbacks(mSeekRunnable);
+            EventBus.post(new SongPauseEvent(true));
         } else {
             mMediaPlayer.start();
             mHandler.post(mSeekRunnable);
+            EventBus.post(new SongPauseEvent(false));
         }
     }
 

@@ -1,5 +1,6 @@
-package cs446.mezzo.app.miniplayer;
+package cs446.mezzo.app.player.mini;
 
+import android.animation.LayoutTransition;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -18,6 +19,7 @@ import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.control.PauseToggleEvent;
 import cs446.mezzo.events.control.PlayNextEvent;
 import cs446.mezzo.events.navigation.OpenAppEvent;
+import cs446.mezzo.events.playback.SongPauseEvent;
 import cs446.mezzo.events.playback.SongPlayEvent;
 import cs446.mezzo.music.AlbumArtManager;
 import cs446.mezzo.music.Song;
@@ -79,8 +81,15 @@ public class MiniPlayer extends Overlay {
         mDismissal = new Dismissal();
         mExpanded = false;
         mPlaying = true;
-        mControls.setVisibility(View.GONE);
+        mPauseButton.setVisibility(View.GONE);
+        mHomeButton.setVisibility(View.GONE);
+        mNextButton.setVisibility(View.GONE);
         getOverlayManager().add(mDismissal);
+
+        final LayoutTransition transition = new LayoutTransition();
+        transition.setStagger(LayoutTransition.APPEARING, 1000);
+        mControls.setLayoutTransition(transition);
+
         mTextView.setOnTouchListener(new DragClickListener(this, view) {
             @Override
             public void onStartDrag(View view, MotionEvent event) {
@@ -98,7 +107,9 @@ public class MiniPlayer extends Overlay {
             @Override
             public void onClick(View view, MotionEvent event) {
                 mExpanded = !mExpanded;
-                mControls.setVisibility(mExpanded ? View.VISIBLE : View.GONE);
+                mPauseButton.setVisibility(mExpanded ? View.VISIBLE : View.GONE);
+                mHomeButton.setVisibility(mExpanded ? View.VISIBLE : View.GONE);
+                mNextButton.setVisibility(mExpanded ? View.VISIBLE : View.GONE);
             }
         });
 
@@ -106,7 +117,6 @@ public class MiniPlayer extends Overlay {
             @Override
             public void onClick(View v) {
                 mPlaying = !mPlaying;
-                mPauseButton.setImageDrawable(mPlaying ? mPauseDrawable : mPlayDrawable);
                 EventBus.post(new PauseToggleEvent());
             }
         });
@@ -135,8 +145,14 @@ public class MiniPlayer extends Overlay {
     public void onSongPlay(SongPlayEvent event) {
         mSong = event.getSong();
         if (isVisible()) {
+            mPauseButton.setImageDrawable(mPauseDrawable);
             updateSongView();
         }
+    }
+
+    @Subscribe
+    public void onSongPaused(SongPauseEvent event) {
+        mPauseButton.setImageDrawable(event.isPaused() ? mPlayDrawable : mPauseDrawable);
     }
 
     @Override

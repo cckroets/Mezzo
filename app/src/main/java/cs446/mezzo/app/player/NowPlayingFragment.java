@@ -1,4 +1,4 @@
-package cs446.mezzo.app;
+package cs446.mezzo.app.player;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -14,6 +14,7 @@ import com.google.inject.Inject;
 import com.squareup.otto.Subscribe;
 
 import cs446.mezzo.R;
+import cs446.mezzo.app.BaseMezzoFragment;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.control.PauseToggleEvent;
 import cs446.mezzo.events.control.PlayNextEvent;
@@ -139,9 +140,14 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        getMezzoActivity().showSecondaryFragment();
+    }
+
+    @Override
     public void onDestroy() {
         EventBus.unregister(this);
-        getMezzoActivity().showSecondaryFragment();
         super.onDestroy();
     }
 

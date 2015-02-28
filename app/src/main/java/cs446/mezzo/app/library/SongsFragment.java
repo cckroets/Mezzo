@@ -18,11 +18,9 @@ import java.util.List;
 
 import cs446.mezzo.R;
 import cs446.mezzo.app.BaseMezzoFragment;
-import cs446.mezzo.app.miniplayer.MiniPlayer;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.control.SelectSongEvent;
 import cs446.mezzo.music.Song;
-import cs446.mezzo.overlay.OverlayManager;
 import cs446.mezzo.sources.LocalMusicFetcher;
 import roboguice.inject.InjectView;
 

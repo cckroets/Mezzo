@@ -23,7 +23,7 @@ import java.util.List;
 
 import cs446.mezzo.R;
 import cs446.mezzo.app.BaseMezzoFragment;
-import cs446.mezzo.app.NowPlayingFragment;
+import cs446.mezzo.app.player.NowPlayingFragment;
 import cs446.mezzo.data.Callback;
 import cs446.mezzo.data.ProgressableCallback;
 import cs446.mezzo.events.EventBus;

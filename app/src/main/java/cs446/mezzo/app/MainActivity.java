@@ -15,6 +15,8 @@ import com.google.inject.Inject;
 import cs446.mezzo.R;
 import cs446.mezzo.app.library.MusicSourceFragment;
 import cs446.mezzo.app.library.SongsFragment;
+import cs446.mezzo.app.player.MusicControlFragment;
+import cs446.mezzo.app.player.NowPlayingFragment;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.music.SongPlayer;
 import cs446.mezzo.overlay.OverlayService;

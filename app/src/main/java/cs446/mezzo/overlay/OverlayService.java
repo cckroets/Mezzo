@@ -10,11 +10,10 @@ import com.google.inject.Inject;
 import com.squareup.otto.Subscribe;
 
 import cs446.mezzo.app.MainActivity;
-import cs446.mezzo.app.miniplayer.MiniPlayer;
+import cs446.mezzo.app.player.mini.MiniPlayer;
 import cs446.mezzo.events.EventBus;
-import cs446.mezzo.events.control.PauseToggleEvent;
 import cs446.mezzo.events.navigation.OpenAppEvent;
-import cs446.mezzo.events.playback.SongPlayEvent;
+import cs446.mezzo.music.SongPlayer;
 import roboguice.service.RoboService;
 
 /**
@@ -25,15 +24,15 @@ public class OverlayService extends RoboService implements Application.ActivityL
     @Inject
     OverlayManager mOverlayManager;
 
-    Overlay mMiniPlayer;
+    @Inject
+    SongPlayer mMusicPlayer;
 
-    boolean mSongPlaying;
+    Overlay mMiniPlayer;
 
     @Override
     public void onCreate() {
         super.onCreate();
         getApplication().registerActivityLifecycleCallbacks(this);
-        mSongPlaying = false;
         EventBus.register(this);
     }
 
@@ -49,16 +48,6 @@ public class OverlayService extends RoboService implements Application.ActivityL
         intent.setAction(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         startActivity(intent);
-    }
-
-    @Subscribe
-    public void onSongPlay(SongPlayEvent event) {
-        mSongPlaying = true;
-    }
-
-    @Subscribe
-    public void onPauseToggle(PauseToggleEvent event) {
-        mSongPlaying = !mSongPlaying;
     }
 
     @Override
@@ -93,7 +82,7 @@ public class OverlayService extends RoboService implements Application.ActivityL
 
     @Override
     public void onActivityStopped(Activity activity) {
-        if (mSongPlaying) {
+        if (!mMusicPlayer.isPaused()) {
             mMiniPlayer = new MiniPlayer();
             mOverlayManager.add(mMiniPlayer);
         }

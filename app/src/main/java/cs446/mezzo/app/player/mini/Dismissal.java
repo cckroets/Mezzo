@@ -1,4 +1,4 @@
-package cs446.mezzo.app.miniplayer;
+package cs446.mezzo.app.player.mini;
 
 import android.view.Gravity;
 import android.view.LayoutInflater;

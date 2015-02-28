@@ -1,4 +1,4 @@
-package cs446.mezzo.app.miniplayer;
+package cs446.mezzo.app.player.mini;
 
 import android.animation.ValueAnimator;
 import android.graphics.Point;

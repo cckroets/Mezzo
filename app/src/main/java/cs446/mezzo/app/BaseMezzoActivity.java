@@ -62,9 +62,13 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity {
     }
 
     protected void setInitialFragment(BaseMezzoFragment fragment) {
+        setInitialFragment(fragment, getMainFragmentContainer());
+    }
+
+    private void setInitialFragment(Fragment fragment, int contId) {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(getMainFragmentContainer(), fragment)
+                .replace(contId, fragment)
                 .commit();
     }
 
@@ -80,7 +84,7 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity {
     }
 
     protected void setSecondaryFragment(Fragment fragment) {
-        setFragment(fragment, getSecondaryFragmentContainer());
+        setInitialFragment(fragment, getSecondaryFragmentContainer());
         mSecondaryFragment = fragment;
     }
 
