@@ -94,7 +94,9 @@ public class AlbumArtManager {
             public void onFailure(Exception error) {
                 Log.e(TAG, "MusicBrainz failed " + error.getMessage());
                 setDefaultCoverArt(view);
-                paletteCallback.onFailure(error);
+                if (paletteCallback != null) {
+                    paletteCallback.onFailure(error);
+                }
             }
         });
     }
