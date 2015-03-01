@@ -34,6 +34,12 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="4dp"
+                android:layout_gravity="top"
+                android:background="@drawable/shadow_downwards"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
                 android:layout_gravity="bottom"
                 android:background="@drawable/shadow_upwards"/>
 

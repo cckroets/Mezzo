@@ -20,7 +20,7 @@
 
         <ScrollView
             android:id="@+id/player_lyrics_container"
-            android:alpha="0"
+            android:alpha="1"
             android:visibility="visible"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -29,28 +29,15 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#a0000000"
+                android:background="#b4000000"
                 android:orientation="vertical"
-                android:paddingRight="8dp"
-                android:paddingLeft="8dp">
-
-                <TextView
-                    android:id="@+id/player_hide_lyrics"
-                    android:text="HIDE LYRICS"
-                    android:background="@color/primary_trans"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:padding="8dp"
-                    android:textColor="@android:color/white"
-                    android:textStyle="bold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                android:padding="8dp">
 
                 <TextView
                     android:id="@+id/player_lyrics_body"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="You never really wanted it You'll settle for a bit of it We started with a big bang And now it's comming back again Hey, don't you feel it now? My shiny side down Hey, burning brighter still And you're getting sick And you're feeling it It'll wear you down and wear you down You chase it, breathing in and out and in and out They'll push you up against the wall, against the wall You didn't think you'd feel it all but you were wrong about it Push It started with a handgun loaded with excuses I started faking it And then we started breaking it All the pieces used to fit Using like it's going out of style ... ******* This Lyrics is NOT for Commercial use *******You never really wanted it You'll settle for a bit of it We started with a big bang And now it's comming back again Hey, don't you feel it now? My shiny side down Hey, burning brighter still And you're getting sick And you're feeling it It'll wear you down and wear you down You chase it, breathing in and out and in and out They'll push you up against the wall, against the wall You didn't think you'd feel it all but you were wrong about it Push It started with a handgun loaded with excuses I started faking it And then we started breaking it All the pieces used to fit Using like it's going out of style ... ******* This "
+                    tools:text="You never really wanted it You'll settle for a bit of it We started with a big bang And now it's comming back again Hey, don't you feel it now? My shiny side down Hey, burning brighter still And you're getting sick And you're feeling it It'll wear you down and wear you down You chase it, breathing in and out and in and out They'll push you up against the wall, against the wall You didn't think you'd feel it all but you were wrong about it Push It started with a handgun loaded with excuses I started faking it And then we started breaking it All the pieces used to fit Using like it's going out of style ... ******* This Lyrics is NOT for Commercial use *******You never really wanted it You'll settle for a bit of it We started with a big bang And now it's comming back again Hey, don't you feel it now? My shiny side down Hey, burning brighter still And you're getting sick And you're feeling it It'll wear you down and wear you down You chase it, breathing in and out and in and out They'll push you up against the wall, against the wall You didn't think you'd feel it all but you were wrong about it Push It started with a handgun loaded with excuses I started faking it And then we started breaking it All the pieces used to fit Using like it's going out of style ... ******* This "
                     android:textColor="@android:color/white"/>
 
                 <Space
@@ -61,7 +48,7 @@
                     android:id="@+id/player_lyrics_copyright"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Lyrics powered by www.musiXmatch.com. This Lyrics is NOT for Commercial use and only 30% of the lyrics are returned."
+                    tools:text="Lyrics powered by www.musiXmatch.com. This Lyrics is NOT for Commercial use and only 30% of the lyrics are returned."
                     android:textColor="@android:color/secondary_text_dark"/>
 
             </LinearLayout>
@@ -188,16 +175,5 @@
         </LinearLayout>
 
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/player_get_lyrics"
-        android:text="GET LYRICS"
-        android:background="@color/primary_trans"
-        android:layout_margin="8dp"
-        android:padding="8dp"
-        android:textColor="@android:color/white"
-        android:textStyle="bold"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
 
 </FrameLayout>

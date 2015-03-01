@@ -13,5 +13,6 @@
     <color name="divider">#B6B6B6</color>
 
     <color name="pressed">@color/primary_light</color>
+    <color name="white">#ffffffff</color>
 
 </resources>

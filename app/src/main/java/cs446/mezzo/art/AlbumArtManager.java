@@ -3,8 +3,10 @@ package cs446.mezzo.art;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
+import android.support.v7.graphics.Palette;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -15,11 +17,9 @@ import com.squareup.picasso.Picasso;
 import java.util.Collection;
 
 import cs446.mezzo.R;
-import cs446.mezzo.data.Preferences;
+import cs446.mezzo.data.Callback;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.net.CoverArtArchive;
-import cs446.mezzo.net.MusicBrainz;
-import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import roboguice.inject.InjectResource;
@@ -45,6 +45,9 @@ public class AlbumArtManager {
     Drawable mDefaultCoverArt;
 
     @Inject
+    PaletteCache mPaletteCache;
+
+    @Inject
     public AlbumArtManager() {
 
     }
@@ -54,16 +57,28 @@ public class AlbumArtManager {
     }
 
     public void setAlbumArt(final ImageView view, final Song song) {
+        setAlbumArt(view, song, null);
+    }
+
+    public void setAlbumArt(final ImageView view, final Song song, final Callback<Palette> paletteCallback) {
         final Bitmap encodedCoverArt = getAlbumArt(song);
         if (encodedCoverArt != null) {
             view.setImageBitmap(encodedCoverArt);
+            Palette.generateAsync(encodedCoverArt, new Palette.PaletteAsyncListener() {
+                @Override
+                public void onGenerated(Palette palette) {
+                    if (paletteCallback != null) {
+                        paletteCallback.onSuccess(palette);
+                    }
+                }
+            });
             return;
         }
-        loadAlbumArtFromNetwork(song, view);
+        loadAlbumArtFromNetwork(song, view, paletteCallback);
     }
 
-    private void loadAlbumArtFromNetwork(final Song song, final ImageView view) {
-        mMusicBrainz.getRecording(song, new cs446.mezzo.data.Callback<Recording>() {
+    private void loadAlbumArtFromNetwork(final Song song, final ImageView view, final Callback<Palette> paletteCallback) {
+        mMusicBrainz.getRecording(song, new Callback<Recording>() {
             @Override
             public void onSuccess(Recording recording) {
                 final Collection<String> mbids = recording.getReleaseMBIDs();
@@ -71,7 +86,7 @@ public class AlbumArtManager {
                 if (mbids.isEmpty()) {
                     setDefaultCoverArt(view);
                 } else {
-                    new CoverArtFetcher().fetch(mbids, view);
+                    new CoverArtFetcher().fetch(mbids, view, paletteCallback);
                 }
             }
 
@@ -79,6 +94,7 @@ public class AlbumArtManager {
             public void onFailure(Exception error) {
                 Log.e(TAG, "MusicBrainz failed " + error.getMessage());
                 setDefaultCoverArt(view);
+                paletteCallback.onFailure(error);
             }
         });
     }
@@ -95,9 +111,10 @@ public class AlbumArtManager {
     }
 
 
-    private class CoverArtFetcher implements Callback<Image> {
+    private class CoverArtFetcher implements retrofit.Callback<Image> {
 
         private ImageView mImageView;
+        private Callback<Palette> mPaletteCallback;
         private boolean mFetched;
         private int mFailures;
         private int mMaxFailures;
@@ -106,8 +123,9 @@ public class AlbumArtManager {
 
         }
 
-        public void fetch(Collection<String> ids, ImageView view) {
+        public void fetch(Collection<String> ids, ImageView view, Callback<Palette> callback) {
             mFetched = false;
+            mPaletteCallback = callback;
             mImageView = view;
             mFailures = 0;
             mMaxFailures = ids.size();
@@ -124,7 +142,24 @@ public class AlbumArtManager {
                         .load(image.getUrl())
                         .placeholder(mDefaultCoverArt)
                         .fit().centerCrop()
-                        .into(mImageView);
+                        .transform(mPaletteCache)
+                        .into(mImageView, new com.squareup.picasso.Callback() {
+                            @Override
+                            public void onSuccess() {
+                                if (mPaletteCallback != null) {
+                                    final Bitmap key = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
+                                    final Palette palette = mPaletteCache.getPalette(key);
+                                    mPaletteCallback.onSuccess(palette);
+                                }
+                            }
+
+                            @Override
+                            public void onError() {
+                                if (mPaletteCallback != null) {
+                                    mPaletteCallback.onFailure(new RuntimeException("Could not load image"));
+                                }
+                            }
+                        });
             }
         }
 
@@ -134,6 +169,9 @@ public class AlbumArtManager {
             mFailures++;
             if (mFailures == mMaxFailures) {
                 setDefaultCoverArt(mImageView);
+                if (mPaletteCallback != null) {
+                    mPaletteCallback.onFailure(error);
+                }
             }
         }
     }

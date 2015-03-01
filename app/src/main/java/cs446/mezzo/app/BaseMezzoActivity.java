@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.IdRes;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.Toolbar;
 
 import java.util.List;
 
@@ -20,10 +22,22 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity {
 
     Fragment mSecondaryFragment;
 
+    Toolbar mToolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mHandler = new Handler(Looper.getMainLooper());
+    }
+
+    @Override
+    public void setSupportActionBar(@Nullable Toolbar toolbar) {
+        super.setSupportActionBar(toolbar);
+        mToolbar = toolbar;
+    }
+
+    public Toolbar getToolbar() {
+        return mToolbar;
     }
 
     public void post(Runnable runnable) {

@@ -152,11 +152,9 @@ public class MainActivity extends BaseMezzoActivity {
         switch (item.getItemId()) {
           case R.id.action_settings:
               // TODO: Open Settings Page here.
-              break;
-          default:
               return true;
+          default:
+              return false;
         }
-
-        return false;
     }
 }

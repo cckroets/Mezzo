@@ -10,4 +10,7 @@
     <string name="default_artist">Unknown Artist</string>
     <string name="default_album">Unknown Album</string>
 
+    <string name="menu_get_lyrics">Show Lyrics</string>
+    <string name="menu_hide_lyrics">Hide Lyrics</string>
+
 </resources>
