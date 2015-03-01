@@ -17,7 +17,7 @@ import cs446.mezzo.app.MainActivity;
 import cs446.mezzo.app.player.mini.MiniPlayer;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.navigation.OpenAppEvent;
-import cs446.mezzo.music.AlbumArtManager;
+import cs446.mezzo.art.AlbumArtManager;
 import cs446.mezzo.music.SongPlayer;
 import cs446.mezzo.events.playback.SongPlayEvent;
 import cs446.mezzo.music.Song;

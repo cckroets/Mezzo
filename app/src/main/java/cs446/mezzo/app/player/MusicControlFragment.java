@@ -18,10 +18,9 @@ import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.control.PauseToggleEvent;
 import cs446.mezzo.events.playback.SongPauseEvent;
 import cs446.mezzo.events.playback.SongPlayEvent;
-import cs446.mezzo.music.AlbumArtManager;
+import cs446.mezzo.art.AlbumArtManager;
 import cs446.mezzo.music.Song;
 import roboguice.fragment.RoboFragment;
-import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
 /**
@@ -79,7 +78,7 @@ public class MusicControlFragment extends RoboFragment {
                 mCurrentSong.getArtist();
         mTitleView.setText(mCurrentSong.getTitle());
         mArtistView.setText(artist);
-        mAlbumArtView.setImageBitmap(mArtManager.getAlbumArt(mCurrentSong));
+        mArtManager.setAlbumArt(mAlbumArtView, mCurrentSong);
     }
 
     @Subscribe

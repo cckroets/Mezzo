@@ -21,7 +21,7 @@ import cs446.mezzo.events.control.PlayNextEvent;
 import cs446.mezzo.events.navigation.OpenAppEvent;
 import cs446.mezzo.events.playback.SongPauseEvent;
 import cs446.mezzo.events.playback.SongPlayEvent;
-import cs446.mezzo.music.AlbumArtManager;
+import cs446.mezzo.art.AlbumArtManager;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.overlay.Overlay;
 import roboguice.inject.InjectResource;

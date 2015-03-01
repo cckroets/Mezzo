@@ -23,8 +23,9 @@ import cs446.mezzo.events.control.RepeatToggleEvent;
 import cs446.mezzo.events.control.SeekSetEvent;
 import cs446.mezzo.events.control.ShuffleToggleEvent;
 import cs446.mezzo.events.playback.SeekEvent;
+import cs446.mezzo.events.playback.SongPauseEvent;
 import cs446.mezzo.events.playback.SongPlayEvent;
-import cs446.mezzo.music.AlbumArtManager;
+import cs446.mezzo.art.AlbumArtManager;
 import cs446.mezzo.music.MusicUtil;
 import cs446.mezzo.music.Song;
 import roboguice.inject.InjectView;
@@ -113,10 +114,7 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
     }
 
     private void updateCoverArt() {
-        final Bitmap bitmap = mArtManager.getAlbumArt(mSong);
-        if (bitmap != null) {
-            mCovertArt.setImageBitmap(bitmap);
-        }
+        mArtManager.setAlbumArt(mCovertArt, mSong);
     }
 
     private void updateSeekbar() {
@@ -156,9 +154,11 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
         if (mSong == null) {
             mSong = event.getSong();
         } else if (mSong == event.getSong()) {
+            mPauseBtn.setImageResource(R.drawable.ic_av_pause);
             updateSeekbar();
         } else {
             mSong = event.getSong();
+            mPauseBtn.setImageResource(R.drawable.ic_av_pause);
             updateSongView();
         }
     }
@@ -170,6 +170,13 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
             mSeekBar.setProgress(seekpos);
             mSeekPosition.setText(MusicUtil.formatTime(seekpos, mSong.getDuration()));
         }
+    }
+
+    @Subscribe
+    public void onSongPaused(SongPauseEvent event) {
+        mPauseBtn.setImageResource(event.isPaused() ?
+                R.drawable.ic_av_play_arrow :
+                R.drawable.ic_av_pause);
     }
 
     @Override
