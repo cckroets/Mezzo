@@ -1,7 +1,5 @@
 package cs446.mezzo.app.player;
 
-import android.content.res.ColorStateList;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.graphics.Palette;
@@ -214,56 +212,19 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
             return;
         }
         final int defaultColor = getResources().getColor(R.color.primary_dark);
-        tintView(mRepeatBtn, palette.getMutedColor(defaultColor));
-        tintView(mPrevBtn, palette.getMutedColor(defaultColor));
-        tintView(mPauseBtn, palette.getMutedColor(defaultColor));
-        tintView(mNextBtn, palette.getMutedColor(defaultColor));
-        tintView(mShuffleBtn, palette.getMutedColor(defaultColor));
-        tintTextView(mTitle, palette.getLightVibrantColor(palette.getVibrantColor(defaultColor)));
-        tintSeekbar(mSeekBar, palette.getVibrantColor(getResources().getColor(R.color.primary)));
-        tintActionBar(palette.getVibrantColor(getResources().getColor(R.color.primary)));
-        tintStatusBar(ViewUtil.darkerColor(palette.getVibrantColor(defaultColor)));
+        final int mutedColor = palette.getMutedColor(defaultColor);
+        ViewUtil.tintViews(mutedColor, mRepeatBtn, mPrevBtn, mPauseBtn, mNextBtn, mShuffleBtn);
+        ViewUtil.tintTextView(mTitle, palette.getLightVibrantColor(palette.getVibrantColor(defaultColor)));
+        ViewUtil.tintSeekbar(mSeekBar, palette.getVibrantColor(getResources().getColor(R.color.primary)));
+        ViewUtil.tintDecor(this, palette.getVibrantColor(getResources().getColor(R.color.primary)));
     }
 
     private void onPaletteFailed() {
         final int defaultColor = getResources().getColor(R.color.primary_dark);
-        tintView(mRepeatBtn, defaultColor);
-        tintView(mPrevBtn, defaultColor);
-        tintView(mPauseBtn, defaultColor);
-        tintView(mNextBtn, defaultColor);
-        tintView(mShuffleBtn, defaultColor);
-        tintTextView(mTitle, defaultColor);
-        tintSeekbar(mSeekBar, defaultColor);
-        tintActionBar(getResources().getColor(R.color.primary));
-        tintStatusBar(defaultColor);
-
-    }
-
-    private void tintView(ImageView view, int color) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            view.setImageTintList(ColorStateList.valueOf(color));
-        }
-    }
-
-    private void tintSeekbar(SeekBar seekBar, int color) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            seekBar.setProgressTintList(ColorStateList.valueOf(color));
-            seekBar.setThumbTintList(ColorStateList.valueOf(color));
-        }
-    }
-
-    private void tintTextView(TextView view, int color) {
-        view.setTextColor(color);
-    }
-
-    private void tintActionBar(int color) {
-        getMezzoActivity().getToolbar().setBackgroundColor(color);
-    }
-
-    private void tintStatusBar(int color) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getMezzoActivity().getWindow().setStatusBarColor(color);
-        }
+        ViewUtil.tintViews(defaultColor, mRepeatBtn, mPrevBtn, mPauseBtn, mNextBtn, mShuffleBtn);
+        ViewUtil.tintTextView(mTitle, defaultColor);
+        ViewUtil.tintSeekbar(mSeekBar, defaultColor);
+        ViewUtil.tintDecor(this, getResources().getColor(R.color.primary));
     }
 
     private void updateSeekbar() {
@@ -289,8 +250,7 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        tintActionBar(getResources().getColor(R.color.primary));
-        tintStatusBar(getResources().getColor(R.color.primary_dark));
+        ViewUtil.tintDecor(this, getResources().getColor(R.color.primary));
         getMezzoActivity().showSecondaryFragment();
     }
 

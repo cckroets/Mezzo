@@ -23,12 +23,12 @@
             android:orientation="horizontal">
 
             <FrameLayout
-                android:layout_width="@dimen/mini_player_size"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent">
 
                 <ImageView
                     android:id="@+id/player_album_art"
-                    android:layout_width="match_parent"
+                    android:layout_width="@dimen/mini_player_size"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
                     tools:src="@drawable/ic_launcher"/>
@@ -36,7 +36,7 @@
                 <cs446.mezzo.view.MarqueeTextView
                     android:id="@+id/player_title"
                     style="@style/AudioFileInfoOverlayText"
-                    android:layout_width="match_parent"
+                    android:layout_width="@dimen/mini_player_size"
                     android:layout_height="match_parent"
                     android:background="@drawable/black_rounded_gradient"
                     android:gravity="bottom"
@@ -48,14 +48,18 @@
                     android:textSize="5pt"
                     tools:text="Blank Space Space"/>
 
-            </FrameLayout>
 
             <LinearLayout
                 android:id="@+id/player_control_container"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_marginLeft="16dp"
                 android:animateLayoutChanges="true"
                 android:orientation="horizontal">
+
+                <Space
+                    android:layout_width="40dp"
+                    android:layout_height="match_parent"/>
 
                 <ImageButton
                     android:id="@+id/player_to_app"
@@ -85,6 +89,8 @@
                     android:tint="@color/primary_dark"/>
 
             </LinearLayout>
+
+            </FrameLayout>
 
         </LinearLayout>
 
