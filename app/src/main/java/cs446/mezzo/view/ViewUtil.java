@@ -2,7 +2,6 @@ package cs446.mezzo.view;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.Build;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -15,8 +14,7 @@ import cs446.mezzo.app.BaseMezzoFragment;
  */
 public final class ViewUtil {
 
-    private ViewUtil() {
-    }
+    private ViewUtil() { }
 
     /**
      * Returns darkerColor version of specified <code>color</code>.
@@ -34,12 +32,10 @@ public final class ViewUtil {
     }
 
     public static void tintViews(int color, ImageView... views) {
-        final ColorStateList csl = ColorStateList.valueOf(color);
-        for (ImageView view : views) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            final ColorStateList csl = ColorStateList.valueOf(color);
+            for (ImageView view : views) {
                 view.setImageTintList(csl);
-            } else {
-                view.getDrawable().setColorFilter(color, PorterDuff.Mode.MULTIPLY);
             }
         }
     }
