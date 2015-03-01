@@ -107,7 +107,6 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
         EventBus.register(this); // Also gets a song from SongPlayEvent Producer
         setHasOptionsMenu(true);
         invalidateActionBar();
-        getMezzoActivity().hideSecondaryFragment();
     }
 
     @Override
@@ -138,6 +137,12 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        getMezzoActivity().hideSecondaryFragment();
     }
 
     @Override
