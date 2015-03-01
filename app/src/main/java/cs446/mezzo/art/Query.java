@@ -13,20 +13,17 @@ import java.util.Map;
 public class Query {
 
     private static final String KEY_ARTIST = "artist";
-    private static final String KEY_RELEASE = "release";
-    private static final String KEY_TYPE = "primarytype";
-    private static final String TYPE_ALBUM = "album";
+    private static final String KEY_RELEASE = "recording";
 
     private static final String DELIM_AND = "+";
     private static final String DELIM_EQUALS = ":";
 
     private Map<String, String> mParams;
 
-    public Query(String artist, String album) {
-        mParams = new HashMap<String, String>(3);
+    public Query(String title, String artist) {
+        mParams = new HashMap<String, String>(2);
         mParams.put(KEY_ARTIST, artist);
-        mParams.put(KEY_RELEASE, album);
-        mParams.put(KEY_TYPE, TYPE_ALBUM);
+        mParams.put(KEY_RELEASE, title);
     }
 
     private String urlEncode(String s) {

@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
+import cs446.mezzo.R;
+import cs446.mezzo.art.LyricResult;
 import cs446.mezzo.art.Recording;
 import retrofit.Callback;
 import retrofit.RequestInterceptor;
@@ -11,16 +13,20 @@ import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;
 import retrofit.http.GET;
 import retrofit.http.Query;
+import roboguice.inject.InjectResource;
 
 /**
  * @author curtiskroetsch
  */
-public class MusicBrainz implements Provider<MusicBrainz.API> {
+public class MusixMatch implements Provider<MusixMatch.API> {
 
-    private static final String ENDPOINT = "http://musicbrainz.org/ws/2";
+    private static final String ENDPOINT = "http://api.musixmatch.com/ws/1.1";
 
     @Inject
     Gson mGson;
+
+    @InjectResource(R.string.musixmatch_api_key)
+    String mApiKey;
 
     @Override
     public API get() {
@@ -30,7 +36,7 @@ public class MusicBrainz implements Provider<MusicBrainz.API> {
                 .setRequestInterceptor(new RequestInterceptor() {
                     @Override
                     public void intercept(RequestFacade request) {
-                        request.addQueryParam("fmt", "json");
+                        request.addQueryParam("apikey", mApiKey);
                     }
                 })
                 .build()
@@ -38,10 +44,8 @@ public class MusicBrainz implements Provider<MusicBrainz.API> {
     }
 
     public interface API {
-        @GET("/recording/")
-        void getReleaseGroups(@Query(value = "query", encodeValue = false) String query,
-                              Callback<Recording> callback);
+        @GET("/track.lyrics.get")
+        void getLyrics(@Query(value = "track_mbid") String mbid,
+                       Callback<LyricResult> callback);
     }
-
-
 }

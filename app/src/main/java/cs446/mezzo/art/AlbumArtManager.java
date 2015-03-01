@@ -9,6 +9,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.squareup.picasso.Picasso;
 
 import java.util.Collection;
@@ -26,43 +27,26 @@ import roboguice.inject.InjectResource;
 /**
  * @author curtiskroetsch
  */
+@Singleton
 public class AlbumArtManager {
 
-    private static final String KEY_MBIDS = "mbids";
     private static final String TAG = AlbumArtManager.class.getName();
 
     @Inject
     Context mContext;
 
     @Inject
-    MusicBrainz.API mMusicBrainz;
+    MusicBrainzManager mMusicBrainz;
 
     @Inject
     CoverArtArchive.API mArtArchive;
 
-    @Inject
-    Preferences mPreferences;
-
     @InjectResource(R.drawable.ic_default_art)
     Drawable mDefaultCoverArt;
 
-    CoverArtFetcher mCoverArtFetcher;
-
     @Inject
     public AlbumArtManager() {
-        mCoverArtFetcher = new CoverArtFetcher();
-    }
 
-    private static String generateKey(Song song) {
-        return KEY_MBIDS + song.getDataSource().toString();
-    }
-
-    private void saveMbids(Song song, Collection<String> mbids) {
-        mPreferences.putStrings(generateKey(song), mbids);
-    }
-
-    private Collection<String> loadMbids(Song song) {
-        return mPreferences.getStrings(generateKey(song));
     }
 
     private void setDefaultCoverArt(ImageView view) {
@@ -75,32 +59,25 @@ public class AlbumArtManager {
             view.setImageBitmap(encodedCoverArt);
             return;
         }
-        final Collection<String> mbids = loadMbids(song);
-        if (mbids != null) {
-            mCoverArtFetcher.fetch(mbids, view);
-        } else {
-            loadAlbumArtFromNetwork(song, view);
-        }
+        loadAlbumArtFromNetwork(song, view);
     }
 
     private void loadAlbumArtFromNetwork(final Song song, final ImageView view) {
-        final Query query = new Query(song.getArtist(), song.getAlbum());
-        mMusicBrainz.getReleaseGroups(query.toString(), new Callback<ReleaseGroupCollection>() {
+        mMusicBrainz.getRecording(song, new cs446.mezzo.data.Callback<Recording>() {
             @Override
-            public void success(ReleaseGroupCollection releaseGroupCollection, Response response) {
-                final Collection<String> mbids = releaseGroupCollection.getMBIDs();
+            public void onSuccess(Recording recording) {
+                final Collection<String> mbids = recording.getReleaseMBIDs();
+                Log.d(TAG, mbids.toString());
                 if (mbids.isEmpty()) {
                     setDefaultCoverArt(view);
                 } else {
-                    saveMbids(song, mbids);
-                    mCoverArtFetcher.fetch(mbids, view);
+                    new CoverArtFetcher().fetch(mbids, view);
                 }
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onFailure(Exception error) {
                 Log.e(TAG, "MusicBrainz failed " + error.getMessage());
-                Log.e(TAG, "url = " + error.getUrl());
                 setDefaultCoverArt(view);
             }
         });

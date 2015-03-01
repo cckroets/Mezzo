@@ -23,6 +23,7 @@ import cs446.mezzo.music.SongPlayer;
 import cs446.mezzo.net.CoverArtArchive;
 import cs446.mezzo.net.GsonProvider;
 import cs446.mezzo.net.MusicBrainz;
+import cs446.mezzo.net.MusixMatch;
 import cs446.mezzo.sources.dropbox.DropboxApiProvider;
 
 /**
@@ -45,5 +46,6 @@ public class MezzoModule extends AbstractModule {
         bind(Gson.class).toProvider(GsonProvider.class).in(Singleton.class);
         bind(MusicBrainz.API.class).toProvider(MusicBrainz.class).in(Singleton.class);
         bind(CoverArtArchive.API.class).toProvider(CoverArtArchive.class).in(Singleton.class);
+        bind(MusixMatch.API.class).toProvider(MusixMatch.class).in(Singleton.class);
     }
 }

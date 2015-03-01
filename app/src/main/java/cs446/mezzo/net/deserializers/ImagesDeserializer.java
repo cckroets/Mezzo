@@ -1,4 +1,4 @@
-package cs446.mezzo.net;
+package cs446.mezzo.net.deserializers;
 
 import android.util.Log;
 

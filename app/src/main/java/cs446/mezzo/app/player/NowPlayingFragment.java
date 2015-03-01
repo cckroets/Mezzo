@@ -1,6 +1,5 @@
 package cs446.mezzo.app.player;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -9,12 +8,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.inject.Inject;
 import com.squareup.otto.Subscribe;
 
 import cs446.mezzo.R;
 import cs446.mezzo.app.BaseMezzoFragment;
+import cs446.mezzo.art.AlbumArtManager;
+import cs446.mezzo.art.LyricResult;
+import cs446.mezzo.art.LyricsManager;
+import cs446.mezzo.data.Callback;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.control.PauseToggleEvent;
 import cs446.mezzo.events.control.PlayNextEvent;
@@ -25,7 +29,6 @@ import cs446.mezzo.events.control.ShuffleToggleEvent;
 import cs446.mezzo.events.playback.SeekEvent;
 import cs446.mezzo.events.playback.SongPauseEvent;
 import cs446.mezzo.events.playback.SongPlayEvent;
-import cs446.mezzo.art.AlbumArtManager;
 import cs446.mezzo.music.MusicUtil;
 import cs446.mezzo.music.Song;
 import roboguice.inject.InjectView;
@@ -68,8 +71,26 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
     @InjectView(R.id.player_duration)
     TextView mDuration;
 
+    @InjectView(R.id.player_lyrics_body)
+    TextView mLyricsBody;
+
+    @InjectView(R.id.player_lyrics_copyright)
+    TextView mLyricsSecondary;
+
+    @InjectView(R.id.player_lyrics_container)
+    View mLyricsContainer;
+
+    @InjectView(R.id.player_get_lyrics)
+    View mGetLyricsBtn;
+
+    @InjectView(R.id.player_hide_lyrics)
+    View mHideLyricsBtn;
+
     @Inject
     AlbumArtManager mArtManager;
+
+    @Inject
+    LyricsManager mLyricsManager;
 
     Song mSong;
 
@@ -96,19 +117,65 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mSeekBar.setOnSeekBarChangeListener(this);
-        mAlbumArtist.setSelected(true);
         setEventClick(mPauseBtn, new PauseToggleEvent());
         setEventClick(mNextBtn, new PlayNextEvent());
         setEventClick(mPrevBtn, new PlayPrevEvent());
         setEventClick(mRepeatBtn, new RepeatToggleEvent());
         setEventClick(mShuffleBtn, new ShuffleToggleEvent());
+        mGetLyricsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onGetLyrics();
+            }
+        });
+        mHideLyricsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onHideLyrics();
+            }
+        });
         updateSongView();
+    }
+
+    private void onGetLyrics() {
+        mLyricsManager.getLyrics(mSong, new Callback<LyricResult>() {
+            @Override
+            public void onSuccess(LyricResult data) {
+                if (isAdded()) {
+                    mLyricsBody.setText(data.getLyrics());
+                    mLyricsSecondary.setText(data.getCopyright());
+                    mLyricsContainer.animate().alpha(1f).start();
+                    mGetLyricsBtn.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                if (isAdded()) {
+                    Toast.makeText(getActivity(), "Lyrics could not be found", Toast.LENGTH_LONG).show();
+                    mGetLyricsBtn.setVisibility(View.INVISIBLE);
+                    mGetLyricsBtn.setEnabled(false);
+                    mHideLyricsBtn.setEnabled(false);
+                }
+            }
+        });
+    }
+
+    private void onHideLyrics() {
+        mLyricsContainer.animate().alpha(0).start();
+        mGetLyricsBtn.setVisibility(View.VISIBLE);
     }
 
     private void updateSongView() {
         mTitle.setText(mSong.getTitle());
         mAlbumArtist.setText(mSong.getArtist() + " - " + mSong.getAlbum());
         mDuration.setText(MusicUtil.formatTime(mSong.getDuration()));
+        mLyricsContainer.setAlpha(0);
+        mLyricsBody.setText(null);
+        mLyricsSecondary.setText(null);
+        mGetLyricsBtn.setVisibility(View.VISIBLE);
+        mGetLyricsBtn.setEnabled(true);
+        mHideLyricsBtn.setEnabled(true);
         updateCoverArt();
         updateSeekbar();
     }
