@@ -116,6 +116,14 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity {
                 .commit();
     }
 
+    @Override
+    public void onBackPressed() {
+        final BaseMezzoFragment fragment = getVisibleFragment();
+        if (fragment != null && !fragment.onBackPress()) {
+            super.onBackPressed();
+        }
+    }
+
     protected abstract int getMainFragmentContainer();
 
     protected abstract int getSecondaryFragmentContainer();

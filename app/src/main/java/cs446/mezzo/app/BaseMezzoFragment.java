@@ -36,5 +36,9 @@ public abstract class BaseMezzoFragment extends RoboFragment {
         getMezzoActivity().invalidateOptionsMenu();
     }
 
+    public boolean onBackPress() {
+        return false;
+    }
+
     public abstract String getTitle();
 }

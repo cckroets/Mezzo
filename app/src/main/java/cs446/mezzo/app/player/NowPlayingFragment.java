@@ -253,9 +253,14 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
     }
 
     @Override
+    public boolean onBackPress() {
+        ViewUtil.tintDecor(this, getResources().getColor(R.color.primary));
+        return false;
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ViewUtil.tintDecor(this, getResources().getColor(R.color.primary));
         getMezzoActivity().showSecondaryFragment();
     }
 
