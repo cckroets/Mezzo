@@ -1,162 +1,30 @@
 package cs446.mezzo.app.library;
 
-import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.Nullable;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.ForegroundColorSpan;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
-
-import com.google.inject.Inject;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import cs446.mezzo.R;
-import cs446.mezzo.app.BaseMezzoFragment;
 import cs446.mezzo.music.Song;
-import cs446.mezzo.sources.LocalMusicFetcher;
-import roboguice.inject.InjectView;
 
 /**
  * @author ulkarakhundzada
  */
 
-public class ArtistsFragment extends BaseMezzoFragment implements AdapterView.OnItemClickListener {
+public class ArtistsFragment extends PlaylistFragment {
 
-    @Inject
-    LocalMusicFetcher mMusicFetcher;
-
-    @InjectView(R.id.song_list)
-    ListView mArtistView;
-
-    @InjectView(R.id.chosen_tab)
-    TextView mChosenTab;
-
-    private List<Song> mSongsList;
-    private Map<String, List<Song>> mArtistDict;
-    private List<Song> mArtistList;
+    public ArtistsFragment() {
+        super();
+    }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mSongsList = mMusicFetcher.getLocalSongs();
-        mArtistDict = new HashMap<>();
-        mArtistList = new ArrayList<Song>();
-
-        for (int i = 0; i < mSongsList.size(); i++) {
-            if (mArtistDict.get(mSongsList.get(i).getArtist()) == null) {
-                // add it in
-                mArtistDict.put(mSongsList.get(i).getArtist(), Arrays.asList(mSongsList.get(i)));
-                mArtistList.add(mSongsList.get(i));
-            } else {
-                //append mSongsList.get(i) to its value list
-                //(mArtistList.get(mSongsList.get(i).getArtist())).add(mSongsList.get(i));
-
-            }
+    protected String[] getCategoriesForSong(Song song) {
+        if (song.getArtist() != null) {
+            return new String[]{song.getArtist()};
+        } else {
+            return new String[]{};
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_songs, container, false);
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        final Spannable word = new SpannableString("  Songs    Artists    Albums    Genres  ");
-        word.setSpan(new BackgroundColorSpan(Color.parseColor("#03A9F4")), 10, 19, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        word.setSpan(new ForegroundColorSpan(Color.parseColor("#000000")), 0, 39, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        word.setSpan(new ForegroundColorSpan(Color.parseColor("#FFFFFF")), 10, 19, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        mChosenTab.setText(word);
-
-        mChosenTab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Dialog alertDialog = new Dialog(getMezzoActivity());
-                alertDialog.setTitle("Swipe to change tabs.");
-                alertDialog.getWindow().getAttributes().verticalMargin = 0.2F;
-                alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-                alertDialog.show();
-
-                // Hide after some seconds
-                final Handler handler  = new Handler();
-                final Runnable runnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        if (alertDialog.isShowing()) {
-                            alertDialog.dismiss();
-                        }
-                    }
-                };
-
-                alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        handler.removeCallbacks(runnable);
-                    }
-                });
-
-                handler.postDelayed(runnable, 2000);
-
-            }
-        });
-
-        final SongAdapter songAdapter = new SongAdapter(getActivity(), mArtistList); //SWITCH BACK
-        mArtistView.setAdapter(songAdapter);
-        mArtistView.setOnItemClickListener(this);
-    }
 
     @Override
     public String getTitle() {
-        return "My Music";
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        //EventBus.post(new SelectSongEvent(mArtistList, position));
-    }
-
-    public class SongAdapter extends ArrayAdapter<Song> {
-
-        private LayoutInflater mInflater;
-
-        public SongAdapter(Context c, List<Song> songs) {
-            super(c, 0, songs);
-            this.mInflater = LayoutInflater.from(c);
-        }
-
-        @Override
-        public android.view.View getView(int position, View convertView, ViewGroup parent) {
-
-            //map to view_song layout
-            final LinearLayout songLay = (LinearLayout) mInflater.inflate(R.layout.view_artist, parent, false);
-            final TextView artistView = (TextView) songLay.findViewById(cs446.mezzo.R.id.song_artist);
-            final Song song = getItem(position);
-
-            artistView.setText(song.getArtist());
-
-            return songLay;
-        }
+        return "Artists";
     }
 
 
