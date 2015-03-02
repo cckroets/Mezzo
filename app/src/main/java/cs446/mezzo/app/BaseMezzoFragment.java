@@ -31,8 +31,14 @@ public abstract class BaseMezzoFragment extends RoboFragment {
         return (BaseMezzoActivity) getActivity();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        invalidateActionBar();
+    }
+
     public void invalidateActionBar() {
-        getMezzoActivity().setTitle(getTitle());
+        getMezzoActivity().getToolbar().setTitle(getTitle());
         getMezzoActivity().invalidateOptionsMenu();
     }
 

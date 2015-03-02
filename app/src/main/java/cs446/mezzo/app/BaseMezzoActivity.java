@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ import roboguice.activity.RoboActionBarActivity;
 /**
  * @author curtiskroetsch
  */
-public abstract class BaseMezzoActivity extends RoboActionBarActivity {
+public abstract class BaseMezzoActivity extends RoboActionBarActivity implements FragmentManager.OnBackStackChangedListener {
 
     Handler mHandler;
 
@@ -27,6 +28,7 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportFragmentManager().addOnBackStackChangedListener(this);
         mHandler = new Handler(Looper.getMainLooper());
     }
 
@@ -82,6 +84,7 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity {
     private void setInitialFragment(Fragment fragment, int contId) {
         getSupportFragmentManager()
                 .beginTransaction()
+                .addToBackStack(null)
                 .replace(contId, fragment)
                 .commit();
     }
@@ -98,8 +101,11 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity {
     }
 
     protected void setSecondaryFragment(Fragment fragment) {
-        setInitialFragment(fragment, getSecondaryFragmentContainer());
         mSecondaryFragment = fragment;
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(getSecondaryFragmentContainer(), fragment)
+                .commit();
     }
 
     public void showSecondaryFragment() {
@@ -114,6 +120,24 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity {
                 .beginTransaction()
                 .hide(mSecondaryFragment)
                 .commit();
+    }
+
+
+    @Override
+    public void onBackStackChanged() {
+        final FragmentManager manager = getSupportFragmentManager();
+        if (manager != null) {
+            final int backStackEntryCount = manager.getBackStackEntryCount();
+            if (backStackEntryCount == 0) {
+                finish();
+                return;
+            }
+            final Fragment fragment = manager.getFragments().get(backStackEntryCount - 1);
+            Log.e("mezzo", "fragment = " + fragment.toString());
+            if (fragment instanceof BaseMezzoFragment) {
+                ((BaseMezzoFragment) fragment).invalidateActionBar();
+            }
+        }
     }
 
     @Override
