@@ -11,6 +11,7 @@
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_default_art"
+        android:paddingBottom="88dp"
         tools:background="@android:color/white"/>
 
     <ImageView
@@ -133,6 +134,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:id="@+id/player_buttons_container"
+                android:background="@color/primary_dark"
                 android:layout_height="72dp"
                 android:visibility="visible">
 

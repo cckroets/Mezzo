@@ -188,7 +188,9 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
 
     private void updateSongView() {
         mTitle.setText(mSong.getTitle());
-        mAlbumArtist.setText(mSong.getArtist() + " - " + mSong.getAlbum());
+        final String artist = mSong.getArtist() == null ? getString(R.string.default_artist) : mSong.getArtist();
+        final String album = mSong.getAlbum() == null ? getString(R.string.default_album) : mSong.getAlbum();
+        mAlbumArtist.setText(artist + " - " + album);
         mDuration.setText(MusicUtil.formatTime(mSong.getDuration()));
         mLyricsContainer.setAlpha(0);
         mLyricsBody.setText(null);

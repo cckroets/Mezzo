@@ -76,7 +76,7 @@ public class MusicSourceFragment extends BaseMezzoFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_songs, container, false);
+        return inflater.inflate(R.layout.fragment_music_source, container, false);
     }
 
     @Override
@@ -86,6 +86,7 @@ public class MusicSourceFragment extends BaseMezzoFragment {
             @Override
             public void onSuccess(List<MusicSource.MusicFile> data) {
                 if (isAdded()) {
+                    mSongsView.setVisibility(View.VISIBLE);
                     final ListAdapter adapter = new MusicFileAdapter(data);
                     mSongsView.setAdapter(adapter);
 
