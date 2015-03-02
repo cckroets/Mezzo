@@ -250,6 +250,7 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
         ViewUtil.tintTextView(mTitle, defaultColor);
         ViewUtil.tintSeekbar(mSeekBar, defaultColor);
         ViewUtil.tintDecor(this, getResources().getColor(R.color.primary));
+
         mPlayerButtonsContainer.setBackgroundColor(defaultColor);
         mSeekBar.getProgressDrawable().setColorFilter(defaultLightColor, PorterDuff.Mode.SRC_ATOP);
         //mSeekBar.getThumb().setColorFilter(defaultLightColor, PorterDuff.Mode.SRC_ATOP);
