@@ -4,6 +4,31 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
+
+        <!-- colorPrimary is used, for instance, for the default ActionBar
+             (but not Toolbar) background.
+             We specify the same color for the toolbar background in
+             toolbar.xml.. -->
+        <item name="colorPrimary">@color/primary</item>
+
+        <!-- colorPrimaryDark is used for the status bar (with the
+             battery, clock, etc). -->
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+
+        <!-- colorAccent is used as the default value for
+             colorControlActivated which is used to tint widgets. -->
+        <item name="colorAccent">@color/primary_dark</item>
+    </style>
+
+    <style name="AudioFileInfoOverlayText">
+        <item name="android:paddingLeft">4px</item>
+        <item name="android:paddingBottom">4px</item>
+        <item name="android:textColor">#ffffffff</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">1</item>
     </style>
 
 </resources>

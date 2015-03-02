@@ -43,7 +43,7 @@
     <ImageView
         android:id="@+id/player_play_btn"
         android:layout_margin="8dp"
-        android:src="@android:drawable/ic_media_pause"
+        android:src="@android:drawable/ic_media_play"
         android:layout_width="56dp"
         android:layout_height="56dp" />
 

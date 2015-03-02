@@ -23,14 +23,14 @@ import java.util.List;
 
 import cs446.mezzo.R;
 import cs446.mezzo.app.BaseMezzoFragment;
-import cs446.mezzo.app.NowPlayingFragment;
+import cs446.mezzo.app.player.NowPlayingFragment;
 import cs446.mezzo.data.Callback;
 import cs446.mezzo.data.ProgressableCallback;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.control.SelectSongEvent;
+import cs446.mezzo.injection.Injector;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.sources.MusicSource;
-import roboguice.RoboGuice;
 import roboguice.inject.InjectView;
 
 /**
@@ -69,15 +69,8 @@ public class MusicSourceFragment extends BaseMezzoFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final String name = getArguments().getString(KEY_SOURCE);
-        try {
-            final Class sourceClass = Class.forName(name);
-            mMusicSource = (MusicSource) RoboGuice.getInjector(getActivity()).getInstance(sourceClass);
-        } catch (ClassNotFoundException e) {
-            Log.w(TAG, "Class Not Found: " + name);
-            mMusicSource = null;
-            throw new IllegalArgumentException(e.getMessage());
-        }
+        final String className = getArguments().getString(KEY_SOURCE);
+        mMusicSource = Injector.getObject(getActivity(), className);
         invalidateActionBar();
     }
 
@@ -124,8 +117,7 @@ public class MusicSourceFragment extends BaseMezzoFragment {
     }
 
     private void onSongClick(int songIndex) {
-        final Song song = mDownloadedSongs.get(songIndex);
-        getMezzoActivity().setFragment(NowPlayingFragment.create(song));
+        getMezzoActivity().setFragment(NowPlayingFragment.create());
         EventBus.post(new SelectSongEvent(mDownloadedSongs, songIndex));
     }
 

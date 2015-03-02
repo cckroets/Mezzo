@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:clipToPadding="false"
+    android:orientation="horizontal"
+    android:padding="4dp">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/mini_player_size"
+        card_view:cardPreventCornerOverlap="true"
+        card_view:cardCornerRadius="5dp"
+        card_view:elevation="4dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/player_album_art"
+                    android:layout_width="@dimen/mini_player_size"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    tools:src="@drawable/ic_launcher"/>
+
+                <cs446.mezzo.view.MarqueeTextView
+                    android:id="@+id/player_title"
+                    style="@style/AudioFileInfoOverlayText"
+                    android:layout_width="@dimen/mini_player_size"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/black_rounded_gradient"
+                    android:gravity="bottom"
+                    android:paddingBottom="1dp"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="2dp"
+                    android:singleLine="true"
+                    android:textColor="@color/primary_text_default_material_dark"
+                    android:textSize="5pt"
+                    tools:text="Blank Space Space"/>
+
+
+            <LinearLayout
+                android:id="@+id/player_control_container"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="16dp"
+                android:animateLayoutChanges="true"
+                android:orientation="horizontal">
+
+                <Space
+                    android:layout_width="40dp"
+                    android:layout_height="match_parent"/>
+
+                <ImageButton
+                    android:id="@+id/player_to_app"
+                    android:layout_width="@dimen/mini_player_control_size"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/pressed"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_action_home"
+                    android:tint="@color/primary_dark"/>
+
+                <ImageButton
+                    android:id="@+id/player_pause"
+                    android:layout_width="@dimen/mini_player_control_size"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/pressed"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_av_pause_circle_fill"
+                    android:tint="@color/primary_dark"/>
+
+                <ImageButton
+                    android:id="@+id/player_next"
+                    android:layout_width="@dimen/mini_player_control_size"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/pressed"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_av_skip_next"
+                    android:tint="@color/primary_dark"/>
+
+            </LinearLayout>
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+</FrameLayout>

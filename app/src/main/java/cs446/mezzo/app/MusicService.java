@@ -6,6 +6,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.google.inject.Inject;
+import com.squareup.otto.Produce;
 import com.squareup.otto.Subscribe;
 
 import cs446.mezzo.events.EventBus;
@@ -13,8 +14,10 @@ import cs446.mezzo.events.control.PauseToggleEvent;
 import cs446.mezzo.events.control.PlayNextEvent;
 import cs446.mezzo.events.control.PlayPrevEvent;
 import cs446.mezzo.events.control.RepeatToggleEvent;
+import cs446.mezzo.events.control.SeekSetEvent;
 import cs446.mezzo.events.control.SelectSongEvent;
 import cs446.mezzo.events.control.ShuffleToggleEvent;
+import cs446.mezzo.events.playback.SongPlayEvent;
 import cs446.mezzo.music.SongPlayer;
 import roboguice.service.RoboService;
 
@@ -80,6 +83,16 @@ public class MusicService extends RoboService
     public void onSongSelected(SelectSongEvent event) {
         mSongPlayer.setPlaylist(event.getPlaylist());
         mSongPlayer.setSong(event.getStartIndex());
+    }
+
+    @Subscribe
+    public void onSetSeekEvent(SeekSetEvent event) {
+        mSongPlayer.setSeek(event.getSeekPos());
+    }
+
+    @Produce
+    public SongPlayEvent produceCurrentSong() {
+        return new SongPlayEvent(mSongPlayer.getCurrentSong());
     }
 
     @Override

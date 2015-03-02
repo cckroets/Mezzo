@@ -34,9 +34,6 @@ public class MainActivity extends BaseMezzoActivity {
     @InjectView(R.id.nav_my_music)
     View mLibraryButton;
 
-    @InjectView(R.id.nav_now_playing)
-    View mNowPlayingButton;
-
     @Inject
     DropboxSource mDropboxSource;
 
@@ -63,7 +60,6 @@ public class MainActivity extends BaseMezzoActivity {
         mNavDrawer.setDrawerListener(mDrawerToggle);
         setInitialFragment(new SongsFragment());
         setSecondaryFragment(new MusicControlFragment());
-
         mDropboxButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,14 +71,6 @@ public class MainActivity extends BaseMezzoActivity {
             @Override
             public void onClick(View v) {
                 setFragment(new SongsFragment());
-                mNavDrawer.closeDrawers();
-            }
-        });
-
-        mNowPlayingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setFragment(new NowPlayingFragment());
                 mNavDrawer.closeDrawers();
             }
         });

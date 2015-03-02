@@ -25,12 +25,7 @@ public class AlbumArtManager {
         retriever.setDataSource(mContext, song.getDataSource());
         final byte[] bitmapData = retriever.getEmbeddedPicture();
         retriever.release();
-        if (bitmapData == null) {
-            final Bitmap bMap = BitmapFactory.decodeResource(mContext.getResources(), cs446.mezzo.R.drawable.default_album_artwork);
-            return bMap;
-        } else {
-            return BitmapFactory.decodeByteArray(bitmapData, 0, bitmapData.length);
-        }
+        return (bitmapData == null) ? null : BitmapFactory.decodeByteArray(bitmapData, 0, bitmapData.length);
     }
 
 }

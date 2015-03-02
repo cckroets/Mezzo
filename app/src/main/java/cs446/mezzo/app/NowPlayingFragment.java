@@ -1,7 +1,6 @@
 package cs446.mezzo.app;
 
 import android.graphics.Bitmap;
-import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -146,19 +145,11 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
         mSeekPosition.setText(MusicUtil.formatTime(0, mSong.getDuration()));
     }
 
-    private void setEventClick(final View view, final Object event) {
+    private void setEventClick(View view, final Object event) {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 EventBus.post(event);
-                if (view == mPauseBtn) {
-                    final AudioManager manager = (AudioManager) getActivity().getSystemService(android.content.Context.AUDIO_SERVICE);
-                    if (manager.isMusicActive()) {
-                        mPauseBtn.setImageResource(android.R.drawable.ic_media_pause);
-                    } else {
-                        mPauseBtn.setImageResource(android.R.drawable.ic_media_play);
-                    }
-                }
             }
         });
     }
