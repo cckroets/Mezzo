@@ -147,7 +147,6 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
     @Override
     public void onStart() {
         super.onStart();
-        getMezzoActivity().hideSecondaryFragment();
     }
 
     @Override
@@ -201,6 +200,11 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
         }
         updateCoverArt();
         updateSeekbar();
+    }
+
+    @Override
+    public boolean showSecondaryFragment() {
+        return false;
     }
 
     private void updateCoverArt() {
@@ -279,14 +283,13 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
 
     @Override
     public boolean onBackPress() {
-        ViewUtil.tintDecor(this, getResources().getColor(R.color.primary));
+        //ViewUtil.tintDecor(this, getResources().getColor(R.color.primary));
         return false;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        getMezzoActivity().showSecondaryFragment();
     }
 
     @Override

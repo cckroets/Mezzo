@@ -78,6 +78,8 @@ public class MainActivity extends BaseMezzoActivity {
             @Override
             public void onClick(View v) {
                 setFragment(MusicSourceFragment.create(mDropboxSource));
+                unselectAll();
+                mDropboxButton.setSelected(true);
                 mNavDrawer.closeDrawers();
             }
         });
@@ -85,6 +87,8 @@ public class MainActivity extends BaseMezzoActivity {
             @Override
             public void onClick(View v) {
                 setFragment(new ScreenSlidePageFragment());
+                unselectAll();
+                mLibraryButton.setSelected(true);
                 mNavDrawer.closeDrawers();
             }
         });
@@ -94,6 +98,8 @@ public class MainActivity extends BaseMezzoActivity {
             public void onClick(View v) {
                 if (mSongPlayer.getCurrentSong() != null) {
                     setFragment(new NowPlayingFragment());
+                    unselectAll();
+                    mNowPlayingButton.setSelected(true);
                 }
                 mNavDrawer.closeDrawers();
             }
@@ -106,6 +112,12 @@ public class MainActivity extends BaseMezzoActivity {
         if (!mDropboxSource.getAuthenticator().isAuthenticated()) {
             mDropboxSource.getAuthenticator().startAuthentication(this);
         }
+    }
+
+    private void unselectAll() {
+        mDropboxButton.setSelected(false);
+        mNowPlayingButton.setSelected(false);
+        mLibraryButton.setSelected(false);
     }
 
     @Override

@@ -35,7 +35,8 @@
 
     <ImageView
         android:id="@+id/file_download"
-        android:src="@android:drawable/star_off"
+        android:src="@drawable/ic_file_cloud_download"
+        android:background="@drawable/pressed"
         android:layout_margin="8dp"
         android:layout_width="56dp"
         android:layout_height="56dp"/>
