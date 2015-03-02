@@ -24,6 +24,8 @@ import android.widget.TextView;
 
 import com.google.inject.Inject;
 
+import java.text.Collator;
+import java.util.ArrayList;
 import java.util.List;
 
 import cs446.mezzo.R;
@@ -49,12 +51,13 @@ public class GenresFragment extends BaseMezzoFragment implements AdapterView.OnI
     @InjectView(R.id.chosen_tab)
     TextView mChosenTab;
 
-    private List<Song> mGenresList;
+    private List<String> mGenresList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mGenresList = mMusicFetcher.getLocalSongs(); // ADD A FILTERING STEP HERE
+        mGenresList = new ArrayList<>();
+        mGenresList.addAll(mMusicFetcher.getAllGenres());
     }
 
     @Override
@@ -104,7 +107,7 @@ public class GenresFragment extends BaseMezzoFragment implements AdapterView.OnI
             }
         });
 
-        final SongAdapter songAdapter = new SongAdapter(getActivity(), mGenresList);
+        final GenreAdapter songAdapter = new GenreAdapter(getActivity(), mGenresList);
         mGenresView.setAdapter(songAdapter);
         mGenresView.setOnItemClickListener(this);
     }
@@ -119,12 +122,12 @@ public class GenresFragment extends BaseMezzoFragment implements AdapterView.OnI
         //EventBus.post(new SelectSongEvent(mArtistList, position));
     }
 
-    public class SongAdapter extends ArrayAdapter<Song> {
+    public class GenreAdapter extends ArrayAdapter<String> {
 
         private LayoutInflater mInflater;
 
-        public SongAdapter(Context c, List<Song> songs) {
-            super(c, 0, songs);
+        public GenreAdapter(Context c, List<String> genres) {
+            super(c, 0, genres);
             this.mInflater = LayoutInflater.from(c);
         }
 
@@ -134,9 +137,9 @@ public class GenresFragment extends BaseMezzoFragment implements AdapterView.OnI
             //map to view_song layout
             final LinearLayout songLay = (LinearLayout) mInflater.inflate(R.layout.view_genre, parent, false);
             final TextView albumsView = (TextView) songLay.findViewById(cs446.mezzo.R.id.song_genre);
-            final Song song = getItem(position);
+            final String genre = getItem(position);
 
-            albumsView.setText(song.getArtist());
+            albumsView.setText(genre);
 
             return songLay;
         }

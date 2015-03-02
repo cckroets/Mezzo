@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.BackgroundColorSpan;
@@ -24,15 +23,14 @@ import android.widget.TextView;
 
 import com.google.inject.Inject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import cs446.mezzo.R;
 import cs446.mezzo.app.BaseMezzoFragment;
-import cs446.mezzo.events.EventBus;
-import cs446.mezzo.events.control.SelectSongEvent;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.sources.LocalMusicFetcher;
 import roboguice.inject.InjectView;
@@ -53,25 +51,27 @@ public class ArtistsFragment extends BaseMezzoFragment implements AdapterView.On
     TextView mChosenTab;
 
     private List<Song> mSongsList;
-    private Map<String, List<Song>> mArtistList;
+    private Map<String, List<Song>> mArtistDict;
+    private List<Song> mArtistList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mSongsList = mMusicFetcher.getLocalSongs();
-/*
+        mArtistDict = new HashMap<>();
+        mArtistList = new ArrayList<Song>();
+
         for (int i = 0; i < mSongsList.size(); i++) {
-            final List<Song> findMatch = mArtistList.get(mSongsList.get(i).getArtist());
-            if (findMatch == null) {
+            if (mArtistDict.get(mSongsList.get(i).getArtist()) == null) {
                 // add it in
-                final List<Song> temp = Arrays.asList(mSongsList.get(i));
-                mArtistList.put(mSongsList.get(i).getArtist(), temp);
+                mArtistDict.put(mSongsList.get(i).getArtist(), Arrays.asList(mSongsList.get(i)));
+                mArtistList.add(mSongsList.get(i));
             } else {
                 //append mSongsList.get(i) to its value list
-                findMatch.add(mSongsList.get(i));
+                //(mArtistList.get(mSongsList.get(i).getArtist())).add(mSongsList.get(i));
+
             }
         }
-*/
     }
 
     @Override
@@ -121,7 +121,7 @@ public class ArtistsFragment extends BaseMezzoFragment implements AdapterView.On
             }
         });
 
-        final SongAdapter songAdapter = new SongAdapter(getActivity(), mSongsList); //SWITCH BACK
+        final SongAdapter songAdapter = new SongAdapter(getActivity(), mArtistList); //SWITCH BACK
         mArtistView.setAdapter(songAdapter);
         mArtistView.setOnItemClickListener(this);
     }
@@ -161,3 +161,4 @@ public class ArtistsFragment extends BaseMezzoFragment implements AdapterView.On
 
 
 }
+

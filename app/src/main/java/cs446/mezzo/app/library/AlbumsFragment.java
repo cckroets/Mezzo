@@ -24,7 +24,11 @@ import android.widget.TextView;
 
 import com.google.inject.Inject;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cs446.mezzo.R;
 import cs446.mezzo.app.BaseMezzoFragment;
@@ -50,11 +54,28 @@ public class AlbumsFragment extends BaseMezzoFragment implements AdapterView.OnI
     TextView mChosenTab;
 
     private List<Song> mAlbumsList;
+    private List<Song> mSongsList;
+    private Map<String, List<Song>> mAlbumsDict;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAlbumsList = mMusicFetcher.getLocalSongs(); // ADD A FILTERING STEP HERE
+        mSongsList = mMusicFetcher.getLocalSongs();
+        mAlbumsDict = new HashMap<>();
+        mAlbumsList = new ArrayList<Song>();
+
+        for (int i = 0; i < mSongsList.size(); i++) {
+            if (mAlbumsDict.get(mSongsList.get(i).getAlbum()) == null) {
+                // add it in
+                mAlbumsDict.put(mSongsList.get(i).getAlbum(), Arrays.asList(mSongsList.get(i)));
+                mAlbumsList.add(mSongsList.get(i));
+            } else {
+                //List<Song> temp = mAlbumsDict.get(mSongsList.get(i).getAlbum());
+                //mAlbumsDict.put(mSongsList.get(i).getAlbum(), temp.add(mSongsList.get(i)));
+                //append mSongsList.get(i) to its value list
+
+            }
+        }
     }
 
     @Override
