@@ -3,39 +3,22 @@ package cs446.mezzo.art;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-<<<<<<< Updated upstream
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
-import android.support.v7.graphics.Palette;
-=======
-import android.graphics.drawable.Drawable;
-import android.media.MediaMetadataRetriever;
->>>>>>> Stashed changes
 import android.util.Log;
 import android.widget.ImageView;
 
 import com.google.inject.Inject;
-<<<<<<< Updated upstream
-import com.google.inject.Singleton;
-=======
->>>>>>> Stashed changes
 import com.squareup.picasso.Picasso;
 
 import java.util.Collection;
 
 import cs446.mezzo.R;
-<<<<<<< Updated upstream
-import cs446.mezzo.data.Callback;
-import cs446.mezzo.music.Song;
-import cs446.mezzo.net.CoverArtArchive;
-=======
 import cs446.mezzo.data.Preferences;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.net.CoverArtArchive;
 import cs446.mezzo.net.MusicBrainz;
 import retrofit.Callback;
->>>>>>> Stashed changes
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import roboguice.inject.InjectResource;
@@ -43,41 +26,20 @@ import roboguice.inject.InjectResource;
 /**
  * @author curtiskroetsch
  */
-<<<<<<< Updated upstream
-@Singleton
-public class AlbumArtManager {
-
-=======
 public class AlbumArtManager {
 
     private static final String KEY_MBIDS = "mbids";
->>>>>>> Stashed changes
     private static final String TAG = AlbumArtManager.class.getName();
 
     @Inject
     Context mContext;
 
     @Inject
-<<<<<<< Updated upstream
-    MusicBrainzManager mMusicBrainz;
-=======
     MusicBrainz.API mMusicBrainz;
->>>>>>> Stashed changes
 
     @Inject
     CoverArtArchive.API mArtArchive;
 
-<<<<<<< Updated upstream
-    @InjectResource(R.drawable.ic_default_art)
-    Drawable mDefaultCoverArt;
-
-    @Inject
-    PaletteCache mPaletteCache;
-
-    @Inject
-    public AlbumArtManager() {
-
-=======
     @Inject
     Preferences mPreferences;
 
@@ -101,7 +63,6 @@ public class AlbumArtManager {
 
     private Collection<String> loadMbids(Song song) {
         return mPreferences.getStrings(generateKey(song));
->>>>>>> Stashed changes
     }
 
     private void setDefaultCoverArt(ImageView view) {
@@ -109,38 +70,6 @@ public class AlbumArtManager {
     }
 
     public void setAlbumArt(final ImageView view, final Song song) {
-<<<<<<< Updated upstream
-        setAlbumArt(view, song, null);
-    }
-
-    public void setAlbumArt(final ImageView view, final Song song, final Callback<Palette> paletteCallback) {
-        final Bitmap encodedCoverArt = getAlbumArt(song);
-        if (encodedCoverArt != null) {
-            view.setImageBitmap(encodedCoverArt);
-            Palette.generateAsync(encodedCoverArt, new Palette.PaletteAsyncListener() {
-                @Override
-                public void onGenerated(Palette palette) {
-                    if (paletteCallback != null) {
-                        paletteCallback.onSuccess(palette);
-                    }
-                }
-            });
-            return;
-        }
-        loadAlbumArtFromNetwork(song, view, paletteCallback);
-    }
-
-    private void loadAlbumArtFromNetwork(final Song song, final ImageView view, final Callback<Palette> paletteCallback) {
-        mMusicBrainz.getRecording(song, new Callback<Recording>() {
-            @Override
-            public void onSuccess(Recording recording) {
-                final Collection<String> mbids = recording.getReleaseMBIDs();
-                Log.d(TAG, mbids.toString());
-                if (mbids.isEmpty()) {
-                    setDefaultCoverArt(view);
-                } else {
-                    new CoverArtFetcher().fetch(mbids, view, paletteCallback);
-=======
         final Bitmap encodedCoverArt = getAlbumArt(song);
         if (encodedCoverArt != null) {
             view.setImageBitmap(encodedCoverArt);
@@ -165,24 +94,14 @@ public class AlbumArtManager {
                 } else {
                     saveMbids(song, mbids);
                     mCoverArtFetcher.fetch(mbids, view);
->>>>>>> Stashed changes
                 }
             }
 
             @Override
-<<<<<<< Updated upstream
-            public void onFailure(Exception error) {
-                Log.e(TAG, "MusicBrainz failed " + error.getMessage());
-                setDefaultCoverArt(view);
-                if (paletteCallback != null) {
-                    paletteCallback.onFailure(error);
-                }
-=======
             public void failure(RetrofitError error) {
                 Log.e(TAG, "MusicBrainz failed " + error.getMessage());
                 Log.e(TAG, "url = " + error.getUrl());
                 setDefaultCoverArt(view);
->>>>>>> Stashed changes
             }
         });
     }
@@ -199,16 +118,9 @@ public class AlbumArtManager {
     }
 
 
-<<<<<<< Updated upstream
-    private class CoverArtFetcher implements retrofit.Callback<Image> {
-
-        private ImageView mImageView;
-        private Callback<Palette> mPaletteCallback;
-=======
     private class CoverArtFetcher implements Callback<Image> {
 
         private ImageView mImageView;
->>>>>>> Stashed changes
         private boolean mFetched;
         private int mFailures;
         private int mMaxFailures;
@@ -217,14 +129,8 @@ public class AlbumArtManager {
 
         }
 
-<<<<<<< Updated upstream
-        public void fetch(Collection<String> ids, ImageView view, Callback<Palette> callback) {
-            mFetched = false;
-            mPaletteCallback = callback;
-=======
         public void fetch(Collection<String> ids, ImageView view) {
             mFetched = false;
->>>>>>> Stashed changes
             mImageView = view;
             mFailures = 0;
             mMaxFailures = ids.size();
@@ -241,28 +147,7 @@ public class AlbumArtManager {
                         .load(image.getUrl())
                         .placeholder(mDefaultCoverArt)
                         .fit().centerCrop()
-<<<<<<< Updated upstream
-                        .transform(mPaletteCache)
-                        .into(mImageView, new com.squareup.picasso.Callback() {
-                            @Override
-                            public void onSuccess() {
-                                if (mPaletteCallback != null) {
-                                    final Bitmap key = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
-                                    final Palette palette = mPaletteCache.getPalette(key);
-                                    mPaletteCallback.onSuccess(palette);
-                                }
-                            }
-
-                            @Override
-                            public void onError() {
-                                if (mPaletteCallback != null) {
-                                    mPaletteCallback.onFailure(new RuntimeException("Could not load image"));
-                                }
-                            }
-                        });
-=======
                         .into(mImageView);
->>>>>>> Stashed changes
             }
         }
 
@@ -272,12 +157,6 @@ public class AlbumArtManager {
             mFailures++;
             if (mFailures == mMaxFailures) {
                 setDefaultCoverArt(mImageView);
-<<<<<<< Updated upstream
-                if (mPaletteCallback != null) {
-                    mPaletteCallback.onFailure(error);
-                }
-=======
->>>>>>> Stashed changes
             }
         }
     }

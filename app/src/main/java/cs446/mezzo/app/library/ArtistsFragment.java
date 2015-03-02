@@ -59,8 +59,8 @@ public class ArtistsFragment extends BaseMezzoFragment implements AdapterView.On
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mSongsList = mMusicFetcher.getLocalSongs();
-/*
-        for (int i = 0; i < mSongsList.size(); i++) {
+
+/*        for (int i = 0; i < mSongsList.size(); i++) {
             final List<Song> findMatch = mArtistList.get(mSongsList.get(i).getArtist());
             if (findMatch == null) {
                 // add it in
@@ -71,7 +71,8 @@ public class ArtistsFragment extends BaseMezzoFragment implements AdapterView.On
                 findMatch.add(mSongsList.get(i));
             }
         }
-*/
+
+    }*/
     }
 
     @Override

@@ -6,6 +6,10 @@ import android.content.SharedPreferences;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author curtiskroetsch
  */
@@ -22,6 +26,9 @@ public class Preferences {
         mSharedPreferences = context.getSharedPreferences(PREFS_NAME, PREFS_MODE);
     }
 
+    public void putStrings(String key, Collection<String> values) {
+        mSharedPreferences.edit().putStringSet(key, new HashSet<String>(values)).apply();
+    }
 
     public void putString(String key, String value) {
         mSharedPreferences.edit().putString(key, value).apply();
@@ -37,6 +44,10 @@ public class Preferences {
 
     public void putLong(String key, long value) {
         mSharedPreferences.edit().putLong(key, value).apply();
+    }
+
+    public Set<String> getStrings(String key) {
+        return mSharedPreferences.getStringSet(key, null);
     }
 
     public String getString(String key) {

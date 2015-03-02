@@ -1,50 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+
+<android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/player_view"
-    android:visibility="gone"
-    tools:visibility="visible"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <ImageView
-        android:id="@+id/player_album_art"
-        android:layout_margin="8dp"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        tools:src="@drawable/ic_launcher"
-        tools:background="@android:color/holo_blue_dark" />
+    android:layout_height="wrap_content"
+    android:visibility="gone"
+    tools:visibility="visible">
 
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_weight="1"
-        android:layout_width="0dp"
-        android:layout_gravity="center_vertical"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/player_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            tools:text="Roar" />
+        <ImageView
+            android:id="@+id/player_album_art"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_margin="8dp"
+            tools:background="@android:color/holo_blue_dark"
+            tools:src="@drawable/ic_launcher"/>
 
-        <TextView
-            android:id="@+id/player_artist"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            tools:text="Katy Perry"/>
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/player_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                tools:text="Roar"/>
+
+            <TextView
+                android:id="@+id/player_artist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                tools:text="Katy Perry"/>
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/player_play_btn"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_margin="8dp"
+            android:src="@drawable/ic_av_pause_circle_fill"
+            android:tint="@color/primary_dark"/>
 
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/player_play_btn"
-        android:layout_margin="8dp"
-        android:src="@android:drawable/ic_media_pause"
-        android:layout_width="56dp"
-        android:layout_height="56dp" />
-
-</LinearLayout>
+</android.support.v7.widget.CardView>

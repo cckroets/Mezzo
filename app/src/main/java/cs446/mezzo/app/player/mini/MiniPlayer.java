@@ -2,10 +2,6 @@ package cs446.mezzo.app.player.mini;
 
 import android.animation.LayoutTransition;
 import android.graphics.drawable.Drawable;
-<<<<<<< Updated upstream
-import android.support.v7.graphics.Palette;
-=======
->>>>>>> Stashed changes
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,26 +15,15 @@ import com.google.inject.Inject;
 import com.squareup.otto.Subscribe;
 
 import cs446.mezzo.R;
-<<<<<<< Updated upstream
-import cs446.mezzo.art.AlbumArtManager;
-import cs446.mezzo.data.Callback;
-=======
->>>>>>> Stashed changes
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.control.PauseToggleEvent;
 import cs446.mezzo.events.control.PlayNextEvent;
 import cs446.mezzo.events.navigation.OpenAppEvent;
 import cs446.mezzo.events.playback.SongPauseEvent;
 import cs446.mezzo.events.playback.SongPlayEvent;
-<<<<<<< Updated upstream
-import cs446.mezzo.music.Song;
-import cs446.mezzo.overlay.Overlay;
-import cs446.mezzo.view.ViewUtil;
-=======
 import cs446.mezzo.art.AlbumArtManager;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.overlay.Overlay;
->>>>>>> Stashed changes
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
@@ -152,37 +137,8 @@ public class MiniPlayer extends Overlay {
     }
 
     public void updateSongView() {
-<<<<<<< Updated upstream
-        mTextView.setText(mSong.getTitle());
-        mArtManager.setAlbumArt(mCoverArt, mSong, new Callback<Palette>() {
-            @Override
-            public void onSuccess(Palette data) {
-                onPaletteLoaded(data);
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                onPaletteFailed();
-            }
-        });
-    }
-
-    private void onPaletteLoaded(Palette palette) {
-        final int defaultColor = getContext().getResources().getColor(R.color.primary_dark);
-        final int tintColor =
-                palette.getDarkVibrantColor(
-                palette.getVibrantColor(
-                palette.getDarkMutedColor(defaultColor)));
-        ViewUtil.tintViews(tintColor, mHomeButton, mPauseButton, mNextButton);
-    }
-
-    private void onPaletteFailed() {
-        final int defaultColor = getContext().getResources().getColor(R.color.primary_dark);
-        ViewUtil.tintViews(defaultColor, mHomeButton, mPauseButton, mNextButton);
-=======
         mCoverArt.setImageBitmap(mArtManager.getAlbumArt(mSong));
         mTextView.setText(mSong.getTitle());
->>>>>>> Stashed changes
     }
 
     @Subscribe

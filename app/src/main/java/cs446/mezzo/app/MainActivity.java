@@ -1,8 +1,13 @@
 package cs446.mezzo.app;
 
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
@@ -12,9 +17,15 @@ import android.view.View;
 
 import com.google.inject.Inject;
 
-import cs446.mezzo.R.app.library;
+import cs446.mezzo.R;
 import cs446.mezzo.app.library.MusicSourceFragment;
+import cs446.mezzo.app.library.ScreenSlidePageFragment;
 import cs446.mezzo.app.library.SongsFragment;
+import cs446.mezzo.app.player.MusicControlFragment;
+import cs446.mezzo.app.player.NowPlayingFragment;
+import cs446.mezzo.music.Song;
+import cs446.mezzo.music.SongPlayer;
+import cs446.mezzo.overlay.OverlayService;
 import cs446.mezzo.sources.dropbox.DropboxSource;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
@@ -28,14 +39,20 @@ public class MainActivity extends BaseMezzoActivity {
     @InjectView(R.id.drawer_layout)
     DrawerLayout mNavDrawer;
 
+    @InjectView(R.id.nav_now_playing)
+    View mPlayingButton;
+
     @InjectView(R.id.nav_dropbox)
     View mDropboxButton;
 
     @InjectView(R.id.nav_my_music)
     View mLibraryButton;
 
-    @InjectView(R.id.nav_now_playing)
-    View mNowPlayingButton;
+    @InjectView(R.id.nav_playlists)
+    View mPlaylistButton;
+
+    @Inject
+    SongPlayer mSongPlayer;
 
     @Inject
     DropboxSource mDropboxSource;
@@ -46,7 +63,9 @@ public class MainActivity extends BaseMezzoActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         startService(new Intent(this, MusicService.class));
+        startService(new Intent(this, OverlayService.class));
         setSupportActionBar(mToolbar);
+
         mDrawerToggle = new ActionBarDrawerToggle(this, mNavDrawer, R.string.app_name, R.string.app_name) {
             @Override
             public void onDrawerOpened(View drawerView) {
@@ -61,9 +80,18 @@ public class MainActivity extends BaseMezzoActivity {
             }
         };
         mNavDrawer.setDrawerListener(mDrawerToggle);
-        setInitialFragment(new SongsFragment());
+        setInitialFragment(new ScreenSlidePageFragment());
         setSecondaryFragment(new MusicControlFragment());
-
+        mPlayingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Song song = mSongPlayer.getCurrentSong();
+                if (song != null) {
+                    setFragment(NowPlayingFragment.create());
+                }
+                mNavDrawer.closeDrawers();
+            }
+        });
         mDropboxButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,15 +102,13 @@ public class MainActivity extends BaseMezzoActivity {
         mLibraryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setFragment(new SongsFragment());
+                setFragment(new ScreenSlidePageFragment());
                 mNavDrawer.closeDrawers();
             }
         });
-
-        mNowPlayingButton.setOnClickListener(new View.OnClickListener() {
+        mPlaylistButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setFragment(new NowPlayingFragment());
                 mNavDrawer.closeDrawers();
             }
         });
@@ -149,4 +175,7 @@ public class MainActivity extends BaseMezzoActivity {
 
         return false;
     }
+
 }
+
+

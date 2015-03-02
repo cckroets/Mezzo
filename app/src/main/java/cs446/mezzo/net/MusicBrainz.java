@@ -4,22 +4,14 @@ import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-<<<<<<< Updated upstream
-import cs446.mezzo.art.Recording;
-=======
 import cs446.mezzo.art.ReleaseGroupCollection;
->>>>>>> Stashed changes
 import retrofit.Callback;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;
-<<<<<<< Updated upstream
-import retrofit.http.GET;
-=======
 import retrofit.http.EncodedQuery;
 import retrofit.http.GET;
 import retrofit.http.Path;
->>>>>>> Stashed changes
 import retrofit.http.Query;
 
 /**
@@ -48,15 +40,9 @@ public class MusicBrainz implements Provider<MusicBrainz.API> {
     }
 
     public interface API {
-<<<<<<< Updated upstream
-        @GET("/recording/")
-        void getReleaseGroups(@Query(value = "query", encodeValue = false) String query,
-                              Callback<Recording> callback);
-=======
         @GET("/release-group/")
         void getReleaseGroups(@Query(value = "query", encodeValue = false) String query,
                               Callback<ReleaseGroupCollection> callback);
->>>>>>> Stashed changes
     }
 
 
