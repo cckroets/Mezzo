@@ -1,98 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:clickable="true"
-    android:background="@android:color/white"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@android:color/white"
+              android:clickable="true"
+              android:orientation="vertical">
 
-    <LinearLayout
+    <TextView
         android:id="@+id/nav_now_playing"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:background="@drawable/drawer_item"
+        android:drawableLeft="@drawable/ic_hardware_headset"
+        android:drawablePadding="16dp"
+        android:drawableStart="@drawable/ic_hardware_headset"
+        android:gravity="center_vertical"
+        android:padding="16dp"
+        android:text="Now Playing"/>
 
-        <ImageView
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_margin="16dp"
-            android:src="@android:drawable/ic_media_play" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_margin="16dp"
-            android:singleLine="true"
-            android:text="Now Playing" />
-
-    </LinearLayout>
-
-    <LinearLayout
+    <TextView
         android:id="@+id/nav_dropbox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:background="@drawable/drawer_item"
+        android:drawableLeft="@drawable/ic_file_cloud_queue"
+        android:drawablePadding="16dp"
+        android:drawableStart="@drawable/ic_file_cloud_queue"
+        android:gravity="center_vertical"
+        android:padding="16dp"
+        android:text="Dropbox"/>
 
-        <ImageView
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_margin="16dp"
-            android:src="@android:drawable/ic_media_play" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_margin="16dp"
-            android:singleLine="true"
-            android:text="Dropbox" />
-
-    </LinearLayout>
-
-    <LinearLayout
+    <TextView
         android:id="@+id/nav_my_music"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:background="@drawable/drawer_item"
+        android:drawableLeft="@drawable/ic_av_my_library_music"
+        android:drawablePadding="16dp"
+        android:drawableStart="@drawable/ic_av_my_library_music"
+        android:gravity="center_vertical"
+        android:padding="16dp"
+        android:text="My Music"/>
 
-        <ImageView
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_margin="16dp"
-            android:src="@android:drawable/ic_media_play" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_margin="16dp"
-            android:singleLine="true"
-            android:text="My Music" />
-
-    </LinearLayout>
-
-    <LinearLayout
+    <TextView
         android:id="@+id/nav_playlists"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_margin="16dp"
-            android:src="@android:drawable/ic_media_play" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_margin="16dp"
-            android:singleLine="true"
-            android:text="Playlists" />
-
-    </LinearLayout>
+        android:background="@drawable/drawer_item"
+        android:drawableLeft="@drawable/ic_av_my_library_music"
+        android:drawablePadding="16dp"
+        android:drawableStart="@drawable/ic_av_my_library_music"
+        android:gravity="center_vertical"
+        android:padding="16dp"
+        android:text="Playlists"/>
 
 
 </LinearLayout>

@@ -92,7 +92,6 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity {
         }
         getSupportFragmentManager()
                 .beginTransaction()
-                .addToBackStack(null)
                 .replace(containerId, fragment, fragment.getTag())
                 .commit();
     }

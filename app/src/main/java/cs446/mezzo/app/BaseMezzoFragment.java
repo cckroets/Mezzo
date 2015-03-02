@@ -21,6 +21,17 @@ public abstract class BaseMezzoFragment extends RoboFragment {
         invalidateActionBar();
     }
 
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (showSecondaryFragment()) {
+            getMezzoActivity().showSecondaryFragment();
+        } else {
+            getMezzoActivity().hideSecondaryFragment();
+        }
+    }
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -47,4 +58,8 @@ public abstract class BaseMezzoFragment extends RoboFragment {
     }
 
     public abstract String getTitle();
+
+    public boolean showSecondaryFragment() {
+        return true;
+    }
 }
