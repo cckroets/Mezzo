@@ -10,167 +10,127 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_default_art"
-        tools:background="@android:color/white"/>
+        tools:background="@android:color/holo_green_dark"
+        android:src="@drawable/ic_launcher"/>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="#b4000000"
         android:orientation="vertical">
 
-        <ScrollView
-            android:id="@+id/player_lyrics_container"
-            android:alpha="1"
-            android:visibility="visible"
+        <TextView
+            android:background="#64000000"
+            android:id="@+id/player_title"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingTop="8dp"
+            android:text="Title of Song"
+            android:textColor="@android:color/primary_text_dark"
+            android:textSize="12pt"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#b4000000"
-                android:orientation="vertical"
-                android:padding="8dp">
-
-                <TextView
-                    android:id="@+id/player_lyrics_body"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    tools:text="You never really wanted it You'll settle for a bit of it We started with a big bang And now it's comming back again Hey, don't you feel it now? My shiny side down Hey, burning brighter still And you're getting sick And you're feeling it It'll wear you down and wear you down You chase it, breathing in and out and in and out They'll push you up against the wall, against the wall You didn't think you'd feel it all but you were wrong about it Push It started with a handgun loaded with excuses I started faking it And then we started breaking it All the pieces used to fit Using like it's going out of style ... ******* This Lyrics is NOT for Commercial use *******You never really wanted it You'll settle for a bit of it We started with a big bang And now it's comming back again Hey, don't you feel it now? My shiny side down Hey, burning brighter still And you're getting sick And you're feeling it It'll wear you down and wear you down You chase it, breathing in and out and in and out They'll push you up against the wall, against the wall You didn't think you'd feel it all but you were wrong about it Push It started with a handgun loaded with excuses I started faking it And then we started breaking it All the pieces used to fit Using like it's going out of style ... ******* This "
-                    android:textColor="@android:color/white"/>
-
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="16dp"/>
-
-                <TextView
-                    android:id="@+id/player_lyrics_copyright"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    tools:text="Lyrics powered by www.musiXmatch.com. This Lyrics is NOT for Commercial use and only 30% of the lyrics are returned."
-                    android:textColor="@android:color/secondary_text_dark"/>
-
-            </LinearLayout>
-
-        </ScrollView>
+        <TextView
+            android:background="#64000000"
+            android:id="@+id/player_album_artist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:gravity="center_horizontal"
+            android:paddingBottom="8dp"
+            android:paddingLeft="8dp"
+            android:singleLine="true"
+            android:text="Artist Name - Album"
+            android:textColor="@android:color/secondary_text_dark"
+            android:textSize="9pt"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:background="#eb000000"
-            android:orientation="vertical">
+            android:background="#64000000"
+            android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/player_title"
-                android:layout_width="match_parent"
+                android:id="@+id/player_seek_position"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:paddingBottom="4dp"
                 android:paddingLeft="8dp"
+                android:paddingRight="8dp"
                 android:paddingTop="8dp"
-                android:text="Title of Song"
-                android:textColor="@android:color/primary_text_dark"
-                android:textSize="12pt"/>
+                android:text="0:45"
+                android:textColor="@android:color/secondary_text_dark"/>
 
-            <cs446.mezzo.view.MarqueeTextView
-                android:id="@+id/player_album_artist"
-                android:layout_width="match_parent"
+            <Space
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="Artist Name - Album"
-                android:textColor="@color/secondary_text"
-                android:textSize="9pt"/>
+                android:layout_weight="1"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/player_duration"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:paddingTop="8dp"
+                android:text="4:23"
+                android:textColor="@android:color/secondary_text_dark"/>
 
-                <TextView
-                    android:id="@+id/player_seek_position"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
-                    android:paddingTop="8dp"
-                    android:text="0:45"
-                    android:textColor="@android:color/secondary_text_dark"/>
+        </LinearLayout>
 
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
+        <SeekBar
+            android:id="@+id/player_seek_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#64000000"
+            android:progress="20"/>
 
-                <TextView
-                    android:id="@+id/player_duration"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
-                    android:paddingTop="8dp"
-                    android:text="4:23"
-                    android:textColor="@android:color/secondary_text_dark"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:background="#64000000">
 
-            </LinearLayout>
+            <ImageView
+                android:id="@+id/player_repeat"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="16dp"
+                android:src="@android:drawable/ic_menu_rotate"/>
 
-            <SeekBar
-                android:id="@+id/player_seek_bar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:progress="20"/>
+            <ImageView
+                android:id="@+id/player_previous"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="12dp"
+                android:src="@android:drawable/ic_media_previous"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="72dp">
+            <ImageView
+                android:id="@+id/player_pause"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="4dp"
+                android:src="@android:drawable/ic_media_pause"/>
 
-                <ImageView
-                    android:id="@+id/player_repeat"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/pressed"
-                    android:src="@drawable/ic_av_repeat"
-                    android:tint="@color/primary_dark"/>
+            <ImageView
+                android:id="@+id/player_next"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="12dp"
+                android:src="@android:drawable/ic_media_next"/>
 
-                <ImageView
-                    android:id="@+id/player_previous"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/pressed"
-                    android:src="@drawable/ic_av_skip_previous"
-                    android:tint="@color/primary_dark"/>
-
-                <ImageView
-                    android:id="@+id/player_pause"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/pressed"
-                    android:src="@drawable/ic_av_pause"
-                    android:tint="@color/primary_dark"/>
-
-                <ImageView
-                    android:id="@+id/player_next"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/pressed"
-                    android:src="@drawable/ic_av_skip_next"
-                    android:tint="@color/primary_dark"/>
-
-                <ImageView
-                    android:id="@+id/player_shuffle"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/pressed"
-                    android:src="@drawable/ic_av_shuffle"
-                    android:tint="@color/primary_dark"/>
-
-            </LinearLayout>
+            <ImageView
+                android:id="@+id/player_shuffle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="16dp"
+                android:src="@android:drawable/ic_menu_directions"/>
 
         </LinearLayout>
 

@@ -1,5 +1,6 @@
 package cs446.mezzo.view;
 
+<<<<<<< Updated upstream
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
@@ -62,4 +63,10 @@ public final class ViewUtil {
         }
     }
 
+=======
+/**
+ * @author curtiskroetsch
+ */
+public class ViewUtil {
+>>>>>>> Stashed changes
 }
