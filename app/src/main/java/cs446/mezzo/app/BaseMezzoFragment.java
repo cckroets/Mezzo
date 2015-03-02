@@ -1,9 +1,11 @@
 package cs446.mezzo.app;
 
 import android.app.Activity;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
+import cs446.mezzo.R;
 import roboguice.fragment.RoboFragment;
 
 /**
@@ -16,7 +18,7 @@ public abstract class BaseMezzoFragment extends RoboFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getMezzoActivity().setTitle(getTitle());
+        invalidateActionBar();
     }
 
     @Override
@@ -33,6 +35,10 @@ public abstract class BaseMezzoFragment extends RoboFragment {
 
     public void invalidateActionBar() {
         getMezzoActivity().setTitle(getTitle());
+        getMezzoActivity().getToolbar().setBackgroundColor(getResources().getColor(R.color.primary));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getMezzoActivity().getWindow().setStatusBarColor(getResources().getColor(R.color.primary_dark));
+        }
         getMezzoActivity().invalidateOptionsMenu();
     }
 

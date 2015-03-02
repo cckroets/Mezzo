@@ -67,12 +67,6 @@ public class MusicControlFragment extends RoboFragment {
             @Override
             public void onClick(View v) {
                 EventBus.post(new PauseToggleEvent());
-                final AudioManager manager = (AudioManager) getActivity().getSystemService(android.content.Context.AUDIO_SERVICE);
-                if (manager.isMusicActive()) {
-                    mPlayButton.setImageResource(android.R.drawable.ic_media_pause);
-                } else {
-                    mPlayButton.setImageResource(android.R.drawable.ic_media_play);
-                }
             }
         });
         EventBus.register(this);

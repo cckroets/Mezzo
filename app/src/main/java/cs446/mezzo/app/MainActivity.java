@@ -14,6 +14,7 @@ import com.google.inject.Inject;
 
 import cs446.mezzo.R;
 import cs446.mezzo.app.library.MusicSourceFragment;
+import cs446.mezzo.app.library.ScreenSlidePageFragment;
 import cs446.mezzo.app.library.SongsFragment;
 import cs446.mezzo.app.player.MusicControlFragment;
 import cs446.mezzo.app.player.NowPlayingFragment;
@@ -33,9 +34,6 @@ public class MainActivity extends BaseMezzoActivity {
     @InjectView(R.id.drawer_layout)
     DrawerLayout mNavDrawer;
 
-    @InjectView(R.id.nav_now_playing)
-    View mPlayingButton;
-
     @InjectView(R.id.nav_dropbox)
     View mDropboxButton;
 
@@ -46,10 +44,11 @@ public class MainActivity extends BaseMezzoActivity {
     View mNowPlayingButton;
 
     @Inject
-    SongPlayer mSongPlayer;
+    DropboxSource mDropboxSource;
 
     @Inject
-    DropboxSource mDropboxSource;
+    SongPlayer mSongPlayer;
+
 
     ActionBarDrawerToggle mDrawerToggle;
 
@@ -73,18 +72,8 @@ public class MainActivity extends BaseMezzoActivity {
             }
         };
         mNavDrawer.setDrawerListener(mDrawerToggle);
-        setInitialFragment(new SongsFragment());
+        setInitialFragment(new ScreenSlidePageFragment());
         setSecondaryFragment(new MusicControlFragment());
-        mPlayingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Song song = mSongPlayer.getCurrentSong();
-                if (song != null) {
-                    setFragment(NowPlayingFragment.create());
-                }
-                mNavDrawer.closeDrawers();
-            }
-        });
         mDropboxButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,7 +84,7 @@ public class MainActivity extends BaseMezzoActivity {
         mLibraryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setFragment(new SongsFragment());
+                setFragment(new ScreenSlidePageFragment());
                 mNavDrawer.closeDrawers();
             }
         });
@@ -103,7 +92,9 @@ public class MainActivity extends BaseMezzoActivity {
         mNowPlayingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setFragment(new NowPlayingFragment());
+                if (mSongPlayer.getCurrentSong() != null) {
+                    setFragment(new NowPlayingFragment());
+                }
                 mNavDrawer.closeDrawers();
             }
         });

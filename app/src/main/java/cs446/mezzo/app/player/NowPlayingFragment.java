@@ -252,6 +252,7 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
         return "Now Playing";
     }
 
+
     @Override
     public boolean onBackPress() {
         ViewUtil.tintDecor(this, getResources().getColor(R.color.primary));
