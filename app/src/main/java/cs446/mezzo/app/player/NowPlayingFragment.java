@@ -1,5 +1,7 @@
 package cs446.mezzo.app.player;
 
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.graphics.Palette;
@@ -51,6 +53,9 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
 
     @InjectView(R.id.player_album_art)
     ImageView mCovertArt;
+
+    @InjectView(R.id.player_buttons_container)
+    View mPlayerButtonsContainer;
 
     @InjectView(R.id.player_pause)
     ImageView mPauseBtn;
@@ -217,19 +222,38 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
             return;
         }
         final int defaultColor = getResources().getColor(R.color.primary_dark);
-        final int mutedColor = palette.getMutedColor(defaultColor);
-        ViewUtil.tintViews(mutedColor, mRepeatBtn, mPrevBtn, mPauseBtn, mNextBtn, mShuffleBtn);
-        ViewUtil.tintTextView(mTitle, palette.getLightVibrantColor(palette.getVibrantColor(defaultColor)));
-        ViewUtil.tintSeekbar(mSeekBar, palette.getVibrantColor(getResources().getColor(R.color.primary)));
-        ViewUtil.tintDecor(this, palette.getVibrantColor(getResources().getColor(R.color.primary)));
+
+        int vibrantColor = palette.getVibrantColor(getResources().getColor(R.color.primary));
+        int mutedColor = palette.getMutedColor(defaultColor);
+
+        if (palette.getLightVibrantColor(palette.getVibrantColor(defaultColor)) == defaultColor) {
+            vibrantColor = Color.parseColor("#555555");
+            mutedColor = palette.getMutedColor(Color.parseColor("#d3d3d3"));
+            ViewUtil.tintTextView(mTitle, Color.parseColor("#ffffff"));
+            ViewUtil.tintSeekbar(mSeekBar, Color.parseColor("#555555"));
+            ViewUtil.tintDecor(this, Color.parseColor("#555555"));
+        }
+        else {
+            ViewUtil.tintTextView(mTitle, palette.getLightVibrantColor(palette.getVibrantColor(defaultColor)));
+            ViewUtil.tintSeekbar(mSeekBar, palette.getVibrantColor(getResources().getColor(R.color.primary)));
+            ViewUtil.tintDecor(this, palette.getVibrantColor(getResources().getColor(R.color.primary)));
+        }
+        mPlayerButtonsContainer.setBackgroundColor(vibrantColor);
+        mSeekBar.getProgressDrawable().setColorFilter(mutedColor, PorterDuff.Mode.SRC_ATOP);
+        //mSeekBar.getThumb().setColorFilter(lightVibrantColor, PorterDuff.Mode.SRC_ATOP);
+        mSeekBar.setThumb(null);
     }
 
     private void onPaletteFailed() {
         final int defaultColor = getResources().getColor(R.color.primary_dark);
-        ViewUtil.tintViews(defaultColor, mRepeatBtn, mPrevBtn, mPauseBtn, mNextBtn, mShuffleBtn);
+        final int defaultLightColor = getResources().getColor(R.color.primary);
         ViewUtil.tintTextView(mTitle, defaultColor);
         ViewUtil.tintSeekbar(mSeekBar, defaultColor);
         ViewUtil.tintDecor(this, getResources().getColor(R.color.primary));
+        mPlayerButtonsContainer.setBackgroundColor(defaultColor);
+        mSeekBar.getProgressDrawable().setColorFilter(defaultLightColor, PorterDuff.Mode.SRC_ATOP);
+        //mSeekBar.getThumb().setColorFilter(defaultLightColor, PorterDuff.Mode.SRC_ATOP);
+        mSeekBar.setThumb(null);
     }
 
     private void updateSeekbar() {
