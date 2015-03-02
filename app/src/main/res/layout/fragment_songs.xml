@@ -7,7 +7,7 @@
         android:id="@+id/song_list"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/abc_ab_share_pack_holo_light">
+        android:background="#ffffffff">
     </ListView>
 
 </LinearLayout>

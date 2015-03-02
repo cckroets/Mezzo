@@ -15,6 +15,11 @@ import com.google.inject.Inject;
 import cs446.mezzo.R;
 import cs446.mezzo.app.library.MusicSourceFragment;
 import cs446.mezzo.app.library.SongsFragment;
+import cs446.mezzo.app.player.MusicControlFragment;
+import cs446.mezzo.app.player.NowPlayingFragment;
+import cs446.mezzo.music.Song;
+import cs446.mezzo.music.SongPlayer;
+import cs446.mezzo.overlay.OverlayService;
 import cs446.mezzo.sources.dropbox.DropboxSource;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
@@ -28,6 +33,9 @@ public class MainActivity extends BaseMezzoActivity {
     @InjectView(R.id.drawer_layout)
     DrawerLayout mNavDrawer;
 
+    @InjectView(R.id.nav_now_playing)
+    View mPlayingButton;
+
     @InjectView(R.id.nav_dropbox)
     View mDropboxButton;
 
@@ -38,6 +46,9 @@ public class MainActivity extends BaseMezzoActivity {
     View mNowPlayingButton;
 
     @Inject
+    SongPlayer mSongPlayer;
+
+    @Inject
     DropboxSource mDropboxSource;
 
     ActionBarDrawerToggle mDrawerToggle;
@@ -46,6 +57,7 @@ public class MainActivity extends BaseMezzoActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         startService(new Intent(this, MusicService.class));
+        startService(new Intent(this, OverlayService.class));
         setSupportActionBar(mToolbar);
         mDrawerToggle = new ActionBarDrawerToggle(this, mNavDrawer, R.string.app_name, R.string.app_name) {
             @Override
@@ -63,7 +75,16 @@ public class MainActivity extends BaseMezzoActivity {
         mNavDrawer.setDrawerListener(mDrawerToggle);
         setInitialFragment(new SongsFragment());
         setSecondaryFragment(new MusicControlFragment());
-
+        mPlayingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Song song = mSongPlayer.getCurrentSong();
+                if (song != null) {
+                    setFragment(NowPlayingFragment.create());
+                }
+                mNavDrawer.closeDrawers();
+            }
+        });
         mDropboxButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -140,13 +161,11 @@ public class MainActivity extends BaseMezzoActivity {
         }
 
         switch (item.getItemId()) {
-            case R.id.action_settings:
-                // TODO: Open Settings Page here.
-                break;
-            default:
-                return true;
+          case R.id.action_settings:
+              // TODO: Open Settings Page here.
+              return true;
+          default:
+              return false;
         }
-
-        return false;
     }
 }
