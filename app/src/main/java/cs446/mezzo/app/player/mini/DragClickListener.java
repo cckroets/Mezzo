@@ -14,7 +14,7 @@ import cs446.mezzo.overlay.Overlay;
  */
 public class DragClickListener implements View.OnTouchListener {
 
-    private static final int WIGGLE_ROOM = 15;
+    private static final int WIGGLE_ROOM = 25;
 
     private Overlay mOverlay;
     private Display mDisplay;

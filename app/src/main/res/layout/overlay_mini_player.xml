@@ -76,7 +76,7 @@
                     android:layout_height="match_parent"
                     android:background="@drawable/pressed"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_av_pause_circle_fill"
+                    android:src="@drawable/ic_av_pause_circle_fill2"
                     android:tint="@color/primary_dark"/>
 
                 <ImageButton
