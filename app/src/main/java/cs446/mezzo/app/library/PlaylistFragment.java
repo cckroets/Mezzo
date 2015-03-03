@@ -42,6 +42,11 @@ public abstract class PlaylistFragment extends BaseMezzoFragment implements Adap
     }
 
     @Override
+    public void invalidateActionBar() {
+
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mCategories = buildCategories(mMusicFetcher);
