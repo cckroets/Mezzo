@@ -159,6 +159,36 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
         setEventClick(mRepeatBtn, new RepeatToggleEvent());
         setEventClick(mShuffleBtn, new ShuffleToggleEvent());
         updateSongView();
+
+        mShuffleBtn.setOnClickListener(new View.OnClickListener() {
+            boolean mSelected;
+            @Override
+            public void onClick(View v) {
+                if (!mSelected) {
+                    mShuffleBtn.setSelected(true);
+                    mSelected = true;
+                }
+                else {
+                    mShuffleBtn.setSelected(false);
+                    mSelected = false;
+                }
+            }
+        });
+
+        mRepeatBtn.setOnClickListener(new View.OnClickListener() {
+            boolean mSelected;
+            @Override
+            public void onClick(View v) {
+                if (!mSelected) {
+                    mRepeatBtn.setSelected(true);
+                    mSelected = true;
+                }
+                else {
+                    mRepeatBtn.setSelected(false);
+                    mSelected = false;
+                }
+            }
+        });
     }
 
     private void onGetLyrics() {

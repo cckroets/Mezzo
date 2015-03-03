@@ -56,10 +56,10 @@ public class MiniPlayer extends Overlay {
     @Inject
     AlbumArtManager mArtManager;
 
-    @InjectResource(R.drawable.ic_av_pause_circle_fill)
+    @InjectResource(R.drawable.ic_av_pause_circle_fill2)
     Drawable mPauseDrawable;
 
-    @InjectResource(R.drawable.ic_av_play_circle_fill)
+    @InjectResource(R.drawable.ic_av_play_circle_fill2)
     Drawable mPlayDrawable;
 
     private Song mSong;

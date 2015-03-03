@@ -12,7 +12,7 @@
     <color name="icons">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
 
-    <color name="pressed">@color/primary_light</color>
+    <color name="pressed">#ff2f2f2f</color>
     <color name="white">#ffffffff</color>
 
 </resources>

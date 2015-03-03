@@ -4,11 +4,13 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.google.inject.Inject;
 import com.squareup.otto.Produce;
 import com.squareup.otto.Subscribe;
 
+import cs446.mezzo.R;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.control.PauseToggleEvent;
 import cs446.mezzo.events.control.PlayNextEvent;
@@ -19,6 +21,7 @@ import cs446.mezzo.events.control.SelectSongEvent;
 import cs446.mezzo.events.control.ShuffleToggleEvent;
 import cs446.mezzo.events.playback.SongPlayEvent;
 import cs446.mezzo.music.SongPlayer;
+import roboguice.inject.InjectView;
 import roboguice.service.RoboService;
 
 /**

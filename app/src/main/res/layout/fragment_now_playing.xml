@@ -142,7 +142,8 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@drawable/pressed"
-                    android:src="@drawable/ic_av_repeat" />
+                    android:src="@drawable/ic_av_repeat"
+                    android:clickable="false" />
 
                 <ImageView
                     android:id="@+id/player_previous"

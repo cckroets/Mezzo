@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.google.inject.Inject;
 
@@ -48,7 +49,6 @@ public class MainActivity extends BaseMezzoActivity {
 
     @Inject
     SongPlayer mSongPlayer;
-
 
     ActionBarDrawerToggle mDrawerToggle;
 
@@ -104,6 +104,7 @@ public class MainActivity extends BaseMezzoActivity {
                 mNavDrawer.closeDrawers();
             }
         });
+
     }
 
     @Override
@@ -112,6 +113,7 @@ public class MainActivity extends BaseMezzoActivity {
         if (!mDropboxSource.getAuthenticator().isAuthenticated()) {
             mDropboxSource.getAuthenticator().startAuthentication(this);
         }
+
     }
 
     private void unselectAll() {
