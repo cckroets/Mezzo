@@ -120,6 +120,16 @@ public class FileSong implements Song {
     }
 
     @Override
+    public File getFile() {
+        return mFile;
+    }
+
+    @Override
+    public long getAlbumId() {
+        return 0;
+    }
+
+    @Override
     public int describeContents() {
         return 0;
     }

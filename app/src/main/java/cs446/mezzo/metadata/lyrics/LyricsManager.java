@@ -1,10 +1,12 @@
-package cs446.mezzo.art;
+package cs446.mezzo.metadata.lyrics;
 
 import android.util.Log;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import cs446.mezzo.metadata.MusicBrainzManager;
+import cs446.mezzo.metadata.Recording;
 import cs446.mezzo.data.Callback;
 import cs446.mezzo.data.Preferences;
 import cs446.mezzo.music.Song;

@@ -8,7 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.inject.Inject;
@@ -20,6 +21,7 @@ import java.util.Map;
 
 import cs446.mezzo.R;
 import cs446.mezzo.app.BaseMezzoFragment;
+import cs446.mezzo.metadata.art.AlbumArtManager;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.sources.LocalMusicFetcher;
 import roboguice.inject.InjectView;
@@ -27,17 +29,20 @@ import roboguice.inject.InjectView;
 /**
  * @author curtiskroetsch
  */
-public abstract class PlaylistFragment extends BaseMezzoFragment implements AdapterView.OnItemClickListener {
+public abstract class CatalogFragment extends BaseMezzoFragment implements AdapterView.OnItemClickListener {
 
     @Inject
     LocalMusicFetcher mMusicFetcher;
 
-    @InjectView(R.id.song_list)
-    ListView mListView;
+    @Inject
+    AlbumArtManager mArtManager;
+
+    @InjectView(R.id.catalog_grid)
+    GridView mCatalog;
 
     private Map<String, List<Song>> mCategories;
 
-    public PlaylistFragment() {
+    public CatalogFragment() {
 
     }
 
@@ -76,7 +81,7 @@ public abstract class PlaylistFragment extends BaseMezzoFragment implements Adap
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_songs, container, false);
+        return inflater.inflate(R.layout.fragment_catalog, container, false);
     }
 
     @Override
@@ -85,8 +90,8 @@ public abstract class PlaylistFragment extends BaseMezzoFragment implements Adap
         final String[] keys = new String[mCategories.size()];
         mCategories.keySet().toArray(keys);
         final PlaylistAdapter songAdapter = new PlaylistAdapter(getActivity(), keys);
-        mListView.setAdapter(songAdapter);
-        mListView.setOnItemClickListener(this);
+        mCatalog.setAdapter(songAdapter);
+        mCatalog.setOnItemClickListener(this);
     }
 
     @Override
@@ -96,6 +101,7 @@ public abstract class PlaylistFragment extends BaseMezzoFragment implements Adap
 
     private static class ViewHolder {
         TextView titleView;
+        ImageView imageView;
     }
 
     public class PlaylistAdapter extends ArrayAdapter<String> {
@@ -113,17 +119,21 @@ public abstract class PlaylistFragment extends BaseMezzoFragment implements Adap
             final View view;
             final ViewHolder viewHolder;
             final String title = getItem(position);
+            final List<Song> songs = mCategories.get(title);
 
             if (convertView != null) {
                 view = convertView;
                 viewHolder = (ViewHolder) convertView.getTag();
             } else {
-                view = mInflater.inflate(R.layout.view_list_item, parent, false);
+                view = mInflater.inflate(R.layout.view_playlist, parent, false);
                 viewHolder = new ViewHolder();
                 viewHolder.titleView = (TextView) view.findViewById(R.id.item_title);
+                viewHolder.imageView = (ImageView) view.findViewById(R.id.item_image);
                 view.setTag(viewHolder);
             }
 
+            //mArtManager.setAlbumArt(viewHolder.imageView, songs.get(0));
+            mArtManager.setAlbumArt(viewHolder.imageView, songs.get(0));
             viewHolder.titleView.setText(title);
             return view;
         }

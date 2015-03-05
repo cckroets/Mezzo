@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-import cs446.mezzo.art.Image;
+import cs446.mezzo.metadata.art.Image;
 import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;

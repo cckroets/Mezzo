@@ -31,10 +31,12 @@ public class LocalMusicFetcher {
 
     private static String[] sMusicProjection = {
             MediaStore.Audio.Media._ID,
+            MediaStore.Audio.Media.DATA,
             MediaStore.Audio.Media.ARTIST,
             MediaStore.Audio.Media.ALBUM,
             MediaStore.Audio.Media.TITLE,
             MediaStore.Audio.Media.DURATION,
+            MediaStore.Audio.Media.ALBUM_ID,
             MediaStore.MediaColumns.DATE_ADDED
     };
 
@@ -63,6 +65,8 @@ public class LocalMusicFetcher {
             final int artistColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
             final int albumColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
             final int durationColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
+            final int fileColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
+            final int albumIdColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
 
             do {
                 final long id = musicCursor.getLong(idColumn);
@@ -70,9 +74,11 @@ public class LocalMusicFetcher {
                 final String title = musicCursor.getString(titleColumn);
                 final String artist = musicCursor.getString(artistColumn);
                 final String album = musicCursor.getString(albumColumn);
+                final String file = musicCursor.getString(fileColumn);
                 final long duration = musicCursor.getLong(durationColumn);
+                final long albumId = musicCursor.getLong(albumIdColumn);
                 final Set<String> genres = getGenres(id);
-                final Song song = new LocalSong(id, title, artist, album, genres, duration, dateAdded);
+                final Song song = new LocalSong(id, title, artist, album, file, genres, duration, dateAdded, albumId);
                 songs.add(song);
                 Log.d("SONG", "title = " + title + ", genres = " + genres);
             }

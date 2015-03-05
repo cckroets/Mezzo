@@ -95,7 +95,8 @@ public class MusicService extends RoboService
 
     @Produce
     public SongPlayEvent produceCurrentSong() {
-        return new SongPlayEvent(mSongPlayer.getCurrentSong());
+        final boolean playing = mSongPlayer.getCurrentSong() != null && !mSongPlayer.isPaused();
+        return new SongPlayEvent(mSongPlayer.getCurrentSong(), playing);
     }
 
     @Override

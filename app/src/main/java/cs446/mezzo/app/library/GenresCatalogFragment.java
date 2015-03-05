@@ -6,9 +6,9 @@ import cs446.mezzo.music.Song;
  * @author ulkarakhundzada
  */
 
-public class GenresFragment extends PlaylistFragment {
+public class GenresCatalogFragment extends CatalogFragment {
 
-    public GenresFragment() {
+    public GenresCatalogFragment() {
         super();
     }
 

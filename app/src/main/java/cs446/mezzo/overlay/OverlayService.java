@@ -2,9 +2,9 @@ package cs446.mezzo.overlay;
 
 import android.app.Activity;
 import android.app.Application;
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
@@ -15,9 +15,10 @@ import com.squareup.otto.Subscribe;
 import cs446.mezzo.R;
 import cs446.mezzo.app.MainActivity;
 import cs446.mezzo.app.player.mini.MiniPlayer;
+import cs446.mezzo.data.Callback;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.navigation.OpenAppEvent;
-import cs446.mezzo.art.AlbumArtManager;
+import cs446.mezzo.metadata.art.AlbumArtManager;
 import cs446.mezzo.music.SongPlayer;
 import cs446.mezzo.events.playback.SongPlayEvent;
 import cs446.mezzo.music.Song;
@@ -65,9 +66,8 @@ public class OverlayService extends RoboService implements Application.ActivityL
     @Subscribe
     public void onSongPlay(SongPlayEvent event) {
         final Song song = event.getSong();
-        String mSongTitle = "";
-        if (song != null) {
-            mSongTitle = song.getTitle();
+        if (song == null) {
+            return;
         }
         final Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -75,14 +75,27 @@ public class OverlayService extends RoboService implements Application.ActivityL
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         final PendingIntent pendInt = PendingIntent.getActivity(this, 0,
                 intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        buildNotificationAndStart(pendInt, song);
+    }
+
+    private void buildNotificationAndStart(PendingIntent intent, Song song) {
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-        builder.setContentIntent(pendInt)
+        builder.setContentIntent(intent)
                 .setSmallIcon(R.drawable.ic_av_play_circle_fill)
-                .setLargeIcon(mArtManager.getAlbumArt(song))
                 .setContentTitle("Mezzo")
-                .setContentText(mSongTitle);
-        final Notification not = builder.build();
-        startForeground(mNotificationId , not);
+                .setContentText(song.getTitle());
+        mArtManager.getAlbumArt(song, new Callback<Bitmap>() {
+            @Override
+            public void onSuccess(Bitmap data) {
+                builder.setLargeIcon(data);
+                startForeground(mNotificationId, builder.build());
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                startForeground(mNotificationId, builder.build());
+            }
+        });
     }
 
     @Override

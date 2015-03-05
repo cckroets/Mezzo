@@ -1,4 +1,4 @@
-package cs446.mezzo.art;
+package cs446.mezzo.metadata.art;
 
 /**
  * @author curtiskroetsch

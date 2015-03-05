@@ -12,12 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.astuetz.PagerSlidingTabStrip;
+import com.google.inject.Inject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cs446.mezzo.R;
 import cs446.mezzo.app.BaseMezzoFragment;
+import cs446.mezzo.sources.dropbox.DropboxSource;
 import roboguice.inject.InjectView;
 
 /**
@@ -48,6 +50,7 @@ public class ScreenSlidePageFragment extends BaseMezzoFragment {
         super.onViewCreated(view, savedInstanceState);
         mPagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager());
         mPager.setAdapter(mPagerAdapter);
+        mPager.setOffscreenPageLimit(5);
         mTabs.setViewPager(mPager);
     }
     @Override
@@ -55,9 +58,6 @@ public class ScreenSlidePageFragment extends BaseMezzoFragment {
         return "My Music";
     }
 
-    /**
-     * A simple pager adapter that represents 5 ScreenSlidePageFragment objects, in
-     * sequence. **/
 
     class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
 
@@ -67,9 +67,11 @@ public class ScreenSlidePageFragment extends BaseMezzoFragment {
             super(fm);
             mFragments = new ArrayList<>();
             mFragments.add(new SongsFragment());
-            mFragments.add(new ArtistsFragment());
-            mFragments.add(new AlbumsFragment());
-            mFragments.add(new GenresFragment());
+            mFragments.add(new PlaylistsCatalogFragment());
+            mFragments.add(new DropboxFragment());
+            mFragments.add(new ArtistsCatalogFragment());
+            mFragments.add(new AlbumsCatalogFragment());
+            mFragments.add(new GenresCatalogFragment());
         }
 
         @Override

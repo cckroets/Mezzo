@@ -1,9 +1,5 @@
-package cs446.mezzo.art;
+package cs446.mezzo.metadata.art;
 
-import android.text.Html;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 

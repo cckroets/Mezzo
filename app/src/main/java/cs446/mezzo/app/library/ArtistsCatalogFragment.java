@@ -6,25 +6,27 @@ import cs446.mezzo.music.Song;
  * @author ulkarakhundzada
  */
 
-public class AlbumsFragment extends PlaylistFragment {
+public class ArtistsCatalogFragment extends CatalogFragment {
 
-    public AlbumsFragment() {
+    public ArtistsCatalogFragment() {
         super();
     }
 
     @Override
     protected String[] getCategoriesForSong(Song song) {
-        if (song.getAlbum() != null) {
-            return new String[]{song.getAlbum()};
+        if (song.getArtist() != null) {
+            return new String[]{song.getArtist()};
         } else {
             return new String[]{};
         }
     }
 
+
     @Override
     public String getTitle() {
-        return "Albums";
+        return "Artists";
     }
 
 
 }
+

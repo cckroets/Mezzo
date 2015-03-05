@@ -1,5 +1,7 @@
 package cs446.mezzo.events;
 
+import android.view.View;
+
 import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
 
@@ -16,8 +18,9 @@ public class EventBus {
 
     /**
      * Register an object to the event bus.
-     *
+     * <p/>
      * Note: Only concrete objects can be registered, not abstract classes.
+     *
      * @param object
      */
     public static void register(Object object) {
@@ -26,6 +29,7 @@ public class EventBus {
 
     /**
      * Unregister an object from the event bus.
+     *
      * @param object
      */
     public static void unregister(Object object) {
@@ -34,9 +38,20 @@ public class EventBus {
 
     /**
      * Post an event to the Event Bus.
+     *
      * @param event
      */
     public static void post(Object event) {
         BUS.post(event);
+    }
+
+
+    public static void setEventClick(View view, final Object event) {
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                post(event);
+            }
+        });
     }
 }

@@ -12,7 +12,10 @@
     <color name="icons">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
 
-    <color name="pressed">#ff2f2f2f</color>
+    <color name="pressed">#ff6c6c6c</color>
     <color name="white">#ffffffff</color>
 
+    <color name="default_vibrant">#555555</color>
+    <color name="default_muted">#d3d3d3</color>
+    <color name="default_textColor">@color/white</color>
 </resources>

@@ -2,6 +2,7 @@ package cs446.mezzo.view;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Build;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -41,10 +42,7 @@ public final class ViewUtil {
     }
 
     public static void tintSeekbar(SeekBar seekBar, int color) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            seekBar.setProgressTintList(ColorStateList.valueOf(color));
-            seekBar.setThumbTintList(ColorStateList.valueOf(color));
-        }
+        seekBar.getProgressDrawable().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
     }
 
     public static void tintTextView(TextView view, int color) {

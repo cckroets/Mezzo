@@ -3,25 +3,26 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="fill_parent"
               android:layout_height="wrap_content"
+              android:background="@color/white"
               android:orientation="horizontal">
 
     <LinearLayout
-        android:padding="8dp"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:gravity="center_vertical"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:padding="8dp">
 
         <TextView
             android:id="@+id/file_name"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:singleLine="true"
             android:textColor="#ff000000"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:singleLine="true"
-            android:ellipsize="marquee"
             tools:text="Blank Space"/>
 
         <ProgressBar
@@ -35,11 +36,10 @@
 
     <ImageView
         android:id="@+id/file_download"
-        android:src="@drawable/ic_file_cloud_download"
-        android:background="@drawable/pressed"
-        android:layout_margin="8dp"
         android:layout_width="56dp"
-        android:layout_height="56dp"/>
-
+        android:layout_height="56dp"
+        android:layout_margin="8dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:src="@drawable/ic_file_cloud_download"/>
 
 </LinearLayout>

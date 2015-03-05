@@ -3,6 +3,7 @@ package cs446.mezzo.music;
 import android.net.Uri;
 import android.os.Parcelable;
 
+import java.io.File;
 import java.util.Set;
 
 /**
@@ -24,9 +25,13 @@ public interface Song extends Parcelable {
 
     long getDateAdded();
 
+    long getAlbumId();
+
     /**
      * Get the Data Source of the song so that it can be played.
      * @return
      */
     Uri getDataSource();
+
+    File getFile();
 }

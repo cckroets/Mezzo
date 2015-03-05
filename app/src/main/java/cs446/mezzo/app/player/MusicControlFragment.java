@@ -1,6 +1,5 @@
 package cs446.mezzo.app.player;
 
-import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -17,9 +16,10 @@ import com.squareup.otto.Subscribe;
 import cs446.mezzo.R;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.control.PauseToggleEvent;
+import cs446.mezzo.events.navigation.MusicControlsPressEvent;
 import cs446.mezzo.events.playback.SongPauseEvent;
 import cs446.mezzo.events.playback.SongPlayEvent;
-import cs446.mezzo.art.AlbumArtManager;
+import cs446.mezzo.metadata.art.AlbumArtManager;
 import cs446.mezzo.music.Song;
 import roboguice.fragment.RoboFragment;
 import roboguice.inject.InjectView;
@@ -63,6 +63,12 @@ public class MusicControlFragment extends RoboFragment {
         super.onViewCreated(view, savedInstanceState);
         Log.d("SMALL", "View Created");
         mPlayerView.setVisibility(View.GONE);
+        mPlayerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EventBus.post(new MusicControlsPressEvent());
+            }
+        });
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

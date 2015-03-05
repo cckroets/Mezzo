@@ -18,7 +18,10 @@ import java.util.List;
 
 import cs446.mezzo.R;
 import cs446.mezzo.events.EventBus;
+import cs446.mezzo.events.control.ShuffleToggleEvent;
+import cs446.mezzo.events.playback.RepeatEvent;
 import cs446.mezzo.events.playback.SeekEvent;
+import cs446.mezzo.events.playback.ShuffleEvent;
 import cs446.mezzo.events.playback.SongPauseEvent;
 import cs446.mezzo.events.playback.SongPlayEvent;
 
@@ -125,7 +128,7 @@ public class MezzoPlayer implements SongPlayer,
 
     private void playSong(int songIndex) {
         acquireResources();
-        EventBus.post(new SongPlayEvent(mPlaylist.get(songIndex)));
+        EventBus.post(new SongPlayEvent(mPlaylist.get(songIndex), true));
         try {
             mMediaPlayer.reset();
             mMediaPlayer.setDataSource(mContext, mPlaylist.get(songIndex).getDataSource());
@@ -170,11 +173,13 @@ public class MezzoPlayer implements SongPlayer,
     @Override
     public void setShuffle(boolean shouldShuffle) {
         mShuffleEnabled = shouldShuffle;
+        EventBus.post(new ShuffleEvent(shouldShuffle));
     }
 
     @Override
     public void setRepeat(boolean shouldRepeat) {
         mMediaPlayer.setLooping(shouldRepeat);
+        EventBus.post(new RepeatEvent(shouldRepeat));
     }
 
     @Override
@@ -206,8 +211,10 @@ public class MezzoPlayer implements SongPlayer,
 
     @Override
     public void releaseResources() {
-        mMediaPlayer.release();
-        mMediaPlayer = null;
+        if (mMediaPlayer != null) {
+            mMediaPlayer.release();
+            mMediaPlayer = null;
+        }
     }
 
     @Override

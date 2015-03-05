@@ -1,4 +1,4 @@
-package cs446.mezzo.art;
+package cs446.mezzo.metadata.art;
 
 import android.graphics.Bitmap;
 import android.support.v7.graphics.Palette;
@@ -28,8 +28,10 @@ public final class PaletteCache implements Transformation {
     }
 
     @Override public Bitmap transform(Bitmap source) {
-        final Palette palette = Palette.generate(source);
-        mCache.put(source, palette);
+        if (!mCache.containsKey(source)) {
+            final Palette palette = Palette.generate(source);
+            mCache.put(source, palette);
+        }
         return source;
     }
 

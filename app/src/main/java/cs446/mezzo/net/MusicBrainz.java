@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-import cs446.mezzo.art.Recording;
+import cs446.mezzo.metadata.Recording;
 import retrofit.Callback;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;

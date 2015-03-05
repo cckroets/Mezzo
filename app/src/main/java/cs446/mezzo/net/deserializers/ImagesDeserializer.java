@@ -11,7 +11,7 @@ import com.google.gson.JsonParseException;
 
 import java.lang.reflect.Type;
 
-import cs446.mezzo.art.Image;
+import cs446.mezzo.metadata.art.Image;
 
 /**
  * @author curtiskroetsch

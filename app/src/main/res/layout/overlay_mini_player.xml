@@ -65,7 +65,7 @@
                     android:id="@+id/player_to_app"
                     android:layout_width="@dimen/mini_player_control_size"
                     android:layout_height="match_parent"
-                    android:background="@drawable/pressed"
+                    android:background="@drawable/negative_press"
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_action_home"
                     android:tint="@color/primary_dark"/>
@@ -74,7 +74,7 @@
                     android:id="@+id/player_pause"
                     android:layout_width="@dimen/mini_player_control_size"
                     android:layout_height="match_parent"
-                    android:background="@drawable/pressed"
+                    android:background="@drawable/negative_press"
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_av_pause_circle_fill2"
                     android:tint="@color/primary_dark"/>
@@ -83,7 +83,7 @@
                     android:id="@+id/player_next"
                     android:layout_width="@dimen/mini_player_control_size"
                     android:layout_height="match_parent"
-                    android:background="@drawable/pressed"
+                    android:background="@drawable/negative_press"
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_av_skip_next"
                     android:tint="@color/primary_dark"/>

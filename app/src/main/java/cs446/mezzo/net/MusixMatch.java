@@ -5,8 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import cs446.mezzo.R;
-import cs446.mezzo.art.LyricResult;
-import cs446.mezzo.art.Recording;
+import cs446.mezzo.metadata.lyrics.LyricResult;
 import retrofit.Callback;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;

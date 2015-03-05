@@ -8,6 +8,7 @@ import android.provider.MediaStore;
 
 import org.roboguice.shaded.goole.common.collect.Lists;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -28,8 +29,10 @@ public class LocalSong implements Song {
                     in.readString(), // title
                     in.readString(), // artist
                     in.readString(), // album
+                    in.readString(),
                     new HashSet<String>(Arrays.asList(in.createStringArray())), // genres
                     in.readLong(), // duration
+                    in.readLong(),
                     in.readLong()); // date added
         }
 
@@ -45,16 +48,20 @@ public class LocalSong implements Song {
     private Set<String> mGenres;
     private long mDuration;
     private long mDateAdded;
+    private long mAlbumId;
+    private File mFile;
 
-    public LocalSong(long songID, String title, String artist, String album,
-                Set<String> genres, long duration, long dateAdded) {
+    public LocalSong(long songID, String title, String artist, String album, String data,
+                Set<String> genres, long duration, long dateAdded, long albumId) {
         mId = songID;
         mTitle = title;
         mArtist = artist;
         mAlbum = album;
+        mFile = new File(data);
         mGenres = genres;
         mDuration = duration;
         mDateAdded = dateAdded;
+        mAlbumId = albumId;
     }
 
     @Override
@@ -88,6 +95,16 @@ public class LocalSong implements Song {
     }
 
     @Override
+    public File getFile() {
+        return mFile;
+    }
+
+    @Override
+    public long getAlbumId() {
+        return mAlbumId;
+    }
+
+    @Override
     public Uri getDataSource() {
         return ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, mId);
     }
@@ -103,12 +120,13 @@ public class LocalSong implements Song {
         dest.writeString(mTitle);
         dest.writeString(mArtist);
         dest.writeString(mAlbum);
+        dest.writeString(mFile.getPath());
         final String[] genres = new String[mGenres.size()];
         mGenres.toArray(genres);
         dest.writeStringArray(genres);
         dest.writeLong(mDuration);
         dest.writeLong(mDateAdded);
+        dest.writeLong(mAlbumId);
     }
-
 
 }

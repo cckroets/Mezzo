@@ -21,9 +21,9 @@ import com.squareup.otto.Subscribe;
 
 import cs446.mezzo.R;
 import cs446.mezzo.app.BaseMezzoFragment;
-import cs446.mezzo.art.AlbumArtManager;
-import cs446.mezzo.art.LyricResult;
-import cs446.mezzo.art.LyricsManager;
+import cs446.mezzo.metadata.art.AlbumArtManager;
+import cs446.mezzo.metadata.lyrics.LyricResult;
+import cs446.mezzo.metadata.lyrics.LyricsManager;
 import cs446.mezzo.data.Callback;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.control.PauseToggleEvent;
@@ -32,7 +32,9 @@ import cs446.mezzo.events.control.PlayPrevEvent;
 import cs446.mezzo.events.control.RepeatToggleEvent;
 import cs446.mezzo.events.control.SeekSetEvent;
 import cs446.mezzo.events.control.ShuffleToggleEvent;
+import cs446.mezzo.events.playback.RepeatEvent;
 import cs446.mezzo.events.playback.SeekEvent;
+import cs446.mezzo.events.playback.ShuffleEvent;
 import cs446.mezzo.events.playback.SongPauseEvent;
 import cs446.mezzo.events.playback.SongPlayEvent;
 import cs446.mezzo.music.MusicUtil;
@@ -109,7 +111,6 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EventBus.register(this); // Also gets a song from SongPlayEvent Producer
         setHasOptionsMenu(true);
         invalidateActionBar();
     }
@@ -145,50 +146,16 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        EventBus.register(this); // Also gets a song from SongPlayEvent Producer
         mSeekBar.setOnSeekBarChangeListener(this);
-        setEventClick(mPauseBtn, new PauseToggleEvent());
-        setEventClick(mNextBtn, new PlayNextEvent());
-        setEventClick(mPrevBtn, new PlayPrevEvent());
-        setEventClick(mRepeatBtn, new RepeatToggleEvent());
-        setEventClick(mShuffleBtn, new ShuffleToggleEvent());
-        updateSongView();
-
-        mShuffleBtn.setOnClickListener(new View.OnClickListener() {
-            boolean mSelected;
-            @Override
-            public void onClick(View v) {
-                if (!mSelected) {
-                    mShuffleBtn.setSelected(true);
-                    mSelected = true;
-                }
-                else {
-                    mShuffleBtn.setSelected(false);
-                    mSelected = false;
-                }
-            }
-        });
-
-        mRepeatBtn.setOnClickListener(new View.OnClickListener() {
-            boolean mSelected;
-            @Override
-            public void onClick(View v) {
-                if (!mSelected) {
-                    mRepeatBtn.setSelected(true);
-                    mSelected = true;
-                }
-                else {
-                    mRepeatBtn.setSelected(false);
-                    mSelected = false;
-                }
-            }
-        });
+        mSeekBar.setThumb(null);
+        EventBus.setEventClick(mPauseBtn, new PauseToggleEvent());
+        EventBus.setEventClick(mNextBtn, new PlayNextEvent());
+        EventBus.setEventClick(mPrevBtn, new PlayPrevEvent());
+        EventBus.setEventClick(mRepeatBtn, new RepeatToggleEvent());
+        EventBus.setEventClick(mShuffleBtn, new ShuffleToggleEvent());
     }
 
     private void onGetLyrics() {
@@ -217,6 +184,7 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
     }
 
     private void updateSongView() {
+        updateCoverArt();
         mTitle.setText(mSong.getTitle());
         final String artist = mSong.getArtist() == null ? getString(R.string.default_artist) : mSong.getArtist();
         final String album = mSong.getAlbum() == null ? getString(R.string.default_album) : mSong.getAlbum();
@@ -230,7 +198,6 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
             mLyricsMenuItem.setEnabled(true);
             mLyricsMenuItem.setIcon(R.drawable.ic_av_subtitles);
         }
-        updateCoverArt();
         updateSeekbar();
     }
 
@@ -257,40 +224,35 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
         if (!isAdded()) {
             return;
         }
-        final int defaultColor = getResources().getColor(R.color.primary_dark);
+        final int defaultVibrant = getResources().getColor(R.color.default_vibrant);
+        final int defaultMuted = getResources().getColor(R.color.default_muted);
+        final int defaultTextPrimary = getResources().getColor(R.color.default_textColor);
+        final int defaultTextSecondary = getResources().getColor(R.color.secondary_text);
 
-        int vibrantColor = palette.getVibrantColor(getResources().getColor(R.color.primary));
-        int mutedColor = palette.getMutedColor(defaultColor);
+        final int vibrantColor = palette.getVibrantColor(defaultVibrant);
+        final int mutedColor = palette.getMutedColor(defaultMuted);
+        final int primaryTextColor = palette.getLightVibrantColor(palette.getVibrantColor(defaultTextPrimary));
+        final int secondaryTextColor = palette.getDarkVibrantColor(defaultTextSecondary);
 
-        if (palette.getLightVibrantColor(palette.getVibrantColor(defaultColor)) == defaultColor) {
-            vibrantColor = Color.parseColor("#555555");
-            mutedColor = palette.getMutedColor(Color.parseColor("#d3d3d3"));
-            ViewUtil.tintTextView(mTitle, Color.parseColor("#ffffff"));
-            ViewUtil.tintSeekbar(mSeekBar, Color.parseColor("#555555"));
-            ViewUtil.tintDecor(this, Color.parseColor("#555555"));
-        }
-        else {
-            ViewUtil.tintTextView(mTitle, palette.getLightVibrantColor(palette.getVibrantColor(defaultColor)));
-            ViewUtil.tintSeekbar(mSeekBar, palette.getVibrantColor(getResources().getColor(R.color.primary)));
-            ViewUtil.tintDecor(this, palette.getVibrantColor(getResources().getColor(R.color.primary)));
-        }
+        ViewUtil.tintTextView(mTitle, primaryTextColor);
+        ViewUtil.tintTextView(mAlbumArtist, secondaryTextColor);
+        ViewUtil.tintDecor(this, vibrantColor);
+        ViewUtil.tintSeekbar(mSeekBar, mutedColor);
         mPlayerButtonsContainer.setBackgroundColor(vibrantColor);
-        mSeekBar.getProgressDrawable().setColorFilter(mutedColor, PorterDuff.Mode.SRC_ATOP);
-        //mSeekBar.getThumb().setColorFilter(lightVibrantColor, PorterDuff.Mode.SRC_ATOP);
-        mSeekBar.setThumb(null);
     }
 
     private void onPaletteFailed() {
-        final int defaultColor = getResources().getColor(R.color.primary_dark);
-        final int defaultLightColor = getResources().getColor(R.color.primary);
-        ViewUtil.tintTextView(mTitle, defaultColor);
-        ViewUtil.tintSeekbar(mSeekBar, defaultColor);
-        ViewUtil.tintDecor(this, getResources().getColor(R.color.primary));
 
-        mPlayerButtonsContainer.setBackgroundColor(defaultColor);
-        mSeekBar.getProgressDrawable().setColorFilter(defaultLightColor, PorterDuff.Mode.SRC_ATOP);
-        //mSeekBar.getThumb().setColorFilter(defaultLightColor, PorterDuff.Mode.SRC_ATOP);
-        mSeekBar.setThumb(null);
+        final int defaultColor = getResources().getColor(R.color.primary_dark);
+        final int defaultVibrant = getResources().getColor(R.color.primary);
+        final int defaultMuted = getResources().getColor(R.color.primary_light);
+        final int defaultTextPrimary = getResources().getColor(R.color.default_textColor);
+
+        ViewUtil.tintTextView(mTitle, defaultTextPrimary);
+        ViewUtil.tintTextView(mAlbumArtist, defaultColor);
+        ViewUtil.tintDecor(this, defaultVibrant);
+        ViewUtil.tintSeekbar(mSeekBar, defaultMuted);
+        mPlayerButtonsContainer.setBackgroundColor(defaultVibrant);
     }
 
     private void updateSeekbar() {
@@ -299,50 +261,28 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
         mSeekPosition.setText(MusicUtil.formatTime(0, mSong.getDuration()));
     }
 
-    private void setEventClick(View view, final Object event) {
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EventBus.post(event);
-            }
-        });
-    }
-
     @Override
     public String getTitle() {
         return "Now Playing";
     }
 
-
-    @Override
-    public boolean onBackPress() {
-        //ViewUtil.tintDecor(this, getResources().getColor(R.color.primary));
-        return false;
-    }
-
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
-    }
-
-    @Override
-    public void onDestroy() {
         EventBus.unregister(this);
-        super.onDestroy();
+        super.onDestroyView();
     }
 
     @Subscribe
     public void onSongPlayEvent(SongPlayEvent event) {
-        if (mSong == null) {
-            mSong = event.getSong();
-        } else if (mSong == event.getSong()) {
-            mPauseBtn.setImageResource(R.drawable.ic_av_pause);
+        if (mSong == event.getSong()) {
             updateSeekbar();
         } else {
             mSong = event.getSong();
-            mPauseBtn.setImageResource(R.drawable.ic_av_pause);
             updateSongView();
         }
+        mPauseBtn.setImageResource(event.isPlaying() ?
+                R.drawable.ic_av_pause :
+                R.drawable.ic_av_play_arrow);
     }
 
     @Subscribe
@@ -359,6 +299,16 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
         mPauseBtn.setImageResource(event.isPaused() ?
                 R.drawable.ic_av_play_arrow :
                 R.drawable.ic_av_pause);
+    }
+
+    @Subscribe
+    public void onShuffle(ShuffleEvent event) {
+        mShuffleBtn.setSelected(event.isOn());
+    }
+
+    @Subscribe
+    public void onRepeatEvent(RepeatEvent event) {
+        mRepeatBtn.setSelected(event.isOn());
     }
 
     @Override

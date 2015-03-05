@@ -143,7 +143,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@drawable/pressed"
+                    android:background="@drawable/negative_press"
                     android:src="@drawable/ic_av_repeat"
                     android:clickable="false" />
 
@@ -152,7 +152,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@drawable/pressed"
+                    android:background="@drawable/negative_press"
                     android:src="@drawable/ic_av_skip_previous" />
 
                 <ImageView
@@ -160,7 +160,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@drawable/pressed"
+                    android:background="@drawable/negative_press"
                     android:src="@drawable/ic_av_pause" />
 
                 <ImageView
@@ -168,7 +168,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@drawable/pressed"
+                    android:background="@drawable/negative_press"
                     android:src="@drawable/ic_av_skip_next" />
 
                 <ImageView
@@ -176,7 +176,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@drawable/pressed"
+                    android:background="@drawable/negative_press"
                     android:src="@drawable/ic_av_shuffle" />
 
             </LinearLayout>

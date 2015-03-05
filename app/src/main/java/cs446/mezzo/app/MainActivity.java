@@ -12,13 +12,17 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.google.inject.Inject;
+import com.squareup.otto.Subscribe;
 
 import cs446.mezzo.R;
+import cs446.mezzo.app.library.DropboxFragment;
 import cs446.mezzo.app.library.MusicSourceFragment;
 import cs446.mezzo.app.library.ScreenSlidePageFragment;
 import cs446.mezzo.app.library.SongsFragment;
 import cs446.mezzo.app.player.MusicControlFragment;
 import cs446.mezzo.app.player.NowPlayingFragment;
+import cs446.mezzo.events.EventBus;
+import cs446.mezzo.events.navigation.MusicControlsPressEvent;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.music.SongPlayer;
 import cs446.mezzo.overlay.OverlayService;
@@ -55,6 +59,7 @@ public class MainActivity extends BaseMezzoActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EventBus.register(this);
         startService(new Intent(this, MusicService.class));
         startService(new Intent(this, OverlayService.class));
         setSupportActionBar(mToolbar);
@@ -77,7 +82,7 @@ public class MainActivity extends BaseMezzoActivity {
         mDropboxButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setFragment(MusicSourceFragment.create(mDropboxSource));
+                setFragment(new DropboxFragment());
                 unselectAll();
                 mDropboxButton.setSelected(true);
                 mNavDrawer.closeDrawers();
@@ -172,5 +177,21 @@ public class MainActivity extends BaseMezzoActivity {
           default:
               return false;
         }
+    }
+
+    @Subscribe
+    public void onMusicControlsPressed(MusicControlsPressEvent event) {
+        postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                setFragment(new NowPlayingFragment());
+            }
+        }, 100);
+    }
+
+    @Override
+    protected void onDestroy() {
+        EventBus.unregister(this);
+        super.onDestroy();
     }
 }

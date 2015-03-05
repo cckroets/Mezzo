@@ -31,12 +31,13 @@ import cs446.mezzo.events.control.SelectSongEvent;
 import cs446.mezzo.injection.Injector;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.sources.MusicSource;
+import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
 /**
  * @author curtiskroetsch
  */
-public class MusicSourceFragment extends BaseMezzoFragment {
+public abstract class MusicSourceFragment extends BaseMezzoFragment {
 
     private static final String TAG = MusicSourceFragment.class.getName();
     private static final String KEY_SOURCE = "source";
@@ -50,28 +51,20 @@ public class MusicSourceFragment extends BaseMezzoFragment {
     @InjectView(R.id.song_list)
     ListView mSongsView;
 
+    @InjectView(R.id.progressBar)
+    View mProgressBar;
+
     @Inject
     LayoutInflater mLayoutInflater;
 
     MusicSource mMusicSource;
-
     List<Integer> mSongPositions;
     List<Song> mDownloadedSongs;
-
-    public static MusicSourceFragment create(MusicSource source) {
-        final MusicSourceFragment fragment = new MusicSourceFragment();
-        final Bundle args = new Bundle();
-        args.putString(KEY_SOURCE, source.getClass().getName());
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final String className = getArguments().getString(KEY_SOURCE);
-        mMusicSource = Injector.getObject(getActivity(), className);
-        invalidateActionBar();
+        mMusicSource = buildMusicSource();
     }
 
     @Override
@@ -82,13 +75,16 @@ public class MusicSourceFragment extends BaseMezzoFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        final View header = mLayoutInflater.inflate(R.layout.header_music_source, null);
+        mSongsView.addHeaderView(header);
         mMusicSource.getAllSongs(new Callback<List<MusicSource.MusicFile>>() {
             @Override
             public void onSuccess(List<MusicSource.MusicFile> data) {
                 if (isAdded()) {
-                    mSongsView.setVisibility(View.VISIBLE);
                     final ListAdapter adapter = new MusicFileAdapter(data);
                     mSongsView.setAdapter(adapter);
+                    mSongsView.setVisibility(View.VISIBLE);
+                    mProgressBar.setVisibility(View.GONE);
 
                     mDownloadedSongs = new ArrayList<Song>(data.size());
                     mSongPositions = new ArrayList<Integer>(data.size());
@@ -122,10 +118,7 @@ public class MusicSourceFragment extends BaseMezzoFragment {
         EventBus.post(new SelectSongEvent(mDownloadedSongs, songIndex));
     }
 
-    @Override
-    public String getTitle() {
-        return mMusicSource == null ? null : mMusicSource.getName();
-    }
+    protected abstract MusicSource buildMusicSource();
 
     private class MusicFileAdapter extends ArrayAdapter<MusicSource.MusicFile> {
 

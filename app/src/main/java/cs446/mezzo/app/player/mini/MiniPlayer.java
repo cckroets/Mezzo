@@ -16,7 +16,7 @@ import com.google.inject.Inject;
 import com.squareup.otto.Subscribe;
 
 import cs446.mezzo.R;
-import cs446.mezzo.art.AlbumArtManager;
+import cs446.mezzo.metadata.art.AlbumArtManager;
 import cs446.mezzo.data.Callback;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.control.PauseToggleEvent;
