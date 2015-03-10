@@ -28,10 +28,8 @@ import cs446.mezzo.data.Callback;
 import cs446.mezzo.data.ProgressableCallback;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.control.SelectSongEvent;
-import cs446.mezzo.injection.Injector;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.sources.MusicSource;
-import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
 /**
@@ -77,7 +75,7 @@ public abstract class MusicSourceFragment extends BaseMezzoFragment {
         super.onViewCreated(view, savedInstanceState);
         final View header = mLayoutInflater.inflate(R.layout.header_music_source, null);
         mSongsView.addHeaderView(header);
-        mMusicSource.getAllSongs(new Callback<List<MusicSource.MusicFile>>() {
+        mMusicSource.searchForSongs(new Callback<List<MusicSource.MusicFile>>() {
             @Override
             public void onSuccess(List<MusicSource.MusicFile> data) {
                 if (isAdded()) {

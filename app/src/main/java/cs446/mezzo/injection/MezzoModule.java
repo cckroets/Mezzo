@@ -20,6 +20,7 @@ import org.xmlpull.v1.XmlPullParser;
 import cs446.mezzo.R;
 import cs446.mezzo.music.MezzoPlayer;
 import cs446.mezzo.music.SongPlayer;
+import cs446.mezzo.music.stats.StatCollector;
 import cs446.mezzo.net.CoverArtArchive;
 import cs446.mezzo.net.GsonProvider;
 import cs446.mezzo.net.MusicBrainz;
@@ -47,5 +48,6 @@ public class MezzoModule extends AbstractModule {
         bind(MusicBrainz.API.class).toProvider(MusicBrainz.class).in(Singleton.class);
         bind(CoverArtArchive.API.class).toProvider(CoverArtArchive.class).in(Singleton.class);
         bind(MusixMatch.API.class).toProvider(MusixMatch.class).in(Singleton.class);
+        bind(StatCollector.class).asEagerSingleton();
     }
 }

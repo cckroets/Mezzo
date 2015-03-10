@@ -16,49 +16,36 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
-    <android.support.v4.widget.DrawerLayout
-        android:id="@+id/drawer_layout"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
 
         <FrameLayout
+            android:id="@+id/fragment_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"/>
 
-            <FrameLayout
-                android:id="@+id/fragment_container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_gravity="top"
+            android:background="@drawable/shadow_downwards"/>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="4dp"
-                android:layout_gravity="top"
-                android:background="@drawable/shadow_downwards"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_gravity="bottom"
+            android:background="@drawable/shadow_upwards"/>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="4dp"
-                android:layout_gravity="bottom"
-                android:background="@drawable/shadow_upwards"/>
-
-        </FrameLayout>
-
-        <include
-            android:id="@+id/drawer_list"
-            layout="@layout/view_nav_drawer"
-            android:layout_width="@dimen/drawer_width"
-            android:layout_height="match_parent"
-            android:layout_gravity="left|start"/>
-
-    </android.support.v4.widget.DrawerLayout>
-
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/bottom_fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        tools:background="@color/primary_dark"
+        tools:layout_height="56dp"/>
 
 </LinearLayout>
 

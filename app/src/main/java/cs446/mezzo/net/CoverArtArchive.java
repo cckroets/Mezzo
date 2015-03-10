@@ -33,6 +33,12 @@ public class CoverArtArchive implements Provider<CoverArtArchive.API> {
 
     public interface API {
         @GET("/release-group/{mbid}")
-        void getImage(@Path("mbid") String mbid, Callback<Image> callback);
+        void getReleaseGroupImage(@Path("mbid") String mbid, Callback<Image> callback);
+
+        @GET("/release-group/{mbid}")
+        Image getReleaseGroupImage(@Path("mbid") String mbid);
+
+        @GET("/release/{mbid}")
+        Image getReleaseImage(@Path("mbid") String mbid);
     }
 }

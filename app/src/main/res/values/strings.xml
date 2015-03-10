@@ -13,4 +13,19 @@
     <string name="menu_get_lyrics">Show Lyrics</string>
     <string name="menu_hide_lyrics">Hide Lyrics</string>
 
+    <string name="playlist_recently_played">Recently Played</string>
+    <string name="playlist_recently_added">Recently Added</string>
+    <string name="playlist_most_played">Most Played</string>
+    <string name="playlist_favourites">Favourites</string>
+    <string name="song_menu_title">Favourite</string>
+    <string name="song_menu_enqueue">Add to Queue</string>
+    <string name="song_menu_add_to_playlist">Add to Playlist</string>
+    <string name="song_menu_download">Download</string>
+
+    <string name="create_playlist_title">Create New Playlist</string>
+    <string name="create_playlist">Create</string>
+    <string name="cancel">Cancel</string>
+    <string name="create_playlist_error">Could not create a playlist with that name</string>
+    <string name="select_playlist">Select Playlist</string>
+
 </resources>

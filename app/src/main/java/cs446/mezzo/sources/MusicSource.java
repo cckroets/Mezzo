@@ -5,6 +5,7 @@ import android.content.Context;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -24,8 +25,7 @@ public abstract class MusicSource {
     private Set<MusicFile> mDownloading = new HashSet<MusicFile>();
     private List<MusicFile> mFiles;
 
-
-    public void getAllSongs(final Callback<List<MusicFile>> callback, final boolean refresh) {
+    public void searchForSongs(final Callback<List<MusicFile>> callback, final boolean refresh) {
         if (mFiles != null && !refresh) {
             callback.onSuccess(mFiles);
             return;
@@ -44,8 +44,19 @@ public abstract class MusicSource {
         });
     }
 
-    public void getAllSongs(final Callback<List<MusicFile>> callback) {
-        getAllSongs(callback, false);
+    public void searchForSongs(final Callback<List<MusicFile>> callback) {
+        searchForSongs(callback, false);
+    }
+
+    public List<Song> getAllDownloadedSongs(Context context) {
+        final List<Song> downloads = new LinkedList<Song>();
+        final File downloadDir = getDownloadDir(context);
+        for (File file : downloadDir.listFiles()) {
+            if (file.isFile()) {
+                downloads.add(new FileSong(file));
+            }
+        }
+        return downloads;
     }
 
     /**
@@ -70,8 +81,12 @@ public abstract class MusicSource {
      */
     public abstract String getName();
 
+    private File getDownloadDir(Context c) {
+        return c.getDir(getName(), Context.MODE_PRIVATE);
+    }
+
     private File getSongFile(Context c, MusicFile file) {
-        return new File(c.getDir(getName(), Context.MODE_PRIVATE), file.getFileName());
+        return new File(getDownloadDir(c), file.getFileName());
     }
 
     public boolean isDownloading(Context c, MusicFile file) {

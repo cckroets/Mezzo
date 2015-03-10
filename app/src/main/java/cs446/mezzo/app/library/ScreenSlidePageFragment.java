@@ -12,14 +12,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.astuetz.PagerSlidingTabStrip;
-import com.google.inject.Inject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cs446.mezzo.R;
 import cs446.mezzo.app.BaseMezzoFragment;
-import cs446.mezzo.sources.dropbox.DropboxSource;
+import cs446.mezzo.app.library.catalogs.PlaylistsCatalogFragment;
+import cs446.mezzo.app.library.catalogs.SongGroup;
+import cs446.mezzo.app.library.catalogs.SongGroupFragment;
 import roboguice.inject.InjectView;
 
 /**
@@ -48,6 +49,7 @@ public class ScreenSlidePageFragment extends BaseMezzoFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        getMezzoActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         mPagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager());
         mPager.setAdapter(mPagerAdapter);
         mPager.setOffscreenPageLimit(5);
@@ -58,20 +60,34 @@ public class ScreenSlidePageFragment extends BaseMezzoFragment {
         return "My Music";
     }
 
+    @Override
+    public boolean isTopLevel() {
+        return true;
+    }
 
     class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
 
-        private List<BaseMezzoFragment> mFragments;
+        private List<BaseMezzoFragment> mFragments = new ArrayList<>();
+        private List<String> mTitles = new ArrayList<>();
 
         public ScreenSlidePagerAdapter(FragmentManager fm) {
             super(fm);
-            mFragments = new ArrayList<>();
-            mFragments.add(new SongsFragment());
-            mFragments.add(new PlaylistsCatalogFragment());
-            mFragments.add(new DropboxFragment());
-            mFragments.add(new ArtistsCatalogFragment());
-            mFragments.add(new AlbumsCatalogFragment());
-            mFragments.add(new GenresCatalogFragment());
+            addFragment(new SongsFragment());
+            addFragment(new PlaylistsCatalogFragment());
+            addFragment(new DropboxFragment());
+            for (SongGroup group : SongGroup.values()) {
+                addFragment(SongGroupFragment.create(group), group.name());
+            }
+        }
+
+        private void addFragment(BaseMezzoFragment fragment, String title) {
+            mFragments.add(fragment);
+            mTitles.add(title);
+        }
+
+        private void addFragment(BaseMezzoFragment fragment) {
+            mFragments.add(fragment);
+            mTitles.add(fragment.getTitle());
         }
 
         @Override
@@ -91,7 +107,7 @@ public class ScreenSlidePageFragment extends BaseMezzoFragment {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return mFragments.get(position).getTitle();
+            return mTitles.get(position);
         }
 
         @Override

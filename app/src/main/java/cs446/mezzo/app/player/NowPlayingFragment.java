@@ -317,6 +317,11 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
     }
 
     @Override
+    public boolean isTopLevel() {
+        return true;
+    }
+
+    @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
         mIsUserSeeking = true;
     }

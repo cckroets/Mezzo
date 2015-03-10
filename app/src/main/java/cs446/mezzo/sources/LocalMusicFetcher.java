@@ -2,6 +2,7 @@ package cs446.mezzo.sources;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SyncRequest;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -12,11 +13,13 @@ import com.google.inject.Singleton;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import cs446.mezzo.music.LocalSong;
 import cs446.mezzo.music.Song;
+import cs446.mezzo.sources.dropbox.DropboxSource;
 
 /**
  * @author curtiskroetsch
@@ -45,6 +48,9 @@ public class LocalMusicFetcher {
     @Inject
     Context mContext;
 
+    @Inject
+    DownloadManager mDownloadManager;
+
     private Set<String> mAllGenres;
 
     @Inject
@@ -52,9 +58,16 @@ public class LocalMusicFetcher {
         mAllGenres = new HashSet<String>();
     }
 
+    public List<Song> getAllSongs() {
+        final List<Song> allSongs = getLocalSongs();
+        allSongs.addAll(getAllDownloadedSongs());
+        return allSongs;
+    }
+
     public List<Song> getLocalSongs() {
-        final List<Song> songs = new ArrayList<Song>();
+        final List<Song> songs = new LinkedList<Song>();
         final ContentResolver musicResolver = mContext.getContentResolver();
+
         final Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         final Cursor musicCursor = musicResolver.query(musicUri, sMusicProjection, sMusicSelection, null, null);
 
@@ -86,6 +99,10 @@ public class LocalMusicFetcher {
             musicCursor.close();
         }
         return songs;
+    }
+
+    public List<Song> getAllDownloadedSongs() {
+        return mDownloadManager.getAllDownloadedSongs();
     }
 
     private Set<String> getGenres(long songId) {

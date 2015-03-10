@@ -6,11 +6,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 
-import org.roboguice.shaded.goole.common.collect.Lists;
-
 import java.io.File;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,7 +49,7 @@ public class LocalSong implements Song {
     private File mFile;
 
     public LocalSong(long songID, String title, String artist, String album, String data,
-                Set<String> genres, long duration, long dateAdded, long albumId) {
+                     Set<String> genres, long duration, long dateAdded, long albumId) {
         mId = songID;
         mTitle = title;
         mArtist = artist;
@@ -107,6 +104,16 @@ public class LocalSong implements Song {
     @Override
     public Uri getDataSource() {
         return ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, mId);
+    }
+
+    @Override
+    public int hashCode() {
+        return mFile.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return (o instanceof Song) && mFile.equals(((Song) o).getFile());
     }
 
     @Override

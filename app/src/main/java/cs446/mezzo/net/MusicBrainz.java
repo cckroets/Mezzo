@@ -41,6 +41,9 @@ public class MusicBrainz implements Provider<MusicBrainz.API> {
         @GET("/recording/")
         void getReleaseGroups(@Query(value = "query", encodeValue = false) String query,
                               Callback<Recording> callback);
+
+        @GET("/recording/")
+        Recording getReleaseGroups(@Query(value = "query", encodeValue = false) String query);
     }
 
 

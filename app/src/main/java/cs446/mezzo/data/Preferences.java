@@ -9,6 +9,7 @@ import com.google.inject.Singleton;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -30,7 +31,11 @@ public class Preferences {
     }
 
     public void putStrings(String key, Collection<String> values) {
-        mSharedPreferences.edit().putStringSet(key, new HashSet<String>(values)).apply();
+        mSharedPreferences.edit().putStringSet(key, new LinkedHashSet<String>(values)).apply();
+    }
+
+    public void putNewStrings(String key, Set<String> values) {
+        mSharedPreferences.edit().putStringSet(key, values).apply();
     }
 
     public void putString(String key, String value) {
@@ -53,13 +58,30 @@ public class Preferences {
         mSharedPreferences.edit().putString(key, mGson.toJson(object)).apply();
     }
 
+    public <T> void putObjects(String key, Collection<T> collection) {
+        final Set<String> rawJson = new LinkedHashSet<>(collection.size());
+        for (T object : collection) {
+            rawJson.add(mGson.toJson(object));
+        }
+        putNewStrings(key, rawJson);
+    }
+
+    public <T> Set<T> getObjects(String key, Class<T> klass) {
+        final Set<String> rawJson = getStrings(key);
+        final Set<T> objects = new LinkedHashSet<>(rawJson.size());
+        for (String raw : rawJson) {
+            objects.add(mGson.fromJson(raw, klass));
+        }
+        return objects;
+    }
+
     public <T> T getObject(String key, Class<T> klass) {
         final String rawGson = mSharedPreferences.getString(key, null);
         return rawGson == null ? null : mGson.fromJson(rawGson, klass);
     }
 
     public Set<String> getStrings(String key) {
-        return mSharedPreferences.getStringSet(key, null);
+        return mSharedPreferences.getStringSet(key, new HashSet<String>());
     }
 
     public String getString(String key) {
@@ -75,7 +97,7 @@ public class Preferences {
     }
 
     public long getLong(String key, long def) {
-        return mSharedPreferences.getLong(key, def);
+        return 0L; //mSharedPreferences.getLong(key, def);
     }
 
 }

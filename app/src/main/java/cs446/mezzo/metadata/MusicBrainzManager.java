@@ -33,24 +33,24 @@ public class MusicBrainzManager {
         mCache = new LruCache<String, Recording>(CACHE_SIZE);
     }
 
-    private static String generateKey(Song song) {
-        return KEY_RECORDING + song.getDataSource().toString();
+    private static String generateKey(String id) {
+        return KEY_RECORDING + id;
     }
 
-    private void saveRecording(Song song, Recording recording) {
-        final String key = generateKey(song);
+    private void saveRecording(String id, Recording recording) {
+        final String key = generateKey(id);
         mCache.put(key, recording);
-        mPreferences.putObject(generateKey(song), recording);
+        mPreferences.putObject(key, recording);
     }
 
-    private Recording loadRecording(Song song) {
-        final String key = generateKey(song);
+    private Recording loadRecording(String id) {
+        final String key = generateKey(id);
         final Recording recording = mCache.get(key);
-        return recording != null ? recording : mPreferences.getObject(generateKey(song), Recording.class);
+        return recording != null ? recording : mPreferences.getObject(key, Recording.class);
     }
 
     public void getRecording(final Song song, final Callback<Recording> callback) {
-        final Recording recording = loadRecording(song);
+        final Recording recording = loadRecording(generateKey(song.getTitle() + song.getArtist()));
         if (recording != null) {
             callback.onSuccess(recording);
             return;
@@ -59,7 +59,7 @@ public class MusicBrainzManager {
         mMBApi.getReleaseGroups(query.toString(), new retrofit.Callback<Recording>() {
             @Override
             public void success(Recording recording, Response response) {
-                saveRecording(song, recording);
+                saveRecording(song.getDataSource().toString(), recording);
                 callback.onSuccess(recording);
             }
 
@@ -68,6 +68,17 @@ public class MusicBrainzManager {
                 callback.onFailure(error);
             }
         });
+    }
+
+    public Recording getRecordingSync(final String title, final String artist) {
+        Recording recording = loadRecording(title + artist);
+        if (recording != null) {
+            return recording;
+        }
+        final Query query = new Query(title, artist);
+        recording = mMBApi.getReleaseGroups(query.toString());
+        saveRecording(title + artist, recording);
+        return recording;
     }
 }
 

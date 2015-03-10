@@ -16,12 +16,12 @@ import com.google.inject.Inject;
 import com.squareup.otto.Subscribe;
 
 import cs446.mezzo.R;
+import cs446.mezzo.events.navigation.GoHomeEvent;
 import cs446.mezzo.metadata.art.AlbumArtManager;
 import cs446.mezzo.data.Callback;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.control.PauseToggleEvent;
 import cs446.mezzo.events.control.PlayNextEvent;
-import cs446.mezzo.events.navigation.OpenAppEvent;
 import cs446.mezzo.events.playback.SongPauseEvent;
 import cs446.mezzo.events.playback.SongPlayEvent;
 import cs446.mezzo.music.Song;
@@ -132,7 +132,7 @@ public class MiniPlayer extends Overlay {
         mHomeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EventBus.post(new OpenAppEvent());
+                EventBus.post(new GoHomeEvent());
             }
         });
 

@@ -108,7 +108,7 @@ public class DropboxSource extends MusicSource {
             try {
                 results = DropboxUtil.multisearch(mDBApi, SEARCH, FILE_LIMIT);
             } catch (DropboxException e) {
-                Log.d(TAG, e.getMessage());
+                Log.d(TAG, "DropboxException: " + e.getMessage());
                 setException(e);
                 return null;
             }

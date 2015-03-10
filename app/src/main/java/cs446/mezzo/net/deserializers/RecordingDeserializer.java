@@ -20,8 +20,8 @@ import java.util.List;
  */
 public class RecordingDeserializer implements JsonDeserializer<Recording> {
 
-    private static final int MAX_RELEASES = 2;
-    private static final int MAX_RECORDS = 3;
+    private static final int MAX_RELEASES = 10;
+    private static final int MAX_RECORDS = 10;
     private static final int MIN_SCORE = 90;
     private static final String KEY_MBID = "id";
     private static final String TAG = RecordingDeserializer.class.getName();
@@ -47,7 +47,19 @@ public class RecordingDeserializer implements JsonDeserializer<Recording> {
                 for (int j = 0; j < numReleases; j++) {
                     final JsonObject release = releases.get(j).getAsJsonObject().get("release-group").getAsJsonObject();
                     final String releaseId = release.get(KEY_MBID).getAsString();
-                    ids.add(releaseId);
+                    final JsonElement primType = release.get("primary-type");
+                    final JsonElement secondType = release.get("secondary-types");
+                    boolean isAlbum = false;
+                    if (primType != null && !primType.isJsonNull()) {
+                        isAlbum = "Album".equals(primType.getAsString()) &&
+                                (secondType == null || secondType.isJsonNull());
+
+                    }
+                    if (isAlbum) {
+                        ids.add(0, releaseId);
+                    } else {
+                        ids.add(releaseId);
+                    }
                 }
             }
             return new Recording(mbid, ids);

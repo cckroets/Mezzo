@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import java.util.List;
 
 import roboguice.activity.RoboActionBarActivity;
+import roboguice.event.EventManager;
 
 /**
  * @author curtiskroetsch
@@ -79,7 +80,7 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity {
         setInitialFragment(fragment, getMainFragmentContainer());
     }
 
-    private void setInitialFragment(Fragment fragment, int contId) {
+    private void setInitialFragment(Fragment fragment, @IdRes int contId) {
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(contId, fragment)
@@ -92,7 +93,8 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity {
         }
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(containerId, fragment, fragment.getTag())
+                .addToBackStack(null)
+                .add(containerId, fragment, fragment.getTag())
                 .commit();
     }
 
@@ -123,7 +125,9 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity {
         }
     }
 
+    @IdRes
     protected abstract int getMainFragmentContainer();
 
+    @IdRes
     protected abstract int getSecondaryFragmentContainer();
 }

@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.google.inject.Inject;
 import com.squareup.otto.Subscribe;
@@ -17,7 +18,8 @@ import cs446.mezzo.app.MainActivity;
 import cs446.mezzo.app.player.mini.MiniPlayer;
 import cs446.mezzo.data.Callback;
 import cs446.mezzo.events.EventBus;
-import cs446.mezzo.events.navigation.OpenAppEvent;
+import cs446.mezzo.events.navigation.GoHomeEvent;
+import cs446.mezzo.events.system.ActivityStoppedEvent;
 import cs446.mezzo.metadata.art.AlbumArtManager;
 import cs446.mezzo.music.SongPlayer;
 import cs446.mezzo.events.playback.SongPlayEvent;
@@ -28,6 +30,8 @@ import roboguice.service.RoboService;
  * @author curtiskroetsch
  */
 public class OverlayService extends RoboService implements Application.ActivityLifecycleCallbacks {
+
+    private static final String TAG = OverlayService.class.getName();
 
     @Inject
     OverlayManager mOverlayManager;
@@ -55,7 +59,7 @@ public class OverlayService extends RoboService implements Application.ActivityL
     }
 
     @Subscribe
-    public void onOpenApp(OpenAppEvent event) {
+    public void onOpenApp(GoHomeEvent event) {
         final Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(Intent.ACTION_MAIN);
@@ -130,6 +134,8 @@ public class OverlayService extends RoboService implements Application.ActivityL
 
     @Override
     public void onActivityStopped(Activity activity) {
+        EventBus.post(new ActivityStoppedEvent());
+        Log.d(TAG, "ACTIVITY STOPPED");
         if (!mMusicPlayer.isPaused()) {
             mMiniPlayer = new MiniPlayer();
             mOverlayManager.add(mMiniPlayer);

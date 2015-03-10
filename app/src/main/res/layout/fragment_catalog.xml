@@ -5,15 +5,15 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <GridView
+    <jp.co.recruit_mp.android.widget.HeaderFooterGridView
         android:id="@+id/catalog_grid"
         android:numColumns="2"
-        tools:listitem="@layout/view_playlist"
-        android:verticalSpacing="8dp"
-        android:horizontalSpacing="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
+        tools:listitem="@layout/view_playlist_2"
+        android:scrollbarStyle="outsideOverlay"
+        android:paddingRight="4dp"
+        android:paddingLeft="4dp"
+        android:verticalSpacing="0dp"
+        android:horizontalSpacing="0dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

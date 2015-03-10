@@ -46,6 +46,19 @@ public class FileSong implements Song {
     private long mDuration;
     private long mDateAdded;
 
+    public FileSong(String path) {
+        this(new File(path));
+    }
+
+    public FileSong(File file) {
+        mFile = file;
+        initFields();
+        mDateAdded = file.lastModified();
+        if (TextUtils.isEmpty(mTitle)) {
+            mTitle = mFile.getName();
+        }
+    }
+
     public FileSong(MusicSource.MusicFile musicFile, File file, long dateAdded) {
         mFile = file;
         initFields();
@@ -145,5 +158,15 @@ public class FileSong implements Song {
         dest.writeStringArray(genres);
         dest.writeLong(mDuration);
         dest.writeLong(mDateAdded);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return (o instanceof Song) && mFile.equals(((Song) o).getFile());
+    }
+
+    @Override
+    public int hashCode() {
+        return mFile.hashCode();
     }
 }

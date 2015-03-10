@@ -3,6 +3,7 @@ package cs446.mezzo.app;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 
 import cs446.mezzo.R;
@@ -18,7 +19,10 @@ public abstract class BaseMezzoFragment extends RoboFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        invalidateActionBar();
+        if (isTopLevel()) {
+            invalidateActionBar();
+            getMezzoActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
     }
 
 
@@ -51,6 +55,10 @@ public abstract class BaseMezzoFragment extends RoboFragment {
             getMezzoActivity().getWindow().setStatusBarColor(getResources().getColor(R.color.primary_dark));
         }
         getMezzoActivity().invalidateOptionsMenu();
+    }
+
+    public boolean isTopLevel() {
+        return false;
     }
 
     public boolean onBackPress() {

@@ -6,6 +6,7 @@ import android.util.Log;
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import cs446.mezzo.R;
 import cs446.mezzo.data.Preferences;
@@ -15,6 +16,7 @@ import roboguice.inject.InjectResource;
 /**
  * Authenticator for Dropbox that uses OAuth 2.
  */
+@Singleton
 public class DropboxAuthenticator implements MusicSource.Authenticator {
 
     private static final String TAG = DropboxAuthenticator.class.getName();

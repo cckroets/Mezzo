@@ -34,8 +34,11 @@ public final class Injector {
                 throw new NullPointerException(String.format(EXCEPTION_NULLABLE,
                         field.getDeclaringClass(), field.getName()));
             }
+
             field.setAccessible(true);
-            field.set(target, view);
+            if (field.get(target) == null) {
+                field.set(target, view);
+            }
         } catch (IllegalAccessException e) {
             throw new IllegalStateException(e);
         }

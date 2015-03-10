@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_download"
+        android:title="@string/song_menu_download"/>
+
+    <item
+        android:id="@+id/action_favourite"
+        android:title="@string/song_menu_title"
+        android:checkable="true"/>
+
+    <item
+        android:id="@+id/action_enqueue"
+        android:title="@string/song_menu_enqueue"/>
+
+    <item
+        android:id="@+id/action_add_to_playlist"
+        android:title="@string/song_menu_add_to_playlist"/>
+
+</menu>

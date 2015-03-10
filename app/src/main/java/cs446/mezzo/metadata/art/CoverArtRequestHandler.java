@@ -7,22 +7,69 @@ import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
+import android.util.LruCache;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.inject.Inject;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Request;
 import com.squareup.picasso.RequestHandler;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import cs446.mezzo.metadata.MusicBrainzManager;
+import cs446.mezzo.metadata.Recording;
+import cs446.mezzo.net.CoverArtArchive;
+import retrofit.RetrofitError;
 
 /**
+ * A Request Handler for Cover Arts.
+ *
+ * First we check if the file is encoded with album art.
+ * If not, we ask MusicBrainz for any associated MBIDs (and cache this).
+ *
+ * We then iterate through the MBIDs and ask the CoverArtArchive API
+ * if there is an image for the given MBID. If there is, we have a url
+ * to load this image from, and we use vanilla Picasso to load this.
+ *
+ * We also cache the Url from the first url we get, with a key for the song
+ * so that we don't need to iterate through the MBID's each time. Note that
+ * the Bitmap is not cached since it is recycled.
+ *
  * @author curtiskroetsch
  */
 class CoverArtRequestHandler extends RequestHandler {
 
-    private Context mContext;
+    private static final String TAG = CoverArtRequestHandler.class.getName();
+    private static final int CACHE_SIZE = 200;
+    private static final Object NOTHING = new Object();
+    private static final int FAILURE_EXPIRE_SECONDS = 3;
 
-    public CoverArtRequestHandler(Context context) {
-        mContext = context;
+    @Inject
+    Context mContext;
+
+    @Inject
+    CoverArtArchive.API mArtArchive;
+
+    @Inject
+    MusicBrainzManager mMusicBrainz;
+
+    private Picasso mPicasso;
+    private Cache<String, String> mUrlCache;
+    private Cache<String, Object> mFailureCache;
+
+
+    public CoverArtRequestHandler() {
+        mUrlCache = CacheBuilder.newBuilder()
+                .maximumSize(CACHE_SIZE)
+                .build();
+        mFailureCache = CacheBuilder.newBuilder()
+                .expireAfterAccess(FAILURE_EXPIRE_SECONDS, TimeUnit.SECONDS)
+                .build();
     }
 
     @Override
@@ -35,14 +82,68 @@ class CoverArtRequestHandler extends RequestHandler {
 
     @Override
     public Result load(Request data) throws IOException {
+        final String key = data.uri.toString();
+        if (mFailureCache.getIfPresent(key) != null) {
+            Log.d(TAG, "known failure = " + data.uri);
+            return new Result(null, Picasso.LoadedFrom.MEMORY);
+        }
+        Log.d(TAG, "start load = " + data.uri);
         final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(mContext, data.uri);
         final byte[] bitmapData = retriever.getEmbeddedPicture();
+        Log.d(TAG, "got bitmap for " + data.uri + ": " + bitmapData);
+        final String title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+        final String artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
         retriever.release();
+        Log.d(TAG, "done with " + key);
         if (bitmapData == null) {
-            return new Result(null, Picasso.LoadedFrom.MEMORY);
+            return loadFromNetwork(key, title, artist);
+        } else {
+            final Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapData, 0, bitmapData.length);
+            if (bitmap == null) {
+                return loadFromNetwork(key, title, artist);
+            }
+            return new Result(bitmap, Picasso.LoadedFrom.DISK);
         }
-        final Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapData, 0, bitmapData.length);
-        return new Result(bitmap, Picasso.LoadedFrom.DISK);
     }
+
+    private Result loadFromNetwork(String key, String title, String artist) throws IOException {
+        Log.d(TAG, "loadFromNetwork = " + key);
+        final String url = mUrlCache.getIfPresent(key);
+        if (url != null) {
+            return loadImage(url);
+        }
+
+        final Recording recording = mMusicBrainz.getRecordingSync(title, artist);
+        final List<String> mbids = recording.getReleaseMBIDs();
+        Log.d(TAG, "mbids = " + mbids);
+
+        for (String mbid : mbids) {
+            Image image;
+            try {
+                image = mArtArchive.getReleaseGroupImage(mbid);
+                Log.d(TAG, "success mbid = " + mbid);
+            } catch (RetrofitError e) {
+                Log.d(TAG, "failure mbid = " + mbid);
+                continue;
+            }
+            if (image != null) {
+                mUrlCache.put(key, image.getUrl());
+                return loadImage(image.getUrl());
+            }
+        }
+
+        mFailureCache.put(key, NOTHING);
+        return new Result(null, Picasso.LoadedFrom.NETWORK);
+    }
+
+    private Result loadImage(String url) throws IOException {
+        Log.d("RHandler", "loading image " + url);
+        if (mPicasso == null) {
+            mPicasso = Picasso.with(mContext);
+        }
+        final Bitmap bitmap = mPicasso.load(url).get();
+        return new Result(bitmap, Picasso.LoadedFrom.NETWORK);
+    }
+
 }
