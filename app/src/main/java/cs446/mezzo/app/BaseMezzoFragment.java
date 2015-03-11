@@ -1,12 +1,7 @@
 package cs446.mezzo.app;
 
 import android.app.Activity;
-import android.os.Build;
-import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
 
-import cs446.mezzo.R;
 import roboguice.fragment.RoboFragment;
 
 /**
@@ -17,22 +12,10 @@ import roboguice.fragment.RoboFragment;
 public abstract class BaseMezzoFragment extends RoboFragment {
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onResume() {
+        super.onResume();
         if (isTopLevel()) {
-            invalidateActionBar();
             getMezzoActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-    }
-
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (showSecondaryFragment()) {
-            getMezzoActivity().showSecondaryFragment();
-        } else {
-            getMezzoActivity().hideSecondaryFragment();
         }
     }
 
@@ -48,15 +31,6 @@ public abstract class BaseMezzoFragment extends RoboFragment {
         return (BaseMezzoActivity) getActivity();
     }
 
-    public void invalidateActionBar() {
-        getMezzoActivity().setTitle(getTitle());
-        getMezzoActivity().getToolbar().setBackgroundColor(getResources().getColor(R.color.primary));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getMezzoActivity().getWindow().setStatusBarColor(getResources().getColor(R.color.primary_dark));
-        }
-        getMezzoActivity().invalidateOptionsMenu();
-    }
-
     public boolean isTopLevel() {
         return false;
     }
@@ -66,8 +40,4 @@ public abstract class BaseMezzoFragment extends RoboFragment {
     }
 
     public abstract String getTitle();
-
-    public boolean showSecondaryFragment() {
-        return true;
-    }
 }

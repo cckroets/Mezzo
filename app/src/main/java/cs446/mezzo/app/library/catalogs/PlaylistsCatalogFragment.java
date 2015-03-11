@@ -107,7 +107,7 @@ public class PlaylistsCatalogFragment extends CatalogFragment {
     protected Map<String, Collection<Song>> buildCategories(LocalMusicFetcher fetcher) {
         final Map<String, Collection<Song>> playlists = new LinkedHashMap<>();
         playlists.put(getString(R.string.playlist_most_played),
-                mStatCollector.getRecentlyAddedSongs(TOP_COUNT));
+                mStatCollector.getTopPlayedSongs(TOP_COUNT));
         playlists.put(getString(R.string.playlist_recently_played),
                 mStatCollector.getRecentlyPlayedSongs(TOP_COUNT));
         playlists.put(getString(R.string.playlist_recently_added),

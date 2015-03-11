@@ -1,5 +1,6 @@
 package cs446.mezzo.app;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -9,15 +10,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
 
-import java.util.List;
-
+import cs446.mezzo.R;
 import roboguice.activity.RoboActionBarActivity;
-import roboguice.event.EventManager;
 
 /**
  * @author curtiskroetsch
  */
-public abstract class BaseMezzoActivity extends RoboActionBarActivity {
+public abstract class BaseMezzoActivity extends RoboActionBarActivity
+        implements FragmentManager.OnBackStackChangedListener {
 
     Handler mHandler;
 
@@ -28,7 +28,14 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportFragmentManager().addOnBackStackChangedListener(this);
         mHandler = new Handler(Looper.getMainLooper());
+    }
+
+    @Override
+    protected void onDestroy() {
+        getSupportFragmentManager().removeOnBackStackChangedListener(this);
+        super.onDestroy();
     }
 
     @Override
@@ -53,29 +60,6 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity {
         mHandler.removeCallbacks(runnable);
     }
 
-    /**
-     * Get the currently visible fragment from the activity.
-     *
-     * @return
-     */
-    public BaseMezzoFragment getVisibleFragment() {
-        final FragmentManager fragmentManager = BaseMezzoActivity.this.getSupportFragmentManager();
-        final List<Fragment> fragments = fragmentManager.getFragments();
-        if (fragments == null) {
-            return null;
-        }
-        for (Fragment fragment : fragments) {
-            if (fragment instanceof BaseMezzoFragment && fragment.isVisible())
-                return (BaseMezzoFragment) fragment;
-        }
-        return null;
-    }
-
-
-    public void setFragment(BaseMezzoFragment fragment) {
-        setFragment(fragment, getMainFragmentContainer());
-    }
-
     protected void setInitialFragment(BaseMezzoFragment fragment) {
         setInitialFragment(fragment, getMainFragmentContainer());
     }
@@ -88,7 +72,7 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity {
     }
 
     private void setFragment(Fragment fragment, @IdRes int containerId) {
-        if (fragment == getVisibleFragment()) {
+        if (fragment == getFragment()) {
             return;
         }
         getSupportFragmentManager()
@@ -117,9 +101,29 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity {
                 .commit();
     }
 
+    public BaseMezzoFragment getFragment() {
+        return (BaseMezzoFragment) getSupportFragmentManager().findFragmentById(getMainFragmentContainer());
+    }
+
+    public void setFragment(BaseMezzoFragment fragment) {
+        setFragment(fragment, getMainFragmentContainer());
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        final BaseMezzoFragment fragment = getFragment();
+        if (fragment != null && fragment.isTopLevel()) {
+            getSupportActionBar().setTitle(fragment.getTitle());
+            mToolbar.setBackgroundColor(getResources().getColor(R.color.primary));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getWindow().setStatusBarColor(getResources().getColor(R.color.primary_dark));
+            }
+        }
+    }
+
     @Override
     public void onBackPressed() {
-        final BaseMezzoFragment fragment = getVisibleFragment();
+        final BaseMezzoFragment fragment = getFragment();
         if (fragment != null && !fragment.onBackPress()) {
             super.onBackPressed();
         }

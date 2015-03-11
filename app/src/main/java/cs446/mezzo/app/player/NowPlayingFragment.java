@@ -1,7 +1,5 @@
 package cs446.mezzo.app.player;
 
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.graphics.Palette;
@@ -21,9 +19,6 @@ import com.squareup.otto.Subscribe;
 
 import cs446.mezzo.R;
 import cs446.mezzo.app.BaseMezzoFragment;
-import cs446.mezzo.metadata.art.AlbumArtManager;
-import cs446.mezzo.metadata.lyrics.LyricResult;
-import cs446.mezzo.metadata.lyrics.LyricsManager;
 import cs446.mezzo.data.Callback;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.control.PauseToggleEvent;
@@ -37,6 +32,9 @@ import cs446.mezzo.events.playback.SeekEvent;
 import cs446.mezzo.events.playback.ShuffleEvent;
 import cs446.mezzo.events.playback.SongPauseEvent;
 import cs446.mezzo.events.playback.SongPlayEvent;
+import cs446.mezzo.metadata.art.AlbumArtManager;
+import cs446.mezzo.metadata.lyrics.LyricResult;
+import cs446.mezzo.metadata.lyrics.LyricsManager;
 import cs446.mezzo.music.MusicUtil;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.view.ViewUtil;
@@ -111,8 +109,8 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getMezzoActivity().hideSecondaryFragment();
         setHasOptionsMenu(true);
-        invalidateActionBar();
     }
 
     @Override
@@ -201,11 +199,6 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
         updateSeekbar();
     }
 
-    @Override
-    public boolean showSecondaryFragment() {
-        return false;
-    }
-
     private void updateCoverArt() {
         mArtManager.setAlbumArt(mCovertArt, mSong, new Callback<Palette>() {
             @Override
@@ -270,6 +263,12 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
     public void onDestroyView() {
         EventBus.unregister(this);
         super.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy() {
+        getMezzoActivity().showSecondaryFragment();
+        super.onDestroy();
     }
 
     @Subscribe

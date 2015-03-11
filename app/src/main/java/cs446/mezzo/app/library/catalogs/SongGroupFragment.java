@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.sources.FileDownloadedEvent;
@@ -49,7 +50,7 @@ public class SongGroupFragment extends CatalogFragment {
 
     protected Map<String, Collection<Song>> buildCategories(LocalMusicFetcher fetcher) {
         Log.d(TAG, "buildCategories");
-        final Map<String, Collection<Song>> categories = new HashMap<>();
+        final Map<String, Collection<Song>> categories = new TreeMap<>();
         final List<Song> songList = fetcher.getAllSongs();
 
         for (int i = 0; i < songList.size(); i++) {
