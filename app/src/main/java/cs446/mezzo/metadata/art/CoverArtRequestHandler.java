@@ -36,7 +36,7 @@ import retrofit.RetrofitError;
  * if there is an image for the given MBID. If there is, we have a url
  * to load this image from, and we use vanilla Picasso to load this.
  *
- * We also cache the Url from the first url we get, with a key for the song
+ * We also cache the Url from the first url we getImageView, with a key for the song
  * so that we don't need to iterate through the MBID's each time. Note that
  * the Bitmap is not cached since it is recycled.
  *
@@ -81,11 +81,11 @@ class CoverArtRequestHandler extends RequestHandler {
     }
 
     @Override
-    public Result load(Request data) throws IOException {
+    public Result load(Request data, int networkPolicy) throws IOException {
         final String key = data.uri.toString();
         if (mFailureCache.getIfPresent(key) != null) {
             Log.d(TAG, "known failure = " + data.uri);
-            return new Result(null, Picasso.LoadedFrom.MEMORY);
+            return new Result((Bitmap) null, Picasso.LoadedFrom.MEMORY);
         }
         Log.d(TAG, "start load = " + data.uri);
         final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
@@ -134,7 +134,7 @@ class CoverArtRequestHandler extends RequestHandler {
         }
 
         mFailureCache.put(key, NOTHING);
-        return new Result(null, Picasso.LoadedFrom.NETWORK);
+        return new Result((Bitmap) null, Picasso.LoadedFrom.NETWORK);
     }
 
     private Result loadImage(String url) throws IOException {

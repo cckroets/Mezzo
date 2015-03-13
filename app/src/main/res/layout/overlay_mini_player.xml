@@ -26,12 +26,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent">
 
-                <ImageView
+                <cs446.mezzo.view.MezzoImageView
                     android:id="@+id/player_album_art"
                     android:layout_width="@dimen/mini_player_size"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    tools:src="@drawable/ic_launcher"/>
+                    android:layout_height="match_parent"/>
 
                 <cs446.mezzo.view.MarqueeTextView
                     android:id="@+id/player_title"

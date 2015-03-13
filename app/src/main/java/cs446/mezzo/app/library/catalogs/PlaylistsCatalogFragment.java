@@ -21,9 +21,10 @@ import cs446.mezzo.events.playlists.PlaylistsChangedEvent;
 import cs446.mezzo.events.sources.FileDownloadedEvent;
 import cs446.mezzo.injection.Nullable;
 import cs446.mezzo.music.Song;
-import cs446.mezzo.music.stats.StatCollector;
+import cs446.mezzo.music.playlists.AutoPlaylists;
 import cs446.mezzo.sources.LocalMusicFetcher;
-import cs446.mezzo.sources.PlaylistManager;
+import cs446.mezzo.music.playlists.Playlist;
+import cs446.mezzo.music.playlists.PlaylistManager;
 import roboguice.inject.InjectView;
 
 /**
@@ -34,7 +35,7 @@ public class PlaylistsCatalogFragment extends CatalogFragment {
     private static final int TOP_COUNT = 25;
 
     @Inject
-    StatCollector mStatCollector;
+    AutoPlaylists mAutoPlaylists;
 
     @Inject
     PlaylistManager mPlaylistManager;
@@ -98,7 +99,7 @@ public class PlaylistsCatalogFragment extends CatalogFragment {
 
     private void updateUserPlaylists() {
         if (getCategories() != null) {
-            getCategories().putAll(mPlaylistManager.getPlaylists());
+            addPlaylists(getCategories());
             updateAdapter();
         }
     }
@@ -107,13 +108,27 @@ public class PlaylistsCatalogFragment extends CatalogFragment {
     protected Map<String, Collection<Song>> buildCategories(LocalMusicFetcher fetcher) {
         final Map<String, Collection<Song>> playlists = new LinkedHashMap<>();
         playlists.put(getString(R.string.playlist_most_played),
-                mStatCollector.getTopPlayedSongs(TOP_COUNT));
+                mAutoPlaylists.getTopPlayedSongs(TOP_COUNT));
         playlists.put(getString(R.string.playlist_recently_played),
-                mStatCollector.getRecentlyPlayedSongs(TOP_COUNT));
+                mAutoPlaylists.getRecentlyPlayedSongs(TOP_COUNT));
         playlists.put(getString(R.string.playlist_recently_added),
-                mStatCollector.getRecentlyAddedSongs(TOP_COUNT));
-        playlists.putAll(mPlaylistManager.getPlaylists());
+                mAutoPlaylists.getRecentlyAddedSongs(TOP_COUNT));
+
+        addPlaylists(playlists);
         return playlists;
+    }
+
+    private void addPlaylists(Map<String, Collection<Song>> playlists) {
+        for (Playlist playlist : mPlaylistManager.getUserPlaylists()) {
+            playlists.put(playlist.getName(), playlist.getSongs());
+        }
+
+        final Playlist favourites = mPlaylistManager.getFavourites();
+        if (!favourites.getSongs().isEmpty()) {
+            playlists.put(favourites.getName(), favourites.getSongs());
+        } else {
+            playlists.remove(favourites.getName());
+        }
     }
 
     @Override

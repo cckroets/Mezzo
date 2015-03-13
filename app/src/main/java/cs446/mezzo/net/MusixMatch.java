@@ -43,7 +43,7 @@ public class MusixMatch implements Provider<MusixMatch.API> {
     }
 
     public interface API {
-        @GET("/track.lyrics.get")
+        @GET("/track.lyrics.getImageView")
         void getLyrics(@Query(value = "track_mbid") String mbid,
                        Callback<LyricResult> callback);
     }

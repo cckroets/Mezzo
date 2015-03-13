@@ -21,15 +21,17 @@ import cs446.mezzo.events.playback.SongPauseEvent;
 import cs446.mezzo.events.playback.SongPlayEvent;
 import cs446.mezzo.metadata.art.AlbumArtManager;
 import cs446.mezzo.music.Song;
+import cs446.mezzo.view.MezzoImageView;
 import roboguice.fragment.RoboFragment;
 import roboguice.inject.InjectView;
+
 /**
  * @author curtiskroetsch
  */
 public class MusicControlFragment extends RoboFragment {
 
     @InjectView(R.id.player_album_art)
-    ImageView mAlbumArtView;
+    MezzoImageView mAlbumArtView;
 
     @InjectView(R.id.player_artist)
     TextView mArtistView;
@@ -45,8 +47,8 @@ public class MusicControlFragment extends RoboFragment {
 
     @Inject
     AlbumArtManager mArtManager;
-    private Song mCurrentSong;
 
+    private Song mCurrentSong;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,7 +86,7 @@ public class MusicControlFragment extends RoboFragment {
                 mCurrentSong.getArtist();
         mTitleView.setText(mCurrentSong.getTitle());
         mArtistView.setText(artist);
-        mArtManager.setAlbumArt(mAlbumArtView, mCurrentSong);
+        mAlbumArtView.bindWithSong(mArtManager, mCurrentSong);
     }
 
     @Subscribe

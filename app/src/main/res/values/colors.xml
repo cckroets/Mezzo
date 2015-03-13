@@ -14,8 +14,28 @@
 
     <color name="pressed">#ff6c6c6c</color>
     <color name="white">#ffffffff</color>
+    <color name="transparent">#00000000</color>
 
     <color name="default_vibrant">#555555</color>
     <color name="default_muted">#d3d3d3</color>
     <color name="default_textColor">@color/white</color>
+
+    <array name="placeholders">
+        <item>#FF6961</item>
+        <item>#F9AD81</item>
+        <item>#FDC68A</item>
+        <item>#FFF79A</item>
+        <item>#C4DF9B</item>
+        <item>#A2D39C</item>
+        <item>#82CA9D</item>
+        <item>#7BCDC8</item>
+        <item>#6ECFF6</item>
+        <item>#7EA7D8</item>
+        <item>#8493CA</item>
+        <item>#8882BE</item>
+        <item>#A187BE</item>
+        <item>#BC8DBF</item>
+        <item>#F49AC2</item>
+        <item>#F6989D</item>
+    </array>
 </resources>

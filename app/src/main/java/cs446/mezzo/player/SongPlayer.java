@@ -1,6 +1,8 @@
-package cs446.mezzo.music;
+package cs446.mezzo.player;
 
 import java.util.List;
+
+import cs446.mezzo.music.Song;
 
 /**
  * @author curtiskroetsch
@@ -33,6 +35,8 @@ public interface SongPlayer {
      * @param playlist
      */
     void setPlaylist(List<Song> playlist);
+
+    void enqueueSong(Song song);
 
     /**
      * Play a particular song in the playlist.

@@ -18,15 +18,16 @@ import android.widget.TextView;
 
 import com.google.inject.Inject;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import cs446.mezzo.R;
 import cs446.mezzo.app.BaseMezzoFragment;
 import cs446.mezzo.events.EventBus;
+import cs446.mezzo.events.control.EnqueueEvent;
 import cs446.mezzo.events.control.SelectSongEvent;
 import cs446.mezzo.music.Song;
-import cs446.mezzo.sources.PlaylistManager;
+import cs446.mezzo.music.playlists.PlaylistManager;
 import roboguice.inject.InjectView;
 
 /**
@@ -82,13 +83,15 @@ public abstract class AbsSongsFragment extends BaseMezzoFragment implements Adap
             }
         });
         inflater.inflate(getMenuResId(), popup.getMenu());
+        final MenuItem favouriteButton = popup.getMenu().findItem(R.id.action_favourite);
+        favouriteButton.setChecked(mPlaylistManager.isFavourited(song));
         popup.show();
     }
 
     public abstract int getMenuResId();
 
     public void onAddToPlaylist(final Song song) {
-        final Set<String> playlistNameSet = mPlaylistManager.getPlaylists().keySet();
+        final Collection<String> playlistNameSet = mPlaylistManager.getUserPlaylistTitles();
         final String[] playlistNameArray = playlistNameSet.toArray(new String[playlistNameSet.size()]);
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
                 .setItems(playlistNameArray, new DialogInterface.OnClickListener() {
@@ -102,11 +105,19 @@ public abstract class AbsSongsFragment extends BaseMezzoFragment implements Adap
     }
 
     public void onEnqueue(Song song) {
-
+        EventBus.post(new EnqueueEvent(song));
     }
 
-    private void onFavourite(Song song) {
+    private void onFavourite(Song song, boolean favourited) {
+        if (favourited) {
+            mPlaylistManager.addToFavourites(song);
+        } else {
+            mPlaylistManager.removeFromFavourites(song);
+        }
+    }
 
+    public PlaylistManager getPlaylistManager() {
+        return mPlaylistManager;
     }
 
     public boolean onMenuItemClick(MenuItem item, Song song) {
@@ -118,7 +129,8 @@ public abstract class AbsSongsFragment extends BaseMezzoFragment implements Adap
                 onEnqueue(song);
                 break;
             case R.id.action_favourite:
-                onFavourite(song);
+                item.setChecked(!item.isChecked());
+                onFavourite(song, item.isChecked());
                 break;
             default:
                 return false;

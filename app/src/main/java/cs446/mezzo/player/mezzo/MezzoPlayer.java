@@ -1,4 +1,4 @@
-package cs446.mezzo.music;
+package cs446.mezzo.player.mezzo;
 
 import android.content.Context;
 import android.media.AudioManager;
@@ -7,23 +7,24 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.util.Log;
-import android.widget.ImageView;
 
 import com.google.inject.Singleton;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
-import cs446.mezzo.R;
 import cs446.mezzo.events.EventBus;
-import cs446.mezzo.events.control.ShuffleToggleEvent;
 import cs446.mezzo.events.playback.RepeatEvent;
 import cs446.mezzo.events.playback.SeekEvent;
 import cs446.mezzo.events.playback.ShuffleEvent;
 import cs446.mezzo.events.playback.SongPauseEvent;
 import cs446.mezzo.events.playback.SongPlayEvent;
+import cs446.mezzo.music.Song;
+import cs446.mezzo.player.SongPlayer;
 
 /**
  * @author curtiskroetsch
@@ -50,14 +51,18 @@ public class MezzoPlayer implements SongPlayer,
     private MediaPlayer mMediaPlayer;
     private List<Song> mPlaylist;
     private List<Integer> mShuffle;
+    private Queue<Song> mQueue;
     private int mCurrentIndex;
     private boolean mShuffleEnabled;
+    private PlayerState mState;
 
     public MezzoPlayer(Context context) {
         mHandler = new Handler(Looper.getMainLooper());
         mShuffleEnabled = false;
         mCurrentIndex = 0;
         mContext = context;
+        mQueue = new LinkedList<>();
+        mState = new QueueState();
         acquireResources();
     }
 
@@ -84,6 +89,14 @@ public class MezzoPlayer implements SongPlayer,
     }
 
     @Override
+    public void enqueueSong(Song song) {
+        mQueue.add(song);
+        if (isPaused()) {
+            playNext();
+        }
+    }
+
+    @Override
     public void togglePause() {
         acquireResources();
         if (mMediaPlayer.isPlaying()) {
@@ -97,17 +110,6 @@ public class MezzoPlayer implements SongPlayer,
         }
     }
 
-    private int getNextIndex() {
-        return (mCurrentIndex + 1) % mPlaylist.size();
-    }
-
-    private int getPrevIndex() {
-        return (mCurrentIndex == 0) ? mPlaylist.size() - 1 : mCurrentIndex - 1;
-    }
-
-    private int getSongIndex() {
-        return mShuffleEnabled ? mShuffle.get(mCurrentIndex) : mCurrentIndex;
-    }
 
     @Override
     public int getSeekPosition() {
@@ -116,22 +118,25 @@ public class MezzoPlayer implements SongPlayer,
 
     @Override
     public void playNext() {
-        mCurrentIndex = getNextIndex();
-        playSong(getSongIndex());
+        mState.next(this);
+        playSong(getCurrentSong());
     }
 
     @Override
     public void playPrevious() {
-        mCurrentIndex = getPrevIndex();
-        playSong(getSongIndex());
+        mState.prev(this);
+        playSong(getCurrentSong());
     }
 
-    private void playSong(int songIndex) {
+    private void playSong(Song song) {
         acquireResources();
-        EventBus.post(new SongPlayEvent(mPlaylist.get(songIndex), true));
+        EventBus.post(new SongPlayEvent(song, true));
+        if (song == null) {
+            return;
+        }
         try {
             mMediaPlayer.reset();
-            mMediaPlayer.setDataSource(mContext, mPlaylist.get(songIndex).getDataSource());
+            mMediaPlayer.setDataSource(mContext, song.getDataSource());
             mMediaPlayer.prepareAsync();
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
@@ -139,16 +144,10 @@ public class MezzoPlayer implements SongPlayer,
     }
 
     @Override
-    public void setPlaylist(List<Song> playlist) {
-        mPlaylist = playlist;
-        mCurrentIndex = 0;
-        initShuffleIndex();
-    }
-
-    @Override
     public void setSong(int songPos) {
         mCurrentIndex = songPos;
-        playSong(mCurrentIndex);
+        mState = new PlaylistState();
+        playSong(getCurrentSong());
     }
 
     @Override
@@ -163,11 +162,15 @@ public class MezzoPlayer implements SongPlayer,
     }
 
     @Override
+    public void setPlaylist(List<Song> playlist) {
+        mPlaylist = playlist;
+        mCurrentIndex = 0;
+        initShuffleIndex();
+    }
+
+    @Override
     public Song getCurrentSong() {
-        if (mPlaylist == null) {
-            return null;
-        }
-        return mPlaylist.get(getSongIndex());
+        return mState.getCurrentSong(this);
     }
 
     @Override
@@ -228,6 +231,7 @@ public class MezzoPlayer implements SongPlayer,
     public void onCompletion(MediaPlayer mp) {
         Log.d(TAG, "On Complete");
         if (!mp.isLooping()) {
+            mState.onSongComplete(this);
             playNext();
         }
     }
@@ -236,5 +240,25 @@ public class MezzoPlayer implements SongPlayer,
     public boolean onError(MediaPlayer mp, int what, int extra) {
         Log.e(TAG, "OnError : what = " + what + ", extra = " + extra + ", mp = " + mp);
         return true;
+    }
+
+    void setState(PlayerState state) {
+        mState = state;
+    }
+
+    Queue<Song> getQueue() {
+        return mQueue;
+    }
+
+    int getCurrentIndex() {
+        return mCurrentIndex;
+    }
+
+    void setCurrentIndex(int index) {
+        mCurrentIndex = index;
+    }
+
+    List<Integer> getShuffle() {
+        return mShuffle;
     }
 }

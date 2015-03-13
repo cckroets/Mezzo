@@ -28,6 +28,8 @@ import roboguice.inject.InjectView;
  */
 public class ScreenSlidePageFragment extends BaseMezzoFragment {
 
+    private static final int OFFSCREEN_FRAGMENT_LIMIT = 5;
+
     @InjectView(R.id.pager)
     ViewPager mPager;
 
@@ -49,15 +51,21 @@ public class ScreenSlidePageFragment extends BaseMezzoFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getMezzoActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         mPagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager());
         mPager.setAdapter(mPagerAdapter);
-        mPager.setOffscreenPageLimit(5);
+        mPager.setOffscreenPageLimit(OFFSCREEN_FRAGMENT_LIMIT);
         mTabs.setViewPager(mPager);
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getMezzoActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+    }
+
     @Override
     public String getTitle() {
-        return "My Music";
+        return getString(R.string.app_name);
     }
 
     @Override
@@ -93,16 +101,6 @@ public class ScreenSlidePageFragment extends BaseMezzoFragment {
         @Override
         public Fragment getItem(int position) {
             return mFragments.get(position);
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            return super.instantiateItem(container, position);
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            super.destroyItem(container, position, object);
         }
 
         @Override

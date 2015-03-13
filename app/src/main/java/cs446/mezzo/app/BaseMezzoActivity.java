@@ -68,6 +68,7 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(contId, fragment)
+                .setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom)
                 .commit();
     }
 
@@ -78,6 +79,7 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity
         getSupportFragmentManager()
                 .beginTransaction()
                 .addToBackStack(null)
+                .setCustomAnimations(R.anim.abc_slide_in_bottom, 0, 0, R.anim.abc_slide_out_bottom)
                 .add(containerId, fragment, fragment.getTag())
                 .commit();
     }
@@ -90,6 +92,7 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity
     public void showSecondaryFragment() {
         getSupportFragmentManager()
                 .beginTransaction()
+                .setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom)
                 .show(mSecondaryFragment)
                 .commit();
     }
@@ -97,6 +100,7 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity
     public void hideSecondaryFragment() {
         getSupportFragmentManager()
                 .beginTransaction()
+                .setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom)
                 .hide(mSecondaryFragment)
                 .commit();
     }
@@ -118,6 +122,7 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 getWindow().setStatusBarColor(getResources().getColor(R.color.primary_dark));
             }
+            fragment.onResume();
         }
     }
 

@@ -2,10 +2,6 @@ package cs446.mezzo.metadata.art;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v7.graphics.Palette;
@@ -39,7 +35,7 @@ public class AlbumArtManager {
     public AlbumArtManager(Context context, CoverArtRequestHandler requestHandler) {
         mPicasso = new Picasso.Builder(context)
                 .addRequestHandler(requestHandler)
-                .indicatorsEnabled(true)
+                .indicatorsEnabled(false)
                 .build();
         mContext = context;
         mDefaultCoverArt = createErrorDrawable();
@@ -83,7 +79,6 @@ public class AlbumArtManager {
 
     public void getAlbumArt(final Song song, final Callback<Bitmap> callback) {
         mPicasso.load(song.getDataSource())
-                .error(mDefaultCoverArt)
                 .into(new Target() {
                     @Override
                     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -103,7 +98,7 @@ public class AlbumArtManager {
     }
 
     private Drawable createErrorDrawable() {
-        return mContext.getResources().getDrawable(R.drawable.ic_hardware_headset);
+        return mContext.getResources().getDrawable(R.color.transparent);
     }
 
 }

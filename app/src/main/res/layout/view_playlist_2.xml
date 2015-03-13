@@ -25,22 +25,18 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <ImageView
+                <cs446.mezzo.view.MezzoImageView
                     android:id="@+id/item_image_1"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:scaleType="centerCrop"
-                    android:src="@color/primary"/>
+                    android:layout_weight="1"/>
 
-                <ImageView
+                <cs446.mezzo.view.MezzoImageView
                     android:id="@+id/item_image_4"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_marginTop="1dp"
-                    android:layout_weight="1"
-                    android:scaleType="centerCrop"
-                    android:src="@color/primary"/>
+                    android:layout_weight="1"/>
 
             </LinearLayout>
 
@@ -52,22 +48,18 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <ImageView
+                <cs446.mezzo.view.MezzoImageView
                     android:id="@+id/item_image_2"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:scaleType="centerCrop"
-                    android:src="@color/primary"/>
+                    android:layout_weight="1"/>
 
-                <ImageView
+                <cs446.mezzo.view.MezzoImageView
                     android:id="@+id/item_image_3"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_marginTop="1dp"
-                    android:layout_weight="1"
-                    android:scaleType="centerCrop"
-                    android:src="@color/primary"/>
+                    android:layout_weight="1"/>
 
             </LinearLayout>
 

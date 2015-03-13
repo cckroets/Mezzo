@@ -8,16 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.inject.Inject;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import cs446.mezzo.R;
 import cs446.mezzo.app.BaseMezzoFragment;
@@ -27,6 +24,7 @@ import cs446.mezzo.injection.Injector;
 import cs446.mezzo.metadata.art.AlbumArtManager;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.sources.LocalMusicFetcher;
+import cs446.mezzo.view.MezzoImageView;
 import jp.co.recruit_mp.android.widget.HeaderFooterGridView;
 import roboguice.inject.InjectView;
 
@@ -121,7 +119,7 @@ public abstract class CatalogFragment extends BaseMezzoFragment implements Adapt
 
     private static class ViewHolder {
         TextView titleView;
-        ImageView[] imageView;
+        MezzoImageView[] imageView;
         View column2;
         View hitTarget;
     }
@@ -150,12 +148,12 @@ public abstract class CatalogFragment extends BaseMezzoFragment implements Adapt
                 view = mInflater.inflate(R.layout.view_playlist_2, parent, false);
                 viewHolder = new ViewHolder();
                 viewHolder.titleView = (TextView) view.findViewById(R.id.item_title);
-                viewHolder.imageView = new ImageView[MAX_VIEWS];
+                viewHolder.imageView = new MezzoImageView[MAX_VIEWS];
                 int i = 0;
-                viewHolder.imageView[i++] = (ImageView) view.findViewById(R.id.item_image_1);
-                viewHolder.imageView[i++] = (ImageView) view.findViewById(R.id.item_image_2);
-                viewHolder.imageView[i++] = (ImageView) view.findViewById(R.id.item_image_3);
-                viewHolder.imageView[i] = (ImageView) view.findViewById(R.id.item_image_4);
+                viewHolder.imageView[i++] = (MezzoImageView) view.findViewById(R.id.item_image_1);
+                viewHolder.imageView[i++] = (MezzoImageView) view.findViewById(R.id.item_image_2);
+                viewHolder.imageView[i++] = (MezzoImageView) view.findViewById(R.id.item_image_3);
+                viewHolder.imageView[i] = (MezzoImageView) view.findViewById(R.id.item_image_4);
                 viewHolder.hitTarget = view.findViewById(R.id.playlist_target);
                 viewHolder.column2 = view.findViewById(R.id.item_column_2);
                 view.setTag(viewHolder);
@@ -164,7 +162,7 @@ public abstract class CatalogFragment extends BaseMezzoFragment implements Adapt
             for (int i = 0; i < MAX_VIEWS; i++) {
                 if (viewSongs.length > i) {
                     viewHolder.imageView[i].setVisibility(View.VISIBLE);
-                    mArtManager.setAlbumArt(viewHolder.imageView[i], viewSongs[i]);
+                    viewHolder.imageView[i].bindWithSong(mArtManager, viewSongs[i]);
                 } else {
                     viewHolder.imageView[i].setVisibility(View.GONE);
                 }

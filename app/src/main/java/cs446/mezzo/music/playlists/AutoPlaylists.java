@@ -1,7 +1,5 @@
-package cs446.mezzo.music.stats;
+package cs446.mezzo.music.playlists;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Ordering;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -19,7 +17,7 @@ import cs446.mezzo.sources.LocalMusicFetcher;
  * @author curtiskroetsch
  */
 @Singleton
-public class StatCollector {
+public class AutoPlaylists {
 
     private static final String KEY_COUNT = "count-";
     private static final String KEY_LAST_PLAYED = "last-";
@@ -31,7 +29,7 @@ public class StatCollector {
     LocalMusicFetcher mLocalMusicFetcher;
 
     @Inject
-    public StatCollector() {
+    public AutoPlaylists() {
         EventBus.register(this);
     }
 
@@ -75,7 +73,7 @@ public class StatCollector {
             @Override
             public int compare(Song left, Song right) {
                 return (int) (getLastPlayTime(KEY_COUNT + left.getDataSource().toString())
-                            - getLastPlayTime(KEY_COUNT + right.getDataSource().toString()));
+                        - getLastPlayTime(KEY_COUNT + right.getDataSource().toString()));
             }
         };
         return ordering.greatestOf(mLocalMusicFetcher.getAllSongs(), topCount);

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
+
+    <cs446.mezzo.view.AutoResizeTextView
+        android:id="@+id/ph_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/primary_light"
+        android:gravity="center"
+        android:text="TS"
+        android:textColor="@color/material_blue_grey_900"
+        android:textSize="24pt"
+        android:textStyle="bold"/>
+
+    <ImageView
+        android:id="@+id/ph_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"/>
+
+</FrameLayout>

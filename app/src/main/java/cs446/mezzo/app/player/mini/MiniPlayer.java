@@ -26,6 +26,7 @@ import cs446.mezzo.events.playback.SongPauseEvent;
 import cs446.mezzo.events.playback.SongPlayEvent;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.overlay.Overlay;
+import cs446.mezzo.view.MezzoImageView;
 import cs446.mezzo.view.ViewUtil;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
@@ -36,7 +37,7 @@ import roboguice.inject.InjectView;
 public class MiniPlayer extends Overlay {
 
     @InjectView(R.id.player_album_art)
-    ImageView mCoverArt;
+    MezzoImageView mCoverArt;
 
     @InjectView(R.id.player_title)
     TextView mTextView;
@@ -141,7 +142,7 @@ public class MiniPlayer extends Overlay {
 
     public void updateSongView() {
         mTextView.setText(mSong.getTitle());
-        mArtManager.setAlbumArt(mCoverArt, mSong, new Callback<Palette>() {
+        mCoverArt.bindWithSong(mArtManager, mSong, new Callback<Palette>() {
             @Override
             public void onSuccess(Palette data) {
                 onPaletteLoaded(data);

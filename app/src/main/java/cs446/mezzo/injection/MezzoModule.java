@@ -3,8 +3,6 @@ package cs446.mezzo.injection;
 
 import android.app.Application;
 import android.content.Context;
-import android.os.DropBoxManager;
-import android.util.Xml;
 
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;
@@ -12,15 +10,9 @@ import com.google.gson.Gson;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
-import com.google.inject.name.Named;
-import com.google.inject.name.Names;
 
-import org.xmlpull.v1.XmlPullParser;
-
-import cs446.mezzo.R;
-import cs446.mezzo.music.MezzoPlayer;
-import cs446.mezzo.music.SongPlayer;
-import cs446.mezzo.music.stats.StatCollector;
+import cs446.mezzo.player.mezzo.MezzoPlayer;
+import cs446.mezzo.player.SongPlayer;
 import cs446.mezzo.net.CoverArtArchive;
 import cs446.mezzo.net.GsonProvider;
 import cs446.mezzo.net.MusicBrainz;
@@ -48,6 +40,5 @@ public class MezzoModule extends AbstractModule {
         bind(MusicBrainz.API.class).toProvider(MusicBrainz.class).in(Singleton.class);
         bind(CoverArtArchive.API.class).toProvider(CoverArtArchive.class).in(Singleton.class);
         bind(MusixMatch.API.class).toProvider(MusixMatch.class).in(Singleton.class);
-        bind(StatCollector.class).asEagerSingleton();
     }
 }

@@ -6,7 +6,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.google.inject.Inject;
 import com.squareup.otto.Subscribe;
 
 import cs446.mezzo.R;
@@ -18,7 +17,7 @@ import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.navigation.MusicControlsPressEvent;
 import cs446.mezzo.events.navigation.PlaylistSelectedEvent;
 import cs446.mezzo.overlay.OverlayService;
-import cs446.mezzo.sources.dropbox.DropboxSource;
+import cs446.mezzo.player.MusicService;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
 
@@ -27,9 +26,6 @@ public class MainActivity extends BaseMezzoActivity {
 
     @InjectView(R.id.toolbar)
     Toolbar mToolbar;
-
-    @Inject
-    DropboxSource mDropboxSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,23 +37,6 @@ public class MainActivity extends BaseMezzoActivity {
         startService(new Intent(this, OverlayService.class));
         setInitialFragment(new ScreenSlidePageFragment());
         setSecondaryFragment(new MusicControlFragment());
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (!mDropboxSource.getAuthenticator().isAuthenticated()) {
-            mDropboxSource.getAuthenticator().startAuthentication(this);
-        }
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (!mDropboxSource.getAuthenticator().isAuthenticated()) {
-            mDropboxSource.getAuthenticator().finishAuthentication(this);
-        }
     }
 
     @Override
@@ -94,12 +73,7 @@ public class MainActivity extends BaseMezzoActivity {
 
     @Subscribe
     public void onMusicControlsPressed(MusicControlsPressEvent event) {
-        postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                setFragment(new NowPlayingFragment());
-            }
-        }, 100);
+        setFragment(new NowPlayingFragment());
     }
 
     @Subscribe

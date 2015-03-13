@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <ImageView
+        <cs446.mezzo.view.MezzoImageView
             android:id="@+id/player_album_art"
             android:layout_width="56dp"
             android:layout_height="56dp"

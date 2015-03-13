@@ -21,7 +21,7 @@ import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.navigation.GoHomeEvent;
 import cs446.mezzo.events.system.ActivityStoppedEvent;
 import cs446.mezzo.metadata.art.AlbumArtManager;
-import cs446.mezzo.music.SongPlayer;
+import cs446.mezzo.player.SongPlayer;
 import cs446.mezzo.events.playback.SongPlayEvent;
 import cs446.mezzo.music.Song;
 import roboguice.service.RoboService;

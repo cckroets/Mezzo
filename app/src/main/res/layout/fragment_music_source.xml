@@ -20,14 +20,12 @@
         android:id="@+id/song_list"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/list_margin"
-        android:layout_marginRight="@dimen/list_margin"
         android:background="@android:color/transparent"
         android:clipToPadding="false"
-        android:drawSelectorOnTop="true"
-        android:headerDividersEnabled="false"
-        tools:listitem="@layout/view_music_file"
-        tools:visibility="visible">
+        android:dividerHeight="0dp"
+        android:divider="@null"
+        android:visibility="visible"
+        tools:listitem="@layout/view_music_file">
 
     </ListView>
 

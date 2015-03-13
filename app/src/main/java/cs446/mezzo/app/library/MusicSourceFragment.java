@@ -1,15 +1,13 @@
 package cs446.mezzo.app.library;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -28,6 +26,7 @@ import cs446.mezzo.data.Callback;
 import cs446.mezzo.data.ProgressableCallback;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.control.SelectSongEvent;
+import cs446.mezzo.injection.Injector;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.sources.MusicSource;
 import roboguice.inject.InjectView;
@@ -35,16 +34,19 @@ import roboguice.inject.InjectView;
 /**
  * @author curtiskroetsch
  */
-public abstract class MusicSourceFragment extends BaseMezzoFragment {
+public abstract class MusicSourceFragment extends BaseMezzoFragment implements AdapterView.OnItemClickListener {
 
     private static final String TAG = MusicSourceFragment.class.getName();
-    private static final String KEY_SOURCE = "source";
     private static final int MAX_PROGRESS = 100;
 
     private static final int TYPE_SONG = 0;
     private static final int TYPE_FILE = 1;
     private static final int TYPE_COUNT = 2;
 
+    protected MusicSource mMusicSource;
+    protected List<Integer> mSongPositions;
+    protected List<Song> mDownloadedSongs;
+    protected MusicSource.Authenticator mAuthenticator;
 
     @InjectView(R.id.song_list)
     ListView mSongsView;
@@ -55,52 +57,98 @@ public abstract class MusicSourceFragment extends BaseMezzoFragment {
     @Inject
     LayoutInflater mLayoutInflater;
 
-    MusicSource mMusicSource;
-    List<Integer> mSongPositions;
-    List<Song> mDownloadedSongs;
+    private MusicFileAdapter mAdapter;
+    private boolean mNeedsAuthentication;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mMusicSource = buildMusicSource();
+        mAuthenticator = mMusicSource.getAuthenticator();
+        final List<MusicSource.MusicFile> empty = Collections.emptyList();
+        mAdapter = new MusicFileAdapter(empty);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_music_source, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final View header = mLayoutInflater.inflate(R.layout.header_music_source, null);
+        final View header = mLayoutInflater.inflate(getHeaderLayoutId(), null);
         mSongsView.addHeaderView(header);
+        mSongsView.requestLayout();
+        mSongsView.setAdapter(mAdapter);
+        mSongsView.setOnItemClickListener(this);
+        Injector.injectViews(this, header);
+        if (mAuthenticator.isAuthenticated()) {
+            onAuthenticated();
+        } else {
+            mNeedsAuthentication = true;
+            onNotAuthenticated();
+        }
+    }
+
+    public abstract void onNotAuthenticated();
+
+    public void onSearchFailure() {
+        mNeedsAuthentication = true;
+        onNotAuthenticated();
+    }
+
+    public void onAuthenticated() {
+        onSongSearchStart();
+    }
+
+    public abstract int getHeaderLayoutId();
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume");
+        if (mNeedsAuthentication) {
+            Log.d(TAG, "onResume: NeedsAuthentication");
+            mAuthenticator.finishAuthentication(getActivity());
+            if (mAuthenticator.isAuthenticated()) {
+                onAuthenticated();
+            }
+        }
+    }
+
+    public void onSongSearchStart() {
         mMusicSource.searchForSongs(new Callback<List<MusicSource.MusicFile>>() {
             @Override
             public void onSuccess(List<MusicSource.MusicFile> data) {
                 if (isAdded()) {
-                    final ListAdapter adapter = new MusicFileAdapter(data);
-                    mSongsView.setAdapter(adapter);
-                    mSongsView.setVisibility(View.VISIBLE);
-                    mProgressBar.setVisibility(View.GONE);
-
-                    mDownloadedSongs = new ArrayList<Song>(data.size());
-                    mSongPositions = new ArrayList<Integer>(data.size());
-                    for (int i = 0; i < data.size(); i++) {
-                        final MusicSource.MusicFile file = data.get(i);
-                        if (mMusicSource.exists(getActivity(), file)) {
-                            mDownloadedSongs.add(mMusicSource.getSong(getActivity(), file));
-                            mSongPositions.add(i);
-                        }
-                    }
+                    onSongSearchComplete(data);
                 }
             }
 
             @Override
             public void onFailure(Exception e) {
-                Toast.makeText(getActivity(), "Could not get songs from " + mMusicSource.getName(), Toast.LENGTH_LONG).show();
+                if (isAdded()) {
+                    Toast.makeText(getActivity(), "Could not getImageView songs from " + mMusicSource.getName(), Toast.LENGTH_LONG).show();
+                    MusicSourceFragment.this.onSearchFailure();
+                }
             }
         });
+    }
+
+    public void onSongSearchComplete(List<MusicSource.MusicFile> data) {
+        mAdapter = new MusicFileAdapter(data);
+        mSongsView.setAdapter(mAdapter);
+
+        mDownloadedSongs = new ArrayList<Song>(data.size());
+        mSongPositions = new ArrayList<Integer>(data.size());
+        for (int i = 0; i < data.size(); i++) {
+            final MusicSource.MusicFile file = data.get(i);
+            if (mMusicSource.exists(getActivity(), file)) {
+                mDownloadedSongs.add(mMusicSource.getSong(getActivity(), file));
+                mSongPositions.add(i);
+            }
+        }
     }
 
     private void onSongDownloaded(int position, Song song) {
@@ -112,11 +160,26 @@ public abstract class MusicSourceFragment extends BaseMezzoFragment {
     }
 
     private void onSongClick(int songIndex) {
-        getMezzoActivity().setFragment(NowPlayingFragment.create());
         EventBus.post(new SelectSongEvent(mDownloadedSongs, songIndex));
     }
 
     protected abstract MusicSource buildMusicSource();
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        int songIndex = Collections.binarySearch(mSongPositions, position - 1);
+        if (songIndex < 0) {
+            songIndex = 0;
+        }
+        onSongClick(songIndex);
+    }
+
+    private static class ViewHolder {
+        TextView mPrimary;
+        TextView mSecondary;
+        ProgressBar mProgressBar;
+        View mButton;
+    }
 
     private class MusicFileAdapter extends ArrayAdapter<MusicSource.MusicFile> {
 
@@ -155,43 +218,46 @@ public abstract class MusicSourceFragment extends BaseMezzoFragment {
 
             final MusicSource.MusicFile file = getItem(position);
             final View view;
-            Log.d(TAG, "getFileView " + file.getFileName());
+            final ViewHolder viewHolder;
+
             if (convertView != null) {
                 view = convertView;
+                viewHolder = (ViewHolder) view.getTag();
             } else {
                 view = mLayoutInflater.inflate(R.layout.view_music_file, parent, false);
+                viewHolder = new ViewHolder();
+                viewHolder.mPrimary = (TextView) view.findViewById(R.id.file_name);
+                viewHolder.mProgressBar = (ProgressBar) view.findViewById(R.id.file_progress);
+                viewHolder.mButton = view.findViewById(R.id.file_download);
+                view.setTag(viewHolder);
             }
 
-            final TextView title = (TextView) view.findViewById(R.id.file_name);
-            final ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.file_progress);
-            final ImageView download = (ImageView) view.findViewById(R.id.file_download);
-
-            title.setText(file.getDisplayName());
-            progressBar.setVisibility(mMusicSource.isDownloading(getContext(), file) ? View.VISIBLE : View.GONE);
-            download.setOnClickListener(new View.OnClickListener() {
+            viewHolder.mPrimary.setText(file.getDisplayName());
+            viewHolder.mProgressBar.setVisibility(mMusicSource.isDownloading(getContext(), file) ? View.VISIBLE : View.GONE);
+            viewHolder.mButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    download.setEnabled(false);
-                    progressBar.setVisibility(View.VISIBLE);
+                    viewHolder.mButton.setEnabled(false);
+                    viewHolder.mProgressBar.setVisibility(View.VISIBLE);
                     mMusicSource.download(getContext(), file, new ProgressableCallback<Song>() {
                         @Override
                         public void onProgress(float completion) {
-                            progressBar.setProgress((int) (MAX_PROGRESS * completion));
+                            viewHolder.mProgressBar.setProgress((int) (MAX_PROGRESS * completion));
                         }
 
                         @Override
                         public void onSuccess(Song data) {
                             Log.d(TAG, "DOWNLOAD SUCCESS " + data.getTitle());
-                            progressBar.setProgress(MAX_PROGRESS);
+                            viewHolder.mProgressBar.setProgress(MAX_PROGRESS);
                             redrawView(position);
                             onSongDownloaded(position, data);
                         }
 
                         @Override
                         public void onFailure(Exception e) {
-                            progressBar.setProgress(0);
-                            progressBar.setVisibility(View.GONE);
-                            download.setEnabled(true);
+                            viewHolder.mProgressBar.setProgress(0);
+                            viewHolder.mProgressBar.setVisibility(View.GONE);
+                            viewHolder.mButton.setEnabled(true);
                             Toast.makeText(getContext(), "Download failed", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -203,36 +269,26 @@ public abstract class MusicSourceFragment extends BaseMezzoFragment {
 
         private View getSongView(final int position, View convertView, ViewGroup parent) {
 
-            final View view = (convertView == null) ?
-                    mLayoutInflater.inflate(R.layout.view_song, parent, false) :
-                    convertView;
-
-            final TextView songView = (TextView) view.findViewById(cs446.mezzo.R.id.song_title);
-            final TextView artistView = (TextView) view.findViewById(cs446.mezzo.R.id.song_artist);
+            final View view;
+            final ViewHolder viewHolder;
             final Song song = mMusicSource.getSong(getContext(), getItem(position));
-            Log.d(TAG, "getSongView " + song.getTitle());
 
-            songView.setText(song.getTitle());
-            artistView.setText(TextUtils.isEmpty(song.getArtist()) ?
+            if (convertView != null) {
+                view = convertView;
+                viewHolder = (ViewHolder) view.getTag();
+            } else {
+                view = mLayoutInflater.inflate(R.layout.view_song, parent, false);
+                viewHolder = new ViewHolder();
+                viewHolder.mPrimary = (TextView) view.findViewById(cs446.mezzo.R.id.song_title);
+                viewHolder.mSecondary = (TextView) view.findViewById(cs446.mezzo.R.id.song_artist);
+                view.setTag(viewHolder);
+            }
+
+            viewHolder.mPrimary.setText(song.getTitle());
+            viewHolder.mSecondary.setText(TextUtils.isEmpty(song.getArtist()) ?
                     getString(R.string.default_artist) :
                     song.getArtist());
-
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int songIndex = Collections.binarySearch(mSongPositions, position);
-                    if (songIndex < 0) {
-                        songIndex = 0;
-                    }
-                    onSongClick(songIndex);
-                }
-            });
-
             return view;
         }
-
-
     }
-
-
 }

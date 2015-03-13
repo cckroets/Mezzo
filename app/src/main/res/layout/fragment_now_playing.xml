@@ -2,18 +2,17 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:clickable="true"
     android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
+    <cs446.mezzo.view.MezzoImageView
         android:id="@+id/player_album_art"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_default_art"
-        android:paddingBottom="88dp"
-        tools:background="@android:color/white"/>
+        android:paddingBottom="88dp"/>
 
     <ImageView
         android:layout_width="fill_parent"

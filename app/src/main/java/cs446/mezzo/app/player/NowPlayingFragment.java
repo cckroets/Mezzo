@@ -37,6 +37,7 @@ import cs446.mezzo.metadata.lyrics.LyricResult;
 import cs446.mezzo.metadata.lyrics.LyricsManager;
 import cs446.mezzo.music.MusicUtil;
 import cs446.mezzo.music.Song;
+import cs446.mezzo.view.MezzoImageView;
 import cs446.mezzo.view.ViewUtil;
 import roboguice.inject.InjectView;
 
@@ -52,7 +53,7 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
     TextView mAlbumArtist;
 
     @InjectView(R.id.player_album_art)
-    ImageView mCovertArt;
+    MezzoImageView mCovertArt;
 
     @InjectView(R.id.player_buttons_container)
     View mPlayerButtonsContainer;
@@ -200,7 +201,7 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
     }
 
     private void updateCoverArt() {
-        mArtManager.setAlbumArt(mCovertArt, mSong, new Callback<Palette>() {
+        mCovertArt.bindWithSong(mArtManager, mSong, new Callback<Palette>() {
             @Override
             public void onSuccess(Palette palette) {
                 onPaletteLoaded(palette);
@@ -273,6 +274,9 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
 
     @Subscribe
     public void onSongPlayEvent(SongPlayEvent event) {
+        if (event.getSong() == null) {
+            return;
+        }
         if (mSong == event.getSong()) {
             updateSeekbar();
         } else {

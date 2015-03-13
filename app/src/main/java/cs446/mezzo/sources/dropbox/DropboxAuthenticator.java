@@ -42,16 +42,11 @@ public class DropboxAuthenticator implements MusicSource.Authenticator {
 
     @Override
     public void startAuthentication(Activity activity) {
-        if (!isAuthenticated()) {
-            mDBApi.getSession().startOAuth2Authentication(activity);
-        }
+        mDBApi.getSession().startOAuth2Authentication(activity);
     }
 
     @Override
     public void finishAuthentication(Activity activity) {
-        if (isAuthenticated()) {
-            return;
-        }
         final AndroidAuthSession session = mDBApi.getSession();
         if (session.authenticationSuccessful()) {
             session.finishAuthentication();

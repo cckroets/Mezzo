@@ -1,17 +1,16 @@
-package cs446.mezzo.app;
+package cs446.mezzo.player;
 
 import android.content.Intent;
 import android.media.AudioManager;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.ImageView;
 
 import com.google.inject.Inject;
 import com.squareup.otto.Produce;
 import com.squareup.otto.Subscribe;
 
-import cs446.mezzo.R;
 import cs446.mezzo.events.EventBus;
+import cs446.mezzo.events.control.EnqueueEvent;
 import cs446.mezzo.events.control.PauseToggleEvent;
 import cs446.mezzo.events.control.PlayNextEvent;
 import cs446.mezzo.events.control.PlayPrevEvent;
@@ -20,8 +19,6 @@ import cs446.mezzo.events.control.SeekSetEvent;
 import cs446.mezzo.events.control.SelectSongEvent;
 import cs446.mezzo.events.control.ShuffleToggleEvent;
 import cs446.mezzo.events.playback.SongPlayEvent;
-import cs446.mezzo.music.SongPlayer;
-import roboguice.inject.InjectView;
 import roboguice.service.RoboService;
 
 /**
@@ -91,6 +88,11 @@ public class MusicService extends RoboService
     @Subscribe
     public void onSetSeekEvent(SeekSetEvent event) {
         mSongPlayer.setSeek(event.getSeekPos());
+    }
+
+    @Subscribe
+    public void onEnqueueEvent(EnqueueEvent event) {
+        mSongPlayer.enqueueSong(event.getSong());
     }
 
     @Produce
