@@ -36,10 +36,17 @@ public class DropboxFragment extends MusicSourceFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mProgressBar.setVisibility(View.GONE);
+        mProgressBar.bringToFront();
         mSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mAuthenticator.startAuthentication(getActivity());
+            }
+        });
+        mSyncButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onSongSearchStart();
             }
         });
     }

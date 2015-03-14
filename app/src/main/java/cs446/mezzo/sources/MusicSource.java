@@ -45,7 +45,7 @@ public abstract class MusicSource {
     }
 
     public void searchForSongs(final Callback<List<MusicFile>> callback) {
-        searchForSongs(callback, false);
+        searchForSongs(callback, true);
     }
 
     public List<Song> getAllDownloadedSongs(Context context) {
