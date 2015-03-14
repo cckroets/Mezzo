@@ -152,6 +152,7 @@ public class PlaylistManager {
         if (mUserPlaylists == null) {
             mUserPlaylists = loadUserPlaylists();
             mFavourites = loadPlaylist(FAVOURITES);
+            mUserPlaylists.put(FAVOURITES, mFavourites);
         }
     }
 
