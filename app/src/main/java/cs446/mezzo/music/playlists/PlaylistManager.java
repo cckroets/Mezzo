@@ -91,12 +91,11 @@ public class PlaylistManager {
     }
 
     public Playlist getPlaylist(String playlistName) {
-        if (mUserPlaylists.containsKey(playlistName)) {
-            return mUserPlaylists.get(playlistName);
-        } else if (playlistName.equals(FAVOURITES)) {
+        if (playlistName.equals(FAVOURITES)) {
             return mFavourites;
+        } else if (mUserPlaylists.containsKey(playlistName)) {
+            return mUserPlaylists.get(playlistName);
         }
-
         final AutoPlaylist autoPlaylist = AutoPlaylist.get(playlistName);
         if (autoPlaylist == null) {
             return null;
@@ -106,7 +105,7 @@ public class PlaylistManager {
 
     public Playlist getFavourites() {
         ensureLoaded();
-        return mUserPlaylists.get(FAVOURITES);
+        return mFavourites;
     }
 
     public void addSongToPlaylist(String playlistName, Song song) {
@@ -126,19 +125,19 @@ public class PlaylistManager {
 
     public boolean isFavourited(Song song) {
         ensureLoaded();
-        return mUserPlaylists.containsKey(FAVOURITES) &&
-                mUserPlaylists.get(FAVOURITES).getSongs().contains(song);
+        return mFavourites.getSongs().contains(song);
     }
 
     public void addToFavourites(Song song) {
-        createPlaylist(FAVOURITES);
-        addSongToPlaylist(FAVOURITES, song);
+        ensureLoaded();
+        mFavourites.getSongs().add(song);
+        EventBus.post(new PlaylistChangedEvent(mFavourites));
     }
 
     public void removeFromFavourites(Song song) {
-        removeSongFromPlaylist(FAVOURITES, song);
+        mFavourites.getSongs().remove(song);
+        EventBus.post(new PlaylistChangedEvent(mFavourites));
     }
-
 
     @Subscribe
     public void onActivityStopped(ActivityStoppedEvent event) {
@@ -152,7 +151,6 @@ public class PlaylistManager {
         if (mUserPlaylists == null) {
             mUserPlaylists = loadUserPlaylists();
             mFavourites = loadPlaylist(FAVOURITES);
-            mUserPlaylists.put(FAVOURITES, mFavourites);
         }
     }
 

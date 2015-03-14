@@ -43,14 +43,12 @@ public class StatCollector {
 
         mPreferences.putInt(countKey, count + 1);
         mPreferences.putLong(lastPlayedKey, System.currentTimeMillis());
-
-        AutoPlaylist.MOST_PLAYED.postInvalidate(mLocalMusicFetcher);
-        AutoPlaylist.RECENTLY_PLAYED.postInvalidate(mLocalMusicFetcher);
+        AutoPlaylist.postInvalidate(mLocalMusicFetcher, AutoPlaylist.MOST_PLAYED, AutoPlaylist.RECENTLY_PLAYED);
     }
 
     @Subscribe
     public void onSongDownloaded(FileDownloadedEvent event) {
-        AutoPlaylist.RECENTLY_ADDED.postInvalidate(mLocalMusicFetcher);
+        AutoPlaylist.postInvalidate(mLocalMusicFetcher, AutoPlaylist.RECENTLY_ADDED);
     }
 
     private int getPlayCount(String countKey) {

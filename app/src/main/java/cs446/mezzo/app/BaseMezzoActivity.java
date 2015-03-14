@@ -85,7 +85,7 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity
                 .addToBackStack(null)
                 .setCustomAnimations(R.anim.abc_slide_in_bottom, 0, 0, R.anim.abc_slide_out_bottom)
                 .add(containerId, fragment, fragment.getTag())
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     protected void setSecondaryFragment(Fragment fragment) {
@@ -98,7 +98,7 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity
                 .beginTransaction()
                 .setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom)
                 .show(mSecondaryFragment)
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     public void hideSecondaryFragment() {
@@ -106,7 +106,7 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity
                 .beginTransaction()
                 .setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom)
                 .hide(mSecondaryFragment)
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     public BaseMezzoFragment getFragment() {
