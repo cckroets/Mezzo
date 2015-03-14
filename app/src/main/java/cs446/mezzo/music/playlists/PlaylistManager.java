@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.squareup.otto.Subscribe;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -16,10 +17,11 @@ import java.util.Set;
 
 import cs446.mezzo.data.Preferences;
 import cs446.mezzo.events.EventBus;
-import cs446.mezzo.events.playlists.PlaylistsChangedEvent;
+import cs446.mezzo.events.playlists.PlaylistChangedEvent;
 import cs446.mezzo.events.system.ActivityStoppedEvent;
 import cs446.mezzo.music.FileSong;
 import cs446.mezzo.music.Song;
+import cs446.mezzo.sources.LocalMusicFetcher;
 
 /**
  * @author curtiskroetsch
@@ -34,6 +36,12 @@ public class PlaylistManager {
 
     @Inject
     Preferences mPreferences;
+
+    @Inject
+    StatCollector mStatCollector;
+
+    @Inject
+    LocalMusicFetcher mLocalMusicFetcher;
 
     private Map<String, Playlist> mUserPlaylists;
     private Playlist mFavourites;
@@ -53,7 +61,7 @@ public class PlaylistManager {
         final Playlist playlist = new Playlist(name, new LinkedHashSet<Song>());
         mUserPlaylists.put(name, playlist);
         mModified = true;
-        EventBus.post(new PlaylistsChangedEvent(playlist));
+        EventBus.post(new PlaylistChangedEvent(playlist));
         return true;
     }
 
@@ -61,7 +69,7 @@ public class PlaylistManager {
         ensureLoaded();
         final Playlist removed = mUserPlaylists.remove(name);
         mModified = true;
-        EventBus.post(new PlaylistsChangedEvent(removed));
+        EventBus.post(new PlaylistChangedEvent(removed));
     }
 
     public Collection<String> getUserPlaylistTitles() {
@@ -74,6 +82,28 @@ public class PlaylistManager {
         return mUserPlaylists.values();
     }
 
+    public Collection<Playlist> getAutoPlaylists() {
+        final Collection<Playlist> playlistList = new ArrayList<>();
+        for (AutoPlaylist auto : AutoPlaylist.values()) {
+            playlistList.add(auto.getPlaylist(mLocalMusicFetcher, mStatCollector));
+        }
+        return playlistList;
+    }
+
+    public Playlist getPlaylist(String playlistName) {
+        if (mUserPlaylists.containsKey(playlistName)) {
+            return mUserPlaylists.get(playlistName);
+        } else if (playlistName.equals(FAVOURITES)) {
+            return mFavourites;
+        }
+
+        final AutoPlaylist autoPlaylist = AutoPlaylist.get(playlistName);
+        if (autoPlaylist == null) {
+            return null;
+        }
+        return autoPlaylist.getPlaylist(mLocalMusicFetcher, mStatCollector);
+    }
+
     public Playlist getFavourites() {
         ensureLoaded();
         return mUserPlaylists.get(FAVOURITES);
@@ -84,14 +114,14 @@ public class PlaylistManager {
         final Playlist playlist = mUserPlaylists.get(playlistName);
         playlist.getSongs().add(song);
         mModified = true;
-        EventBus.post(new PlaylistsChangedEvent(playlist));
+        EventBus.post(new PlaylistChangedEvent(playlist));
     }
 
     public void removeSongFromPlaylist(String playlistName, Song song) {
         ensureLoaded();
         mUserPlaylists.get(playlistName).getSongs().remove(song);
         mModified = true;
-        EventBus.post(new PlaylistsChangedEvent(mUserPlaylists.get(playlistName)));
+        EventBus.post(new PlaylistChangedEvent(mUserPlaylists.get(playlistName)));
     }
 
     public boolean isFavourited(Song song) {
@@ -120,7 +150,7 @@ public class PlaylistManager {
 
     private void ensureLoaded() {
         if (mUserPlaylists == null) {
-            mUserPlaylists = loadPlaylists();
+            mUserPlaylists = loadUserPlaylists();
             mFavourites = loadPlaylist(FAVOURITES);
         }
     }
@@ -135,7 +165,7 @@ public class PlaylistManager {
         return playlist;
     }
 
-    private Map<String, Playlist> loadPlaylists() {
+    private Map<String, Playlist> loadUserPlaylists() {
         final Set<String> playlistNames = mPreferences.getStrings(KEY_PLAYLISTS);
         final Map<String, Playlist> playlists = new LinkedHashMap<>(playlistNames.size());
         for (String playlistName : playlistNames) {

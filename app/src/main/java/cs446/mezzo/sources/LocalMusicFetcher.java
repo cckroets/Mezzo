@@ -12,11 +12,14 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import cs446.mezzo.data.Callback;
+import cs446.mezzo.data.SimpleAsyncTask;
 import cs446.mezzo.music.LocalSong;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.sources.dropbox.DropboxSource;
@@ -51,11 +54,9 @@ public class LocalMusicFetcher {
     @Inject
     DownloadManager mDownloadManager;
 
-    private Set<String> mAllGenres;
-
     @Inject
     public LocalMusicFetcher() {
-        mAllGenres = new HashSet<String>();
+
     }
 
     public List<Song> getAllSongs() {
@@ -65,7 +66,6 @@ public class LocalMusicFetcher {
     }
 
     public List<Song> getLocalSongs() {
-        final List<Song> songs = new LinkedList<Song>();
         final ContentResolver musicResolver = mContext.getContentResolver();
 
         final Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
@@ -81,6 +81,8 @@ public class LocalMusicFetcher {
             final int fileColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
             final int albumIdColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
 
+            final List<Song> songs = new ArrayList<>(musicCursor.getCount());
+
             do {
                 final long id = musicCursor.getLong(idColumn);
                 final long dateAdded = musicCursor.getLong(dateAddedColumn);
@@ -93,12 +95,13 @@ public class LocalMusicFetcher {
                 final Set<String> genres = getGenres(id);
                 final Song song = new LocalSong(id, title, artist, album, file, genres, duration, dateAdded, albumId);
                 songs.add(song);
-                Log.d("SONG", "title = " + title + ", genres = " + genres);
             }
             while (musicCursor.moveToNext());
             musicCursor.close();
+            return songs;
+        } else {
+            return new ArrayList<Song>();
         }
-        return songs;
     }
 
     public List<Song> getAllDownloadedSongs() {
@@ -115,15 +118,19 @@ public class LocalMusicFetcher {
             do {
                 final String genre = genresCursor.getString(genreColumn);
                 genres.add(genre);
-                mAllGenres.add(genre);
             } while (genresCursor.moveToNext());
         }
         genresCursor.close();
         return genres;
     }
 
-
-    public Set<String> getAllGenres() {
-        return mAllGenres;
+    public void getAllSongs(Callback<Collection<Song>> callback) {
+        new SimpleAsyncTask<Collection<Song>>(callback) {
+            @Override
+            public Collection<Song> doInBackground() {
+                return getAllSongs();
+            }
+        }.execute();
     }
+
 }

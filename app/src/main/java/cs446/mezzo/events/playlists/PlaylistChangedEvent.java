@@ -5,11 +5,11 @@ import cs446.mezzo.music.playlists.Playlist;
 /**
  * @author curtiskroetsch
  */
-public class PlaylistsChangedEvent {
+public class PlaylistChangedEvent {
 
     private Playlist mPlaylist;
 
-    public PlaylistsChangedEvent(Playlist playlist) {
+    public PlaylistChangedEvent(Playlist playlist) {
         mPlaylist = playlist;
     }
 

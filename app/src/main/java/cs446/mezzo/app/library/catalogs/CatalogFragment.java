@@ -23,6 +23,7 @@ import cs446.mezzo.events.navigation.PlaylistSelectedEvent;
 import cs446.mezzo.injection.Injector;
 import cs446.mezzo.metadata.art.AlbumArtManager;
 import cs446.mezzo.music.Song;
+import cs446.mezzo.music.playlists.Playlist;
 import cs446.mezzo.sources.LocalMusicFetcher;
 import cs446.mezzo.view.MezzoImageView;
 import jp.co.recruit_mp.android.widget.HeaderFooterGridView;
@@ -47,7 +48,7 @@ public abstract class CatalogFragment extends BaseMezzoFragment implements Adapt
     @InjectView(R.id.catalog_grid)
     HeaderFooterGridView mCatalog;
 
-    private Map<String, Collection<Song>> mCategories;
+    private Map<String, Playlist> mCategories;
 
     public CatalogFragment() {
 
@@ -59,9 +60,9 @@ public abstract class CatalogFragment extends BaseMezzoFragment implements Adapt
         mCategories = buildCategories(mMusicFetcher);
     }
 
-    protected abstract Map<String, Collection<Song>> buildCategories(LocalMusicFetcher fetcher);
+    protected abstract Map<String, Playlist> buildCategories(LocalMusicFetcher fetcher);
 
-    public Map<String, Collection<Song>> getCategories() {
+    public Map<String, Playlist> getCategories() {
         return mCategories;
     }
 
@@ -90,6 +91,8 @@ public abstract class CatalogFragment extends BaseMezzoFragment implements Adapt
     public int getFooterLayout() {
         return R.layout.header_default;
     }
+
+    public abstract boolean isSaved(Playlist playlist);
 
     public void updateAdapter() {
         final String[] keys = new String[mCategories.size()];
@@ -138,8 +141,8 @@ public abstract class CatalogFragment extends BaseMezzoFragment implements Adapt
             final View view;
             final ViewHolder viewHolder;
             final String title = getItem(position);
-            final Collection<Song> allSongs = mCategories.get(title);
-            final Song[] viewSongs = songCollectionToArray(allSongs);
+            final Playlist playlist = mCategories.get(title);
+            final Song[] viewSongs = songCollectionToArray(playlist.getSongs());
 
             if (convertView != null && convertView.getTag() != null) {
                 view = convertView;
@@ -172,7 +175,7 @@ public abstract class CatalogFragment extends BaseMezzoFragment implements Adapt
             viewHolder.hitTarget.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    EventBus.post(new PlaylistSelectedEvent(title, allSongs));
+                    EventBus.post(new PlaylistSelectedEvent(playlist, isSaved(playlist)));
                 }
             });
             viewHolder.column2.setVisibility(viewSongs.length > 1 ? View.VISIBLE : View.GONE);

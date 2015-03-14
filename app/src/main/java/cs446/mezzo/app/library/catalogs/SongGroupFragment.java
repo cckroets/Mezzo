@@ -16,6 +16,7 @@ import java.util.TreeMap;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.sources.FileDownloadedEvent;
 import cs446.mezzo.music.Song;
+import cs446.mezzo.music.playlists.Playlist;
 import cs446.mezzo.sources.LocalMusicFetcher;
 
 /**
@@ -48,9 +49,14 @@ public class SongGroupFragment extends CatalogFragment {
         EventBus.register(this);
     }
 
-    protected Map<String, Collection<Song>> buildCategories(LocalMusicFetcher fetcher) {
+    @Override
+    public boolean isSaved(Playlist playlist) {
+        return false;
+    }
+
+    protected Map<String, Playlist> buildCategories(LocalMusicFetcher fetcher) {
         Log.d(TAG, "buildCategories");
-        final Map<String, Collection<Song>> categories = new TreeMap<>();
+        final Map<String, Playlist> categories = new TreeMap<>();
         final List<Song> songList = fetcher.getAllSongs();
 
         for (int i = 0; i < songList.size(); i++) {
@@ -60,9 +66,9 @@ public class SongGroupFragment extends CatalogFragment {
                 if (categories.get(category) == null) {
                     final List<Song> songs = new ArrayList<>();
                     songs.add(songList.get(i));
-                    categories.put(category, songs);
+                    categories.put(category, new Playlist(category, songs));
                 } else {
-                    categories.get(category).add(songList.get(i));
+                    categories.get(category).getSongs().add(songList.get(i));
                 }
             }
         }

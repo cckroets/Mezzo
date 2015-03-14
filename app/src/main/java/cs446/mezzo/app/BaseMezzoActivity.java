@@ -10,6 +10,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 import cs446.mezzo.R;
 import roboguice.activity.RoboActionBarActivity;
 

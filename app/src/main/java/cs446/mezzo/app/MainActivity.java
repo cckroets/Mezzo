@@ -78,7 +78,11 @@ public class MainActivity extends BaseMezzoActivity {
 
     @Subscribe
     public void onPlaylistSelected(PlaylistSelectedEvent event) {
-        setFragment(PlaylistFragment.create(event.getName(), event.getSongs()));
+        if (event.isSaved()) {
+            setFragment(PlaylistFragment.createFromSavedPlaylist(event.getPlaylist().getName()));
+        } else {
+            setFragment(PlaylistFragment.createFromOnTheFly(event.getPlaylist()));
+        }
     }
 
     @Override

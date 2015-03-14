@@ -167,11 +167,10 @@ public abstract class MusicSourceFragment extends BaseMezzoFragment implements A
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        int songIndex = Collections.binarySearch(mSongPositions, position - 1);
-        if (songIndex < 0) {
-            songIndex = 0;
+        final int songIndex = Collections.binarySearch(mSongPositions, position - 1);
+        if (songIndex >= 0) {
+            onSongClick(songIndex);
         }
-        onSongClick(songIndex);
     }
 
     private static class ViewHolder {

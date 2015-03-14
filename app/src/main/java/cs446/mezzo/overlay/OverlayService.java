@@ -149,6 +149,6 @@ public class OverlayService extends RoboService implements Application.ActivityL
 
     @Override
     public void onActivityDestroyed(Activity activity) {
-
+        Log.d(TAG, "ACTIVITY DESTROYED");
     }
 }

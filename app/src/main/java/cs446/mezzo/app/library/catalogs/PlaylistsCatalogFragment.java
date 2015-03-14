@@ -17,25 +17,18 @@ import java.util.Map;
 
 import cs446.mezzo.R;
 import cs446.mezzo.events.EventBus;
-import cs446.mezzo.events.playlists.PlaylistsChangedEvent;
+import cs446.mezzo.events.playlists.PlaylistChangedEvent;
 import cs446.mezzo.events.sources.FileDownloadedEvent;
 import cs446.mezzo.injection.Nullable;
-import cs446.mezzo.music.Song;
-import cs446.mezzo.music.playlists.AutoPlaylists;
-import cs446.mezzo.sources.LocalMusicFetcher;
 import cs446.mezzo.music.playlists.Playlist;
 import cs446.mezzo.music.playlists.PlaylistManager;
+import cs446.mezzo.sources.LocalMusicFetcher;
 import roboguice.inject.InjectView;
 
 /**
  * @author curtiskroetsch
  */
 public class PlaylistsCatalogFragment extends CatalogFragment {
-
-    private static final int TOP_COUNT = 25;
-
-    @Inject
-    AutoPlaylists mAutoPlaylists;
 
     @Inject
     PlaylistManager mPlaylistManager;
@@ -93,41 +86,32 @@ public class PlaylistsCatalogFragment extends CatalogFragment {
     }
 
     @Subscribe
-    public void onPlaylistsChanged(PlaylistsChangedEvent event) {
-        updateUserPlaylists();
-    }
-
-    private void updateUserPlaylists() {
-        if (getCategories() != null) {
-            addPlaylists(getCategories());
+    public void onPlaylistsChanged(PlaylistChangedEvent event) {
+        if (event.getPlaylist() != null) {
+            getCategories().put(event.getPlaylist().getName(), event.getPlaylist());
             updateAdapter();
         }
     }
 
     @Override
-    protected Map<String, Collection<Song>> buildCategories(LocalMusicFetcher fetcher) {
-        final Map<String, Collection<Song>> playlists = new LinkedHashMap<>();
-        playlists.put(getString(R.string.playlist_most_played),
-                mAutoPlaylists.getTopPlayedSongs(TOP_COUNT));
-        playlists.put(getString(R.string.playlist_recently_played),
-                mAutoPlaylists.getRecentlyPlayedSongs(TOP_COUNT));
-        playlists.put(getString(R.string.playlist_recently_added),
-                mAutoPlaylists.getRecentlyAddedSongs(TOP_COUNT));
+    protected Map<String, Playlist> buildCategories(LocalMusicFetcher fetcher) {
+        final Map<String, Playlist> playlists = new LinkedHashMap<>();
+        addPlaylists(playlists, mPlaylistManager.getAutoPlaylists());
+        addPlaylists(playlists, mPlaylistManager.getUserPlaylists());
 
-        addPlaylists(playlists);
+        final Playlist favourites = mPlaylistManager.getFavourites();
+        playlists.put(favourites.getName(), favourites);
         return playlists;
     }
 
-    private void addPlaylists(Map<String, Collection<Song>> playlists) {
-        for (Playlist playlist : mPlaylistManager.getUserPlaylists()) {
-            playlists.put(playlist.getName(), playlist.getSongs());
-        }
+    @Override
+    public boolean isSaved(Playlist playlist) {
+        return true;
+    }
 
-        final Playlist favourites = mPlaylistManager.getFavourites();
-        if (!favourites.getSongs().isEmpty()) {
-            playlists.put(favourites.getName(), favourites.getSongs());
-        } else {
-            playlists.remove(favourites.getName());
+    private void addPlaylists(Map<String, Playlist> categories, Collection<Playlist> playlists) {
+        for (Playlist playlist : playlists) {
+            categories.put(playlist.getName(), playlist);
         }
     }
 

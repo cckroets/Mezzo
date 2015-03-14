@@ -1,27 +1,25 @@
 package cs446.mezzo.events.navigation;
 
-import java.util.Collection;
-
-import cs446.mezzo.music.Song;
+import cs446.mezzo.music.playlists.Playlist;
 
 /**
  * @author curtiskroetsch
  */
 public class PlaylistSelectedEvent {
 
-    private String mName;
-    private Collection<Song> mSongs;
+    private Playlist mPlaylist;
+    private boolean mSaved;
 
-    public PlaylistSelectedEvent(String name, Collection<Song> songs) {
-        mName = name;
-        mSongs = songs;
+    public PlaylistSelectedEvent(Playlist playlist, boolean isSaved) {
+        mPlaylist = playlist;
+        mSaved = isSaved;
     }
 
-    public String getName() {
-        return mName;
+    public Playlist getPlaylist() {
+        return mPlaylist;
     }
 
-    public Collection<Song> getSongs() {
-        return mSongs;
+    public boolean isSaved() {
+        return mSaved;
     }
 }

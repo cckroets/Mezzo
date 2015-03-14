@@ -97,7 +97,7 @@ public class Preferences {
     }
 
     public long getLong(String key, long def) {
-        return 0L; //mSharedPreferences.getLong(key, def);
+        return mSharedPreferences.getLong(key, def);
     }
 
 }
