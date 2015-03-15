@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:key="pref_wifi"
+        android:title="Cloud Sync"
+        android:defaultValue="false"
+        android:summaryOff="Sync files when any internet connection is available"
+        android:summaryOn="Sync files only when on Wi-Fi"/>
+
+    <cs446.mezzo.view.SizePickerPreference
+        android:key="pref_size"
+        android:title="Song Cache Size"
+        android:defaultValue="500"/>
+
+    <Preference
+        android:key="pref_report"
+        android:title="Send Stats Report"
+        android:summary="Email a report containing the listening statistics"/>
+
+</PreferenceScreen>

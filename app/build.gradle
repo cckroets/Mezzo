@@ -36,4 +36,6 @@ dependencies {
     compile 'com.google.guava:guava:18.0'
     compile 'jp.co.recruit_mp:android-HeaderFooterGridView:0.2.3'
     compile 'me.grantland:autofittextview:0.2.+'
+
+    compile 'com.android.support:support-v4-preferencefragment:1.0.0'
 }

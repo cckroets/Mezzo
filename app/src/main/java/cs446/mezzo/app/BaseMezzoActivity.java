@@ -10,10 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
 import cs446.mezzo.R;
 import roboguice.activity.RoboActionBarActivity;
 
@@ -64,8 +60,8 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity
         mHandler.removeCallbacks(runnable);
     }
 
-    protected void setInitialFragment(BaseMezzoFragment fragment) {
-        setInitialFragment(fragment, getMainFragmentContainer());
+    protected void setInitialFragment(MezzoPage fragment) {
+        setInitialFragment(fragment.getFragment(), getMainFragmentContainer());
     }
 
     private void setInitialFragment(Fragment fragment, @IdRes int contId) {
@@ -109,17 +105,17 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity
                 .commitAllowingStateLoss();
     }
 
-    public BaseMezzoFragment getFragment() {
-        return (BaseMezzoFragment) getSupportFragmentManager().findFragmentById(getMainFragmentContainer());
+    public MezzoPage getFragment() {
+        return (MezzoPage) getSupportFragmentManager().findFragmentById(getMainFragmentContainer());
     }
 
-    public void setFragment(BaseMezzoFragment fragment) {
-        setFragment(fragment, getMainFragmentContainer());
+    public void setFragment(MezzoPage fragment) {
+        setFragment(fragment.getFragment(), getMainFragmentContainer());
     }
 
     @Override
     public void onBackStackChanged() {
-        final BaseMezzoFragment fragment = getFragment();
+        final MezzoPage fragment = getFragment();
         if (fragment != null && fragment.isTopLevel()) {
             getSupportActionBar().setTitle(fragment.getTitle());
             mToolbar.setBackgroundColor(getResources().getColor(R.color.primary));
@@ -132,7 +128,7 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity
 
     @Override
     public void onBackPressed() {
-        final BaseMezzoFragment fragment = getFragment();
+        final MezzoPage fragment = getFragment();
         if (fragment != null && !fragment.onBackPress()) {
             super.onBackPressed();
         }

@@ -64,6 +64,7 @@ public class MainActivity extends BaseMezzoActivity {
                 break;
             case R.id.action_settings:
                 // TODO: Open Settings Page here.
+                setFragment(new SettingsFragment());
                 break;
             default:
                 return false;

@@ -104,6 +104,7 @@
     <orderEntry type="library" exported="" name="support-annotations-21.0.3" level="project" />
     <orderEntry type="library" exported="" name="commons-lang-2.4" level="project" />
     <orderEntry type="library" exported="" name="json_simple-1.1" level="project" />
+    <orderEntry type="library" exported="" name="support-v4-preferencefragment-1.0.0" level="project" />
     <orderEntry type="library" exported="" name="velocity-1.7" level="project" />
   </component>
 </module>
