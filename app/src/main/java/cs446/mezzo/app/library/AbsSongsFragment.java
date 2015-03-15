@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -63,14 +64,17 @@ public abstract class AbsSongsFragment extends BaseMezzoFragment implements Adap
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final SongAdapter songAdapter = new SongAdapter(getActivity(), mSongList);
-        mSongView.setAdapter(songAdapter);
+        mSongView.setAdapter(createAdapter(mSongList));
         mSongView.setOnItemClickListener(this);
     }
 
     public void updateSongs() {
         mSongList = buildSongsList();
-        mSongView.setAdapter(new SongAdapter(getActivity(), mSongList));
+        mSongView.setAdapter(createAdapter(mSongList));
+    }
+
+    protected ListAdapter createAdapter(List<Song> songs) {
+        return new SongAdapter(getActivity(), songs);
     }
 
     public void showPopup(View v, final Song song) {

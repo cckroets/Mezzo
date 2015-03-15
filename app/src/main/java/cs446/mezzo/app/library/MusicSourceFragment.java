@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -27,6 +28,7 @@ import cs446.mezzo.data.ProgressableCallback;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.control.SelectSongEvent;
 import cs446.mezzo.injection.Injector;
+import cs446.mezzo.music.FileSong;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.sources.MusicSource;
 import roboguice.inject.InjectView;
@@ -34,7 +36,7 @@ import roboguice.inject.InjectView;
 /**
  * @author curtiskroetsch
  */
-public abstract class MusicSourceFragment extends BaseMezzoFragment implements AdapterView.OnItemClickListener {
+public abstract class MusicSourceFragment extends AbsSongsFragment {
 
     private static final String TAG = MusicSourceFragment.class.getName();
     private static final int MAX_PROGRESS = 100;
@@ -65,8 +67,6 @@ public abstract class MusicSourceFragment extends BaseMezzoFragment implements A
         super.onCreate(savedInstanceState);
         mMusicSource = buildMusicSource();
         mAuthenticator = mMusicSource.getAuthenticator();
-        final List<MusicSource.MusicFile> empty = Collections.emptyList();
-        mAdapter = new MusicFileAdapter(empty);
     }
 
     @Override
@@ -79,7 +79,6 @@ public abstract class MusicSourceFragment extends BaseMezzoFragment implements A
         super.onViewCreated(view, savedInstanceState);
         final View header = mLayoutInflater.inflate(getHeaderLayoutId(), null);
         mSongsView.addHeaderView(header);
-        mSongsView.requestLayout();
         mSongsView.setAdapter(mAdapter);
         mSongsView.setOnItemClickListener(this);
         Injector.injectViews(this, header);
@@ -173,6 +172,25 @@ public abstract class MusicSourceFragment extends BaseMezzoFragment implements A
         }
     }
 
+    @Override
+    public List<Song> buildSongsList() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    protected ListAdapter createAdapter(List<Song> songs) {
+        if (mAdapter == null) {
+            final List<MusicSource.MusicFile> empty = Collections.emptyList();
+            mAdapter = new MusicFileAdapter(empty);
+        }
+        return mAdapter;
+    }
+
+    @Override
+    public int getMenuResId() {
+        return R.menu.menu_song_item;
+    }
+
     private static class ViewHolder {
         TextView mPrimary;
         TextView mSecondary;
@@ -206,6 +224,11 @@ public abstract class MusicSourceFragment extends BaseMezzoFragment implements A
                 default:
                     return null;
             }
+        }
+
+        @Override
+        public boolean isEnabled(int position) {
+            return getItemViewType(position) == TYPE_SONG;
         }
 
         // Make more efficient? This will recreate all rows, we just want to redraw one.
@@ -280,6 +303,7 @@ public abstract class MusicSourceFragment extends BaseMezzoFragment implements A
                 viewHolder = new ViewHolder();
                 viewHolder.mPrimary = (TextView) view.findViewById(cs446.mezzo.R.id.song_title);
                 viewHolder.mSecondary = (TextView) view.findViewById(cs446.mezzo.R.id.song_artist);
+                viewHolder.mButton = view.findViewById(R.id.song_menu);
                 view.setTag(viewHolder);
             }
 
@@ -287,6 +311,12 @@ public abstract class MusicSourceFragment extends BaseMezzoFragment implements A
             viewHolder.mSecondary.setText(TextUtils.isEmpty(song.getArtist()) ?
                     getString(R.string.default_artist) :
                     song.getArtist());
+            viewHolder.mButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showPopup(v, song);
+                }
+            });
             return view;
         }
     }
