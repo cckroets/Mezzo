@@ -13,4 +13,14 @@
         android:title="Song Cache Size"
         android:defaultValue="500"/>
 
+    <SwitchPreference
+        android:key="pref_timer"
+        android:title="Sleep Timer"
+        android:defaultValue="false"/>
+
+    <cs446.mezzo.view.TimePickerPreference
+        android:key="pref_setTimer"
+        android:dependency="pref_timer"
+        android:summary="Set the time the app should stop processes"/>
+
 </PreferenceScreen>
