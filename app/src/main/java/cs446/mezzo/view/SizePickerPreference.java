@@ -44,6 +44,7 @@ public class SizePickerPreference extends DialogPreference implements NumberPick
         mNumberPicker.setMaxValue((int) (gigabytesAvailable(getContext())));
         mNumberPicker.setValue(mCurrentValue);
         mNumberPicker.setWrapSelectorWheel(false);
+        mNumberPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
     }
 
     @Override

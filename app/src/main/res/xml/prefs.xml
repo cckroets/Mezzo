@@ -13,9 +13,4 @@
         android:title="Song Cache Size"
         android:defaultValue="500"/>
 
-    <Preference
-        android:key="pref_report"
-        android:title="Send Stats Report"
-        android:summary="Email a report containing the listening statistics"/>
-
 </PreferenceScreen>

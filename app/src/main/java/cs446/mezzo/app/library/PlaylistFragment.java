@@ -1,9 +1,20 @@
 package cs446.mezzo.app.library;
 
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.ListView;
+
+import com.google.inject.Inject;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,11 +23,20 @@ import java.util.List;
 import cs446.mezzo.R;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.music.playlists.Playlist;
+import cs446.mezzo.music.playlists.StatCollector;
+import cs446.mezzo.sources.LocalMusicFetcher;
+import roboguice.inject.InjectView;
 
 /**
  * @author curtiskroetsch
  */
 public class PlaylistFragment extends AbsSongsFragment {
+
+    @InjectView(R.id.song_list)
+    ListView mSongView;
+
+    @Inject
+    StatCollector mStatCollector;
 
     private static final String KEY_NAME = "name";
     private static final String KEY_SONGS = "songs";
@@ -77,6 +97,37 @@ public class PlaylistFragment extends AbsSongsFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        final FrameLayout footerLayout = (FrameLayout) getLayoutInflater(savedInstanceState).inflate(R.layout.fragment_playlist_footer, null);
+        final Button mExportPlaylistButton = (Button) footerLayout.findViewById(R.id.export_playlist_button);
+
+        mExportPlaylistButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String text = "";
+                final List<Song> mSongs = buildSongsList();
+                for (Song s : mSongs) {
+                    final String mTitle = s.getTitle();
+                    final String mArtist = s.getArtist();
+                    final int mCount = mStatCollector.getTotalPlayCount(s);
+                    text = text + mCount + ": " + mTitle + " " + mArtist + "\n";
+                }
+                final Intent sendEmail = new Intent();
+                sendEmail.setAction(Intent.ACTION_SEND);
+                sendEmail.putExtra(Intent.EXTRA_TEXT, text);
+                sendEmail.setType("text/plain");
+
+                final Intent openInChooser = Intent.createChooser(sendEmail, "Export using...");
+                startActivityForResult(openInChooser, 1);
+            }
+        });
+
+        mSongView.addFooterView(footerLayout);
     }
 
     @Override

@@ -3,7 +3,9 @@ package cs446.mezzo.app.library;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
@@ -13,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -29,6 +33,8 @@ import cs446.mezzo.events.control.EnqueueEvent;
 import cs446.mezzo.events.control.SelectSongEvent;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.music.playlists.PlaylistManager;
+import cs446.mezzo.music.playlists.StatCollector;
+import cs446.mezzo.sources.LocalMusicFetcher;
 import roboguice.inject.InjectView;
 
 /**
@@ -66,6 +72,7 @@ public abstract class AbsSongsFragment extends BaseMezzoFragment implements Adap
         super.onViewCreated(view, savedInstanceState);
         mSongView.setAdapter(createAdapter(mSongList));
         mSongView.setOnItemClickListener(this);
+
     }
 
     public void updateSongs() {

@@ -1,20 +1,28 @@
 package cs446.mezzo.app;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.preference.PreferenceFragment;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
-import android.view.ViewGroup;
+
+import com.google.inject.Inject;
+
+import java.util.List;
 
 import cs446.mezzo.R;
+import cs446.mezzo.music.Song;
+import cs446.mezzo.music.playlists.StatCollector;
+import cs446.mezzo.sources.LocalMusicFetcher;
 
 /**
  * @author curtiskroetsch
  */
+
 public class SettingsFragment extends PreferenceFragment implements MezzoPage {
 
     @Override

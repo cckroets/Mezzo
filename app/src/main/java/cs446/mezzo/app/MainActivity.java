@@ -63,7 +63,6 @@ public class MainActivity extends BaseMezzoActivity {
                 onBackPressed();
                 break;
             case R.id.action_settings:
-                // TODO: Open Settings Page here.
                 setFragment(new SettingsFragment());
                 break;
             default:
@@ -84,6 +83,8 @@ public class MainActivity extends BaseMezzoActivity {
         } else {
             setFragment(PlaylistFragment.createFromOnTheFly(event.getPlaylist()));
         }
+
+
     }
 
     @Override
