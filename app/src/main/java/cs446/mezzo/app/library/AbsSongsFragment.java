@@ -31,6 +31,7 @@ import cs446.mezzo.app.BaseMezzoFragment;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.control.EnqueueEvent;
 import cs446.mezzo.events.control.SelectSongEvent;
+import cs446.mezzo.injection.Injector;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.music.playlists.PlaylistManager;
 import cs446.mezzo.music.playlists.StatCollector;
@@ -70,9 +71,11 @@ public abstract class AbsSongsFragment extends BaseMezzoFragment implements Adap
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        final View header = getActivity().getLayoutInflater().inflate(getHeaderLayoutId(), null);
+        Injector.injectViews(this, header);
+        mSongView.addHeaderView(header, null, false);
         mSongView.setAdapter(createAdapter(mSongList));
         mSongView.setOnItemClickListener(this);
-
     }
 
     public void updateSongs() {
@@ -100,6 +103,10 @@ public abstract class AbsSongsFragment extends BaseMezzoFragment implements Adap
     }
 
     public abstract int getMenuResId();
+
+    public int getHeaderLayoutId() {
+        return R.layout.header_default;
+    }
 
     public void onAddToPlaylist(final Song song) {
         final Collection<String> playlistNameSet = mPlaylistManager.getUserPlaylistTitles();
@@ -151,7 +158,7 @@ public abstract class AbsSongsFragment extends BaseMezzoFragment implements Adap
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        EventBus.post(new SelectSongEvent(mSongList, position));
+        EventBus.post(new SelectSongEvent(mSongList, position - mSongView.getHeaderViewsCount()));
     }
 
     private static class ViewHolder {

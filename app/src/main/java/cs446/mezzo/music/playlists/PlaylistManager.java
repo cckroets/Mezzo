@@ -65,11 +65,19 @@ public class PlaylistManager {
         return true;
     }
 
-    public void deletePlaylist(String name) {
+    public boolean deletePlaylist(String name) {
         ensureLoaded();
         final Playlist removed = mUserPlaylists.remove(name);
-        mModified = true;
-        EventBus.post(new PlaylistChangedEvent(removed));
+        if (removed != null) {
+            mModified = true;
+            EventBus.post(new PlaylistChangedEvent(removed));
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isEditable(String playlistName) {
+        return mUserPlaylists.containsKey(playlistName);
     }
 
     public Collection<String> getUserPlaylistTitles() {

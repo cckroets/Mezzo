@@ -21,14 +21,10 @@ import java.util.Collections;
 import java.util.List;
 
 import cs446.mezzo.R;
-import cs446.mezzo.app.BaseMezzoFragment;
-import cs446.mezzo.app.player.NowPlayingFragment;
 import cs446.mezzo.data.Callback;
 import cs446.mezzo.data.ProgressableCallback;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.control.SelectSongEvent;
-import cs446.mezzo.injection.Injector;
-import cs446.mezzo.music.FileSong;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.sources.MusicSource;
 import roboguice.inject.InjectView;
@@ -77,11 +73,6 @@ public abstract class MusicSourceFragment extends AbsSongsFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final View header = mLayoutInflater.inflate(getHeaderLayoutId(), null);
-        mSongsView.addHeaderView(header);
-        mSongsView.setAdapter(mAdapter);
-        mSongsView.setOnItemClickListener(this);
-        Injector.injectViews(this, header);
         if (mAuthenticator.isAuthenticated()) {
             onAuthenticated();
         } else {

@@ -3,21 +3,21 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:clickable="true"
               android:background="#fff3f3f3"
+              android:baselineAligned="false"
+              android:clickable="true"
               android:orientation="vertical"
-    android:paddingBottom="3dp"
-    android:baselineAligned="false">
+              android:paddingBottom="3dp">
 
     <ListView
         android:id="@+id/song_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
-        android:dividerHeight="0dp"
         android:divider="@null"
+        android:dividerHeight="0dp"
+        android:fastScrollEnabled="false"
         android:visibility="visible"
-        tools:listitem="@layout/view_song"
-        android:fastScrollEnabled="false" />
+        tools:listitem="@layout/view_song"/>
 
 </LinearLayout>

@@ -1,18 +1,12 @@
 package cs446.mezzo.app.library;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.ListView;
 
 import com.google.inject.Inject;
 
@@ -21,29 +15,26 @@ import java.util.Collection;
 import java.util.List;
 
 import cs446.mezzo.R;
+import cs446.mezzo.events.EventBus;
+import cs446.mezzo.events.control.ShuffleAllEvent;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.music.playlists.Playlist;
 import cs446.mezzo.music.playlists.StatCollector;
-import cs446.mezzo.sources.LocalMusicFetcher;
-import roboguice.inject.InjectView;
 
 /**
  * @author curtiskroetsch
  */
 public class PlaylistFragment extends AbsSongsFragment {
 
-    @InjectView(R.id.song_list)
-    ListView mSongView;
-
-    @Inject
-    StatCollector mStatCollector;
-
     private static final String KEY_NAME = "name";
     private static final String KEY_SONGS = "songs";
     private static final String KEY_PARCELED = "saved";
 
-    private String mPlaylistName;
+    @Inject
+    StatCollector mStatCollector;
 
+    private String mPlaylistName;
+    private List<Song> mSongs;
 
     public PlaylistFragment() {
 
@@ -51,6 +42,7 @@ public class PlaylistFragment extends AbsSongsFragment {
 
     /**
      * Create an instance of the fragment where the playlist is saved inside of the PlaylistManager
+     *
      * @param name
      * @return
      */
@@ -66,6 +58,7 @@ public class PlaylistFragment extends AbsSongsFragment {
     /**
      * Create an instance of the fragment where the playlist is not saved in the PlaylistManager,
      * and so we must save it somewhere ourselves.
+     *
      * @param playlist
      * @return
      */
@@ -97,37 +90,51 @@ public class PlaylistFragment extends AbsSongsFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        final boolean isEditable = getPlaylistManager().isEditable(mPlaylistName);
+        inflater.inflate(R.menu.menu_playlist, menu);
+        menu.findItem(R.id.action_delete_playlist).setVisible(isEditable);
+    }
 
-        final FrameLayout footerLayout = (FrameLayout) getLayoutInflater(savedInstanceState).inflate(R.layout.fragment_playlist_footer, null);
-        final Button mExportPlaylistButton = (Button) footerLayout.findViewById(R.id.export_playlist_button);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_shuffle_all:
+                shuffleAll();
+                break;
+            case R.id.action_delete_playlist:
+                deletePlaylist();
+                break;
+            case R.id.action_report_stats:
+                reportStats();
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
 
-        mExportPlaylistButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String text = "";
-                final List<Song> mSongs = buildSongsList();
-                for (Song s : mSongs) {
-                    final String mTitle = s.getTitle();
-                    final String mArtist = s.getArtist();
-                    final int mCount = mStatCollector.getTotalPlayCount(s);
-                    text = text + mCount + ": " + mTitle + " " + mArtist + "\n";
-                }
-                final Intent sendEmail = new Intent();
-                sendEmail.setAction(Intent.ACTION_SEND);
-                sendEmail.putExtra(Intent.EXTRA_TEXT, text);
-                sendEmail.setType("text/plain");
+    private void reportStats() {
+        final String report = mStatCollector.buildStatsReport(mSongs);
+        final Intent sendEmail = new Intent();
+        sendEmail.setAction(Intent.ACTION_SEND);
+        sendEmail.putExtra(Intent.EXTRA_TEXT, report);
+        sendEmail.setType("text/plain");
 
-                final Intent openInChooser = Intent.createChooser(sendEmail, "Export using...");
-                startActivityForResult(openInChooser, 1);
-            }
-        });
+        final Intent openInChooser = Intent.createChooser(sendEmail, "Export using...");
+        startActivityForResult(openInChooser, 1);
+    }
 
-        mSongView.addFooterView(footerLayout);
+    private void deletePlaylist() {
+        getPlaylistManager().deletePlaylist(mPlaylistName);
+    }
+
+    private void shuffleAll() {
+        EventBus.post(new ShuffleAllEvent(mSongs));
     }
 
     @Override
@@ -135,13 +142,12 @@ public class PlaylistFragment extends AbsSongsFragment {
         mPlaylistName = getArguments().getString(KEY_NAME);
         Log.d("PLAYLIST NAME", mPlaylistName);
         final boolean bundled = getArguments().getBoolean(KEY_PARCELED, false);
-        final List<Song> songs;
         if (bundled) {
-            songs = loadSongs(getArguments());
+            mSongs = loadSongs(getArguments());
         } else {
-            songs = new ArrayList<>(getPlaylistManager().getPlaylist(mPlaylistName).getSongs());
+            mSongs = new ArrayList<>(getPlaylistManager().getPlaylist(mPlaylistName).getSongs());
         }
-        return songs;
+        return mSongs;
     }
 
     public void onRemoveFromPlaylist(Song song) {
