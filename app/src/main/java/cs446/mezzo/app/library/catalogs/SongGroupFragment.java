@@ -62,13 +62,14 @@ public class SongGroupFragment extends CatalogFragment {
         for (int i = 0; i < songList.size(); i++) {
 
             for (String category : mSongGroup.getGroups(getActivity().getResources(), songList.get(i))) {
-
-                if (categories.get(category) == null) {
-                    final List<Song> songs = new ArrayList<>();
-                    songs.add(songList.get(i));
-                    categories.put(category, new Playlist(category, songs));
-                } else {
-                    categories.get(category).getSongs().add(songList.get(i));
+                if (category != null) {
+                    if (categories.get(category) == null) {
+                        final List<Song> songs = new ArrayList<>();
+                        songs.add(songList.get(i));
+                        categories.put(category, new Playlist(category, songs));
+                    } else {
+                        categories.get(category).getSongs().add(songList.get(i));
+                    }
                 }
             }
         }
