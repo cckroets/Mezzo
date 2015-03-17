@@ -27,6 +27,8 @@ public class MainActivity extends BaseMezzoActivity {
     @InjectView(R.id.toolbar)
     Toolbar mToolbar;
 
+    MenuItem mRefreshButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +55,8 @@ public class MainActivity extends BaseMezzoActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        mRefreshButton = menu.findItem(R.id.navigation_refresh);
+        mRefreshButton.setVisible(false);
         return true;
     }
 
@@ -85,6 +89,10 @@ public class MainActivity extends BaseMezzoActivity {
         }
 
 
+    }
+
+    public MenuItem getRefreshButton() {
+        return mRefreshButton;
     }
 
     @Override
