@@ -28,5 +28,8 @@
     <string name="cancel">Cancel</string>
     <string name="create_playlist_error">Could not create a playlist with that name</string>
     <string name="select_playlist">Select Playlist</string>
+    <string name="menu_delete_playlist">Delete Playlist</string>
+    <string name="menu_export">Export Stats</string>
+    <string name="menu_shuffle_all">Shuffle all</string>
 
 </resources>

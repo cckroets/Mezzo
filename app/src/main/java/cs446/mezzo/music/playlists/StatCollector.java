@@ -4,6 +4,8 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.squareup.otto.Subscribe;
 
+import java.util.Collection;
+
 import cs446.mezzo.data.Preferences;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.playback.SongPlayEvent;
@@ -65,5 +67,18 @@ public class StatCollector {
 
     public int getTotalPlayCount(Song song) {
         return getPlayCount(KEY_COUNT + song.getDataSource().toString());
+    }
+
+    public String buildStatsReport(Collection<Song> songs) {
+        final StringBuilder builder = new StringBuilder();
+        for (Song s : songs) {
+            final String title = s.getTitle();
+            final String artist = s.getArtist();
+            final int count = getTotalPlayCount(s);
+            builder.append(count).append(": ")
+                   .append(title).append(" - ")
+                   .append(artist).append('\n');
+        }
+        return builder.toString();
     }
 }
