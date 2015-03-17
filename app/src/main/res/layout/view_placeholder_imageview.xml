@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
 
     <cs446.mezzo.view.AutoResizeTextView
         android:id="@+id/ph_text"
@@ -11,13 +13,20 @@
         android:gravity="center"
         android:text="TS"
         android:textColor="@color/material_blue_grey_900"
-        android:textSize="24pt"
-        android:textStyle="bold"/>
+        android:textSize="12pt" />
 
     <ImageView
         android:id="@+id/ph_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop"/>
+        android:scaleType="centerCrop" />
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/ph_logo"
+        android:background="@drawable/nowplaying_bg_logo"
+        android:layout_gravity="center"
+        android:visibility="invisible" />
 
 </FrameLayout>

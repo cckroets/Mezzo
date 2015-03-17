@@ -1,5 +1,9 @@
 package cs446.mezzo.app.player;
 
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.graphics.Palette;
@@ -16,6 +20,8 @@ import android.widget.Toast;
 
 import com.google.inject.Inject;
 import com.squareup.otto.Subscribe;
+
+import java.util.Random;
 
 import cs446.mezzo.R;
 import cs446.mezzo.app.BaseMezzoFragment;
@@ -37,6 +43,7 @@ import cs446.mezzo.metadata.lyrics.LyricResult;
 import cs446.mezzo.metadata.lyrics.LyricsManager;
 import cs446.mezzo.music.MusicUtil;
 import cs446.mezzo.music.Song;
+import cs446.mezzo.view.AutoResizeTextView;
 import cs446.mezzo.view.MezzoImageView;
 import cs446.mezzo.view.ViewUtil;
 import roboguice.inject.InjectView;
@@ -90,6 +97,12 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
 
     @InjectView(R.id.player_lyrics_container)
     View mLyricsContainer;
+
+    @InjectView(R.id.ph_text)
+    AutoResizeTextView mTextView;
+
+    @InjectView(R.id.ph_logo)
+    ImageView mLogoView;
 
     MenuItem mLyricsMenuItem;
 
@@ -215,6 +228,7 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
     }
 
     private void onPaletteLoaded(Palette palette) {
+        mLogoView.setVisibility(View.INVISIBLE);
         if (!isAdded()) {
             return;
         }
@@ -237,16 +251,31 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
 
     private void onPaletteFailed() {
 
-        final int defaultColor = getResources().getColor(R.color.primary_dark);
-        final int defaultVibrant = getResources().getColor(R.color.primary);
-        final int defaultMuted = getResources().getColor(R.color.primary_light);
-        final int defaultTextPrimary = getResources().getColor(R.color.default_textColor);
+        final ColorDrawable cd = (ColorDrawable) mTextView.getBackground();
+        final int backgroundColor = cd.getColor();
 
-        ViewUtil.tintTextView(mTitle, defaultTextPrimary);
-        ViewUtil.tintTextView(mAlbumArtist, defaultColor);
-        ViewUtil.tintDecor(this, defaultVibrant);
-        ViewUtil.tintSeekbar(mSeekBar, defaultMuted);
-        mPlayerButtonsContainer.setBackgroundColor(defaultVibrant);
+        int r = Color.red(backgroundColor);
+        int g = Color.green(backgroundColor);
+        int b = Color.blue(backgroundColor);
+
+        final int accentColor = Color.rgb(r-75,g-75,b-75); //+75 lightens it up
+
+        //final int defaultColor = randomColor; //getResources().getColor(R.color.primary_dark);
+        //final int defaultVibrant = randomColor; //getResources().getColor(R.color.primary);
+        //final int defaultMuted = randomColor; //getResources().getColor(R.color.primary_light);
+        //final int defaultTextPrimary = randomColor; //getResources().getColor(R.color.default_textColor);
+
+        ViewUtil.tintTextView(mTitle, accentColor);
+        ViewUtil.tintTextView(mAlbumArtist, backgroundColor);
+        ViewUtil.tintDecor(this, accentColor);
+        ViewUtil.tintSeekbar(mSeekBar, backgroundColor);
+        mPlayerButtonsContainer.setBackgroundColor(accentColor);
+        mTextView.setBackgroundColor(backgroundColor);
+        mTextView.setTextColor(Color.TRANSPARENT);
+        mLogoView.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.OVERLAY);
+        //ViewUtil.tintViews(backgroundColor, mLogoView);
+        mLogoView.setVisibility(View.VISIBLE);
+
     }
 
     private void updateSeekbar() {
