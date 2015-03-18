@@ -9,7 +9,10 @@ import com.google.inject.Inject;
 import java.util.List;
 
 import cs446.mezzo.R;
+import cs446.mezzo.data.Callback;
+import cs446.mezzo.data.ProgressableCallback;
 import cs446.mezzo.injection.Nullable;
+import cs446.mezzo.music.Song;
 import cs446.mezzo.sources.MusicSource;
 import cs446.mezzo.sources.dropbox.DropboxSource;
 import roboguice.inject.InjectView;
@@ -26,8 +29,8 @@ public class DropboxFragment extends MusicSourceFragment {
     View mSignInButton;
 
     @Nullable
-    @InjectView(R.id.source_sync)
-    View mSyncButton;
+    @InjectView(R.id.download_all)
+    View mDownloadAll;
 
     @Inject
     DropboxSource mDropboxSource;
@@ -43,19 +46,62 @@ public class DropboxFragment extends MusicSourceFragment {
                 mAuthenticator.startAuthentication(getActivity());
             }
         });
-        mSyncButton.setOnClickListener(new View.OnClickListener() {
+        mDownloadAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onSongSearchStart();
+                mDropboxSource.searchForSongs(new Callback<List<MusicSource.MusicFile>>() {
+                    @Override
+                    public void onSuccess(List<MusicSource.MusicFile> data) {
+                        downloadAll();
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+
+                    }
+                }, false);
             }
         });
+    }
+
+    public void downloadAll() {
+        mDropboxSource.searchForSongs(new Callback<List<MusicSource.MusicFile>>() {
+            @Override
+            public void onSuccess(List<MusicSource.MusicFile> data) {
+                for (MusicSource.MusicFile file : data) {
+                    mDropboxSource.download(getView().getContext(), file, new ProgressableCallback<Song>() {
+                        @Override
+                        public void onProgress(float completion) {
+
+                        }
+
+                        @Override
+                        public void onSuccess(Song data) {
+
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+
+                        }
+                    });
+                }
+
+                mSongsView.invalidateViews();
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+
+            }
+        }, false);
     }
 
     @Override
     public void onAuthenticated() {
         Log.d(TAG, "onAuthenticated");
         mSignInButton.setVisibility(View.GONE);
-        mSyncButton.setVisibility(View.VISIBLE);
+        mDownloadAll.setVisibility(View.VISIBLE);
         super.onAuthenticated();
     }
 
@@ -63,7 +109,7 @@ public class DropboxFragment extends MusicSourceFragment {
     public void onNotAuthenticated() {
         Log.d(TAG, "onNotAuthenticated");
         mSignInButton.setVisibility(View.VISIBLE);
-        mSyncButton.setVisibility(View.GONE);
+        mDownloadAll.setVisibility(View.GONE);
     }
 
     @Override

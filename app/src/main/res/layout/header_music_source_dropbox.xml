@@ -36,7 +36,7 @@
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
-        android:id="@+id/source_sync"
+        android:id="@+id/download_all"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
@@ -55,7 +55,7 @@
             android:paddingLeft="12dp"
             android:paddingRight="12dp"
             android:paddingTop="6dp"
-            android:text="SYNC NOW"
+            android:text="DOWNLOAD ALL"
             android:textColor="@color/primary"
             android:textStyle="bold"/>
 
