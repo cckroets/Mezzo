@@ -73,9 +73,18 @@ public class DropboxSource extends MusicSource {
     public class DBMusicFile implements MusicFile {
 
         DropboxAPI.Entry mEntry;
+        DBDownloadTask mDownloadTask;
 
         public DBMusicFile(DropboxAPI.Entry entry) {
             mEntry = entry;
+        }
+
+        public void setDownloadTask(DBDownloadTask downloadTask) {
+            mDownloadTask = downloadTask;
+        }
+
+        public DBDownloadTask getDownloadTask() {
+            return mDownloadTask;
         }
 
         @Override
@@ -142,6 +151,7 @@ public class DropboxSource extends MusicSource {
             mFile = file;
             mEntry = ((DBMusicFile) musicFile).mEntry;
             mMusicFile = musicFile;
+            ((DBMusicFile) musicFile).setDownloadTask(this);
         }
 
         @Override
@@ -179,7 +189,8 @@ public class DropboxSource extends MusicSource {
         @Override
         protected void onPostExecute(Song song) {
             super.onPostExecute(song);
-            if (song != null) {
+            if (song != null && mDownloadingCount == 0) {
+                // For some reason this event sometimes fails if there are still unfinished downloads.
                 EventBus.post(new FileDownloadedEvent(DropboxSource.this, song, mFile));
             }
         }

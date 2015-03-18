@@ -21,12 +21,14 @@ import java.util.Collections;
 import java.util.List;
 
 import cs446.mezzo.R;
+import cs446.mezzo.data.AsyncMezzoTask;
 import cs446.mezzo.data.Callback;
 import cs446.mezzo.data.ProgressableCallback;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.control.SelectSongEvent;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.sources.MusicSource;
+import cs446.mezzo.sources.dropbox.DropboxSource;
 import roboguice.inject.InjectView;
 
 /**
@@ -245,35 +247,47 @@ public abstract class MusicSourceFragment extends AbsSongsFragment {
                 view.setTag(viewHolder);
             }
 
+            final ProgressableCallback<Song> progressCallback = new ProgressableCallback<Song>() {
+                @Override
+                public void onProgress(float completion) {
+                    viewHolder.mProgressBar.setProgress((int) (MAX_PROGRESS * completion));
+                }
+
+                @Override
+                public void onSuccess(Song data) {
+                    Log.d(TAG, "DOWNLOAD SUCCESS " + data.getTitle());
+                    viewHolder.mProgressBar.setProgress(MAX_PROGRESS);
+                    redrawView(position);
+                    onSongDownloaded(position, data);
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    viewHolder.mProgressBar.setProgress(0);
+                    viewHolder.mProgressBar.setVisibility(View.GONE);
+                    viewHolder.mButton.setEnabled(true);
+                    Toast.makeText(getContext(), "Download failed", Toast.LENGTH_SHORT).show();
+                }
+            };
+
             viewHolder.mPrimary.setText(file.getDisplayName());
-            viewHolder.mProgressBar.setVisibility(mMusicSource.isDownloading(getContext(), file) ? View.VISIBLE : View.GONE);
+            if (mMusicSource.isDownloading(getContext(), file)) {
+                viewHolder.mButton.setEnabled(false);
+                viewHolder.mProgressBar.setVisibility(View.VISIBLE);
+                AsyncMezzoTask<Void, Float, Song> downloadTask = ((DropboxSource.DBMusicFile) file).getDownloadTask();
+                downloadTask.setCallback(mMusicSource.getDecoratedCallback(file, progressCallback));
+            }
+            else {
+                viewHolder.mButton.setEnabled(true);
+                viewHolder.mProgressBar.setVisibility(View.GONE);
+            }
+
             viewHolder.mButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     viewHolder.mButton.setEnabled(false);
                     viewHolder.mProgressBar.setVisibility(View.VISIBLE);
-                    mMusicSource.download(getContext(), file, new ProgressableCallback<Song>() {
-                        @Override
-                        public void onProgress(float completion) {
-                            viewHolder.mProgressBar.setProgress((int) (MAX_PROGRESS * completion));
-                        }
-
-                        @Override
-                        public void onSuccess(Song data) {
-                            Log.d(TAG, "DOWNLOAD SUCCESS " + data.getTitle());
-                            viewHolder.mProgressBar.setProgress(MAX_PROGRESS);
-                            redrawView(position);
-                            onSongDownloaded(position, data);
-                        }
-
-                        @Override
-                        public void onFailure(Exception e) {
-                            viewHolder.mProgressBar.setProgress(0);
-                            viewHolder.mProgressBar.setVisibility(View.GONE);
-                            viewHolder.mButton.setEnabled(true);
-                            Toast.makeText(getContext(), "Download failed", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    mMusicSource.download(getContext(), file, progressCallback);
                 }
             });
 

@@ -25,6 +25,8 @@ public abstract class MusicSource {
     private Set<MusicFile> mDownloading = new HashSet<MusicFile>();
     private List<MusicFile> mFiles;
 
+    protected int mDownloadingCount = 0;
+
     public void searchForSongs(final Callback<List<MusicFile>> callback, final boolean refresh) {
         if (mFiles != null && !refresh) {
             callback.onSuccess(mFiles);
@@ -102,6 +104,29 @@ public abstract class MusicSource {
         return downloadedFile.exists() ? new FileSong(file, downloadedFile) : null;
     }
 
+    public ProgressableCallback<Song> getDecoratedCallback(final MusicFile musicFile, final ProgressableCallback<Song> callback) {
+        return new ProgressableCallback<Song>() {
+            @Override
+            public void onProgress(float completion) {
+                callback.onProgress(completion);
+            }
+
+            @Override
+            public void onSuccess(Song data) {
+                mDownloading.remove(musicFile);
+                mDownloadingCount = mDownloadingCount - 1;
+                callback.onSuccess(data);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                mDownloading.remove(musicFile);
+                mDownloadingCount = mDownloadingCount - 1;
+                callback.onFailure(e);
+            }
+        };
+    }
+
     /**
      * Download a specified MusicFile to the device.
      *
@@ -111,24 +136,8 @@ public abstract class MusicSource {
      */
     public void download(Context c, final MusicFile musicFile, final ProgressableCallback<Song> callback) {
         mDownloading.add(musicFile);
-        download(musicFile, getSongFile(c, musicFile), new ProgressableCallback<Song>() {
-            @Override
-            public void onProgress(float completion) {
-                callback.onProgress(completion);
-            }
-
-            @Override
-            public void onSuccess(Song data) {
-                mDownloading.remove(musicFile);
-                callback.onSuccess(data);
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                mDownloading.remove(musicFile);
-                callback.onFailure(e);
-            }
-        });
+        mDownloadingCount = mDownloadingCount + 1;
+        download(musicFile, getSongFile(c, musicFile), getDecoratedCallback(musicFile, callback));
     }
 
     /**

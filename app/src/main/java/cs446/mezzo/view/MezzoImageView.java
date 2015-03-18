@@ -24,6 +24,9 @@ public class MezzoImageView extends FrameLayout {
     @InjectView(R.id.ph_text)
     AutoResizeTextView mTextView;
 
+    @InjectView(R.id.ph_logo)
+    ImageView mLogoView;
+
     public MezzoImageView(Context context) {
         super(context);
         init();

@@ -21,6 +21,7 @@ public abstract class AsyncMezzoTask<Params, Progress, Result> extends AsyncTask
     public Callback<Result> getCallback() {
         return mCallback;
     }
+    public void setCallback(Callback<Result> callback) { mCallback = callback; }
 
     @Override
     protected void onPostExecute(Result result) {

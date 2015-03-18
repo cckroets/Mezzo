@@ -92,7 +92,9 @@ public class FileSong implements Song {
         final String genre = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE);
         final String rawDuration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
         mGenres = new HashSet<String>();
-        mGenres.add(genre);
+        if (genre != null) {
+            mGenres.add(genre);
+        }
         mDuration = rawDuration == null ? 0 : Long.parseLong(rawDuration);
         retriever.release();
     }
