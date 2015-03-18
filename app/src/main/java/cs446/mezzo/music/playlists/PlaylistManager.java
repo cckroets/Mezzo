@@ -70,7 +70,7 @@ public class PlaylistManager {
         final Playlist removed = mUserPlaylists.remove(name);
         if (removed != null) {
             mModified = true;
-            EventBus.post(new PlaylistChangedEvent(removed));
+            EventBus.post(new PlaylistChangedEvent(removed, true));
             return true;
         }
         return false;

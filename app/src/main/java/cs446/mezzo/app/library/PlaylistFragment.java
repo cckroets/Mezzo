@@ -131,6 +131,7 @@ public class PlaylistFragment extends AbsSongsFragment {
 
     private void deletePlaylist() {
         getPlaylistManager().deletePlaylist(mPlaylistName);
+        getMezzoActivity().onBackPressed();
     }
 
     private void shuffleAll() {

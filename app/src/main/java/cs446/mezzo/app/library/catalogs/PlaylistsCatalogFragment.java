@@ -88,7 +88,11 @@ public class PlaylistsCatalogFragment extends CatalogFragment {
     @Subscribe
     public void onPlaylistsChanged(PlaylistChangedEvent event) {
         if (event.getPlaylist() != null) {
-            getCategories().put(event.getPlaylist().getName(), event.getPlaylist());
+            if (event.isDeleted()) {
+                getCategories().remove(event.getPlaylist().getName());
+            } else {
+                getCategories().put(event.getPlaylist().getName(), event.getPlaylist());
+            }
             updateAdapter();
         }
     }

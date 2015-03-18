@@ -87,8 +87,6 @@ public class MainActivity extends BaseMezzoActivity {
         } else {
             setFragment(PlaylistFragment.createFromOnTheFly(event.getPlaylist()));
         }
-
-
     }
 
     public MenuItem getRefreshButton() {

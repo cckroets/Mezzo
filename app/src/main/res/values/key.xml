@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Put this file here: /Mezzo/app/src/main/res/values/keys.xml
-     And make sure not to upload it to Git!-->
-<resources>
-    <string name="dropbox_app_key">84wbr5z1trj7oxj</string>
-    <string name="dropbox_secret_key">8wv2iethpzbm4m3</string>
-    <string name="musixmatch_api_key">042c3853289335e62ff25490e7770a40</string>
-</resources>
