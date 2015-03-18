@@ -3,12 +3,6 @@
       tools:context=".MainActivity"
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
-<item
-    android:id="@+id/navigation_refresh"
-    android:icon="@drawable/ic_navigation_refresh"
-    app:showAsAction="ifRoom"
-    android:title="Settings"/>
-
 
 <item
         android:id="@+id/action_settings"

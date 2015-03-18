@@ -29,8 +29,12 @@ public class DropboxFragment extends MusicSourceFragment {
     View mSignInButton;
 
     @Nullable
-    @InjectView(R.id.download_all)
+    @InjectView(R.id.source_download_all)
     View mDownloadAll;
+
+    @Nullable
+    @InjectView(R.id.source_refresh)
+    View mRefresh;
 
     @Inject
     DropboxSource mDropboxSource;
@@ -62,14 +66,23 @@ public class DropboxFragment extends MusicSourceFragment {
                 }, false);
             }
         });
+        mRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onSongSearchStart();
+            }
+        });
     }
 
     public void downloadAll() {
         mDropboxSource.searchForSongs(new Callback<List<MusicSource.MusicFile>>() {
             @Override
             public void onSuccess(List<MusicSource.MusicFile> data) {
+                if (!isAdded()) {
+                    return;
+                }
                 for (MusicSource.MusicFile file : data) {
-                    mDropboxSource.download(getView().getContext(), file, new ProgressableCallback<Song>() {
+                    mDropboxSource.download(getActivity(), file, new ProgressableCallback<Song>() {
                         @Override
                         public void onProgress(float completion) {
 
@@ -86,7 +99,6 @@ public class DropboxFragment extends MusicSourceFragment {
                         }
                     });
                 }
-
                 mSongsView.invalidateViews();
             }
 
