@@ -12,15 +12,23 @@ import android.util.LruCache;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
+import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Request;
 import com.squareup.picasso.RequestHandler;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import cs446.mezzo.data.Preferences;
+import cs446.mezzo.events.EventBus;
+import cs446.mezzo.events.system.ActivityStoppedEvent;
 import cs446.mezzo.metadata.MusicBrainzManager;
 import cs446.mezzo.metadata.Recording;
 import cs446.mezzo.net.CoverArtArchive;
@@ -45,6 +53,7 @@ import retrofit.RetrofitError;
 class CoverArtRequestHandler extends RequestHandler {
 
     private static final String TAG = CoverArtRequestHandler.class.getName();
+    private static final String KEY_CACHE = "image-cache";
     private static final int CACHE_SIZE = 200;
     private static final Object NOTHING = new Object();
     private static final int FAILURE_EXPIRE_SECONDS = 3;
@@ -58,18 +67,29 @@ class CoverArtRequestHandler extends RequestHandler {
     @Inject
     MusicBrainzManager mMusicBrainz;
 
+    Preferences mPreferences;
+
     private Picasso mPicasso;
     private Cache<String, String> mUrlCache;
     private Cache<String, Object> mFailureCache;
 
-
-    public CoverArtRequestHandler() {
+    @Inject
+    public CoverArtRequestHandler(Preferences preferences) {
+        mPreferences = preferences;
         mUrlCache = CacheBuilder.newBuilder()
                 .maximumSize(CACHE_SIZE)
                 .build();
         mFailureCache = CacheBuilder.newBuilder()
                 .expireAfterAccess(FAILURE_EXPIRE_SECONDS, TimeUnit.SECONDS)
                 .build();
+        mPreferences = preferences;
+        loadCache();
+        EventBus.register(this);
+    }
+
+    @Subscribe
+    public void onActivityStopped(ActivityStoppedEvent event) {
+        saveCache();
     }
 
     @Override
@@ -144,6 +164,23 @@ class CoverArtRequestHandler extends RequestHandler {
         }
         final Bitmap bitmap = mPicasso.load(url).get();
         return new Result(bitmap, Picasso.LoadedFrom.NETWORK);
+    }
+
+    private void saveCache() {
+        final Type type = new TypeToken<Map<String, String>>(){ }.getType();
+        mPreferences.putObject(KEY_CACHE, type, mUrlCache.asMap());
+        Log.d(TAG, "saving to cache");
+    }
+
+    private void loadCache() {
+        final Type type = new TypeToken<Map<String, String>>(){ }.getType();
+        final Map<String, String> cache = mPreferences.getObject(KEY_CACHE, type);
+        if (cache != null) {
+            Log.d(TAG, "Loading from cache success");
+            mUrlCache.putAll(cache);
+        } else {
+            Log.d(TAG, "Loading from cache failed");
+        }
     }
 
 }
