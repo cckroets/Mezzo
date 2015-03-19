@@ -140,6 +140,9 @@ public class PlaylistFragment extends AbsSongsFragment {
 
     @Override
     public List<Song> buildSongsList() {
+        if (mSongs != null) {
+            return mSongs;
+        }
         mPlaylistName = getArguments().getString(KEY_NAME);
         Log.d("PLAYLIST NAME", mPlaylistName);
         final boolean bundled = getArguments().getBoolean(KEY_PARCELED, false);
@@ -153,6 +156,8 @@ public class PlaylistFragment extends AbsSongsFragment {
 
     public void onRemoveFromPlaylist(Song song) {
         getPlaylistManager().removeSongFromPlaylist(mPlaylistName, song);
+        mSongs.remove(song);
+        updateSongs();
     }
 
     @Override
@@ -169,7 +174,8 @@ public class PlaylistFragment extends AbsSongsFragment {
 
     @Override
     public int getMenuResId() {
-        return R.menu.menu_song_item;
+        return getPlaylistManager().isEditable(mPlaylistName) ?
+                R.menu.menu_song_item_editable : R.menu.menu_song_item;
     }
 
     @Override
