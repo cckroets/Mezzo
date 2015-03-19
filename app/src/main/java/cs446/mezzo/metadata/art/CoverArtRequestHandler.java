@@ -85,7 +85,7 @@ class CoverArtRequestHandler extends RequestHandler {
         final String key = data.uri.toString();
         if (mFailureCache.getIfPresent(key) != null) {
             Log.d(TAG, "known failure = " + data.uri);
-            return new Result((Bitmap) null, Picasso.LoadedFrom.MEMORY);
+            return new Result((Bitmap) null, Picasso.LoadedFrom.DISK);
         }
         Log.d(TAG, "start load = " + data.uri);
         final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
