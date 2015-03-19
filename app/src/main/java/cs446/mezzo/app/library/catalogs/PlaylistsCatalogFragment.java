@@ -126,7 +126,7 @@ public class PlaylistsCatalogFragment extends CatalogFragment {
 
     @Subscribe
     public void onSongDownloaded(FileDownloadedEvent e) {
-        updateContent();
+        // Nothing needs to be done as long as their is no sort of "downloads" playlist
     }
 
     @Override

@@ -2,33 +2,35 @@ package cs446.mezzo.sources;
 
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.SyncRequest;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import cs446.mezzo.data.Callback;
 import cs446.mezzo.data.SimpleAsyncTask;
+import cs446.mezzo.music.HttpSong;
 import cs446.mezzo.music.LocalSong;
 import cs446.mezzo.music.Song;
-import cs446.mezzo.sources.dropbox.DropboxSource;
 
 /**
  * @author curtiskroetsch
  */
 @Singleton
 public class LocalMusicFetcher {
+
+    private static final String M3U_EXT = ".m3u";
 
     private static String[] sGenresProjection = {
             MediaStore.Audio.Genres.NAME,
@@ -54,14 +56,24 @@ public class LocalMusicFetcher {
     @Inject
     DownloadManager mDownloadManager;
 
+    private List<Song> mAllSongs;
+
     @Inject
     public LocalMusicFetcher() {
 
     }
 
     public List<Song> getAllSongs() {
+        if (mAllSongs == null) {
+            mAllSongs = getAllSongsFresh();
+        }
+        return mAllSongs;
+    }
+
+    private List<Song> getAllSongsFresh() {
         final List<Song> allSongs = getLocalSongs();
         allSongs.addAll(getAllDownloadedSongs());
+        allSongs.addAll(getAllM3USongs());
         return allSongs;
     }
 
@@ -104,6 +116,31 @@ public class LocalMusicFetcher {
         }
     }
 
+    public List<Song> getAllM3USongs() {
+        final List<Song> m3us = new ArrayList<>();
+        final File userDir = Environment.getExternalStorageDirectory();
+        final List<File> m3uFiles = new ArrayList<>();
+        findMatchingFiles(userDir, M3U_EXT, m3uFiles);
+
+        for (File m3uFile : m3uFiles) {
+            final Song song = new HttpSong(m3uFile);
+            m3us.add(song);
+        }
+
+        return m3us;
+    }
+
+    private void findMatchingFiles(File file, String ext, List<File> result) {
+        if (file.isFile() && file.getName().endsWith(ext)) {
+            Log.d("M3U", "found one! " + file);
+            result.add(file);
+        } else if (file.isDirectory() && file.listFiles() != null) {
+            for (File f : file.listFiles()) {
+                findMatchingFiles(f, ext, result);
+            }
+        }
+    }
+
     public List<Song> getAllDownloadedSongs() {
         return mDownloadManager.getAllDownloadedSongs();
     }
@@ -128,7 +165,12 @@ public class LocalMusicFetcher {
         new SimpleAsyncTask<Collection<Song>>(callback) {
             @Override
             public Collection<Song> doInBackground() {
-                return getAllSongs();
+                return getAllSongsFresh();
+            }
+
+            @Override
+            protected void onPostExecute(Collection<Song> songs) {
+                mAllSongs = (List<Song>) songs;
             }
         }.execute();
     }

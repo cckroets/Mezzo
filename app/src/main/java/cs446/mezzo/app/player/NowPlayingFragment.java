@@ -3,7 +3,6 @@ package cs446.mezzo.app.player;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.graphics.Palette;
@@ -21,8 +20,6 @@ import android.widget.Toast;
 
 import com.google.inject.Inject;
 import com.squareup.otto.Subscribe;
-
-import java.util.Random;
 
 import cs446.mezzo.R;
 import cs446.mezzo.app.BaseMezzoFragment;
@@ -117,6 +114,8 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
 
     boolean mIsUserSeeking;
 
+    int mDecorColor;
+
     public static NowPlayingFragment create() {
         return new NowPlayingFragment();
     }
@@ -126,6 +125,14 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
         super.onCreate(savedInstanceState);
         getMezzoActivity().hideSecondaryFragment();
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mDecorColor != 0) {
+            ViewUtil.tintDecor(this, mDecorColor);
+        }
     }
 
     @Override
@@ -248,6 +255,7 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
         ViewUtil.tintTextView(mAlbumArtist, secondaryTextColor);
         ViewUtil.tintDecor(this, vibrantColor);
         ViewUtil.tintSeekbar(mSeekBar, mutedColor);
+        mDecorColor = vibrantColor;
         mPlayerButtonsContainer.setBackgroundColor(vibrantColor);
     }
 
@@ -277,7 +285,7 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
         mLogoView.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.OVERLAY);
         //ViewUtil.tintViews(backgroundColor, mLogoView);
         mLogoView.setVisibility(View.VISIBLE);
-
+        mDecorColor = accentColor;
     }
 
     private void updateSeekbar() {
