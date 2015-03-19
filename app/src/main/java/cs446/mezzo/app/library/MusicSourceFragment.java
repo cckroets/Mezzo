@@ -1,5 +1,6 @@
 package cs446.mezzo.app.library;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -18,17 +19,17 @@ import com.google.inject.Inject;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cs446.mezzo.R;
-import cs446.mezzo.data.AsyncMezzoTask;
 import cs446.mezzo.data.Callback;
 import cs446.mezzo.data.ProgressableCallback;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.control.SelectSongEvent;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.sources.MusicSource;
-import cs446.mezzo.sources.dropbox.DropboxSource;
 import roboguice.inject.InjectView;
 
 /**
@@ -59,11 +60,13 @@ public abstract class MusicSourceFragment extends AbsSongsFragment {
 
     private MusicFileAdapter mAdapter;
     private boolean mNeedsAuthentication;
+    private Map<MusicSource.MusicFile, FileDownloadCallback> mCallbacks;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mMusicSource = buildMusicSource();
+        mCallbacks = new HashMap<>();
         mAuthenticator = mMusicSource.getAuthenticator();
     }
 
@@ -179,6 +182,29 @@ public abstract class MusicSourceFragment extends AbsSongsFragment {
         return mAdapter;
     }
 
+    protected void downloadAll() {
+        final Context c = getActivity();
+        for (int i = 0; i < mAdapter.getCount(); i++) {
+            final MusicSource.MusicFile file = mAdapter.getItem(i);
+            if (!mMusicSource.exists(c, file) && !mMusicSource.isDownloading(c, file)) {
+                onDownload(file, new FileDownloadCallback(i, file, true));
+            }
+        }
+    }
+
+    protected void onDownload(MusicSource.MusicFile file, FileDownloadCallback callback) {
+        mCallbacks.put(file, callback);
+        mMusicSource.download(getActivity(), file, callback);
+    }
+
+    protected FileDownloadCallback getCallback(MusicSource.MusicFile file) {
+        return mCallbacks.get(file);
+    }
+
+    protected void onFinishDownload(MusicSource.MusicFile file) {
+        mCallbacks.remove(file);
+    }
+
     @Override
     public int getMenuResId() {
         return R.menu.menu_song_item;
@@ -189,6 +215,7 @@ public abstract class MusicSourceFragment extends AbsSongsFragment {
         TextView mSecondary;
         ProgressBar mProgressBar;
         View mButton;
+        FileDownloadCallback mCallback;
     }
 
     private class MusicFileAdapter extends ArrayAdapter<MusicSource.MusicFile> {
@@ -247,37 +274,18 @@ public abstract class MusicSourceFragment extends AbsSongsFragment {
                 view.setTag(viewHolder);
             }
 
-            final ProgressableCallback<Song> progressCallback = new ProgressableCallback<Song>() {
-                @Override
-                public void onProgress(float completion) {
-                    viewHolder.mProgressBar.setProgress((int) (MAX_PROGRESS * completion));
-                }
-
-                @Override
-                public void onSuccess(Song data) {
-                    Log.d(TAG, "DOWNLOAD SUCCESS " + data.getTitle());
-                    viewHolder.mProgressBar.setProgress(MAX_PROGRESS);
-                    redrawView(position);
-                    onSongDownloaded(position, data);
-                }
-
-                @Override
-                public void onFailure(Exception e) {
-                    viewHolder.mProgressBar.setProgress(0);
-                    viewHolder.mProgressBar.setVisibility(View.GONE);
-                    viewHolder.mButton.setEnabled(true);
-                    Toast.makeText(getContext(), "Download failed", Toast.LENGTH_SHORT).show();
-                }
-            };
+            final FileDownloadCallback progressCallback = getCallback(file);
+            if (progressCallback != null) {
+                progressCallback.setViewHolder(viewHolder);
+            } else if (viewHolder.mCallback != null) {
+                viewHolder.mCallback.setHidden();
+            }
 
             viewHolder.mPrimary.setText(file.getDisplayName());
             if (mMusicSource.isDownloading(getContext(), file)) {
                 viewHolder.mButton.setEnabled(false);
                 viewHolder.mProgressBar.setVisibility(View.VISIBLE);
-                AsyncMezzoTask<Void, Float, Song> downloadTask = ((DropboxSource.DBMusicFile) file).getDownloadTask();
-                downloadTask.setCallback(mMusicSource.getDecoratedCallback(file, progressCallback));
-            }
-            else {
+            } else {
                 viewHolder.mButton.setEnabled(true);
                 viewHolder.mProgressBar.setVisibility(View.GONE);
             }
@@ -287,7 +295,9 @@ public abstract class MusicSourceFragment extends AbsSongsFragment {
                 public void onClick(View v) {
                     viewHolder.mButton.setEnabled(false);
                     viewHolder.mProgressBar.setVisibility(View.VISIBLE);
-                    mMusicSource.download(getContext(), file, progressCallback);
+                    final FileDownloadCallback callback = new FileDownloadCallback(position, file);
+                    callback.setViewHolder(viewHolder);
+                    onDownload(file, callback);
                 }
             });
 
@@ -323,6 +333,69 @@ public abstract class MusicSourceFragment extends AbsSongsFragment {
                 }
             });
             return view;
+        }
+    }
+
+    private class FileDownloadCallback implements ProgressableCallback<Song> {
+
+        ViewHolder mViewHolder;
+        MusicSource.MusicFile mMusicFile;
+        int mProgress;
+        int mPosition;
+        boolean mIsBatch;
+
+        public FileDownloadCallback(int position, MusicSource.MusicFile musicFile) {
+            this(position, musicFile, false);
+        }
+
+        public FileDownloadCallback(int position, MusicSource.MusicFile musicFile, boolean isBatch) {
+            mMusicFile = musicFile;
+            mPosition = position;
+            mIsBatch = isBatch;
+        }
+
+        @Override
+        public void onProgress(float completion) {
+            mProgress = (int) (MAX_PROGRESS * completion);
+            if (mViewHolder != null) {
+                mViewHolder.mProgressBar.setProgress(mProgress);
+            }
+        }
+
+        @Override
+        public void onSuccess(Song data) {
+            Log.d(TAG, "DOWNLOAD SUCCESS " + data.getTitle());
+            if (mViewHolder != null) {
+                mViewHolder.mProgressBar.setProgress(MAX_PROGRESS);
+                if (!mIsBatch) {
+                    mAdapter.redrawView(mPosition);
+                }
+            }
+            onSongDownloaded(mPosition, data);
+            onFinishDownload(mMusicFile);
+        }
+
+        @Override
+        public void onFailure(Exception e) {
+            if (mViewHolder != null) {
+                mViewHolder.mProgressBar.setProgress(0);
+                mViewHolder.mProgressBar.setVisibility(View.GONE);
+                mViewHolder.mButton.setEnabled(true);
+            }
+            onFinishDownload(mMusicFile);
+            if (getActivity() != null) {
+                Toast.makeText(getActivity(), "Download failed", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        public void setHidden() {
+            mViewHolder = null;
+        }
+
+        public void setViewHolder(ViewHolder viewHolder) {
+            mViewHolder = viewHolder;
+            mViewHolder.mCallback = this;
+            mViewHolder.mProgressBar.setProgress(mProgress);
         }
     }
 }

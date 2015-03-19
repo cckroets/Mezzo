@@ -36,7 +36,7 @@
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
-        android:id="@+id/download_all"
+        android:id="@+id/source_download_all"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
@@ -56,6 +56,31 @@
             android:paddingRight="12dp"
             android:paddingTop="6dp"
             android:text="DOWNLOAD ALL"
+            android:textColor="@color/primary"
+            android:textStyle="bold"/>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/source_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:background="@color/white"
+        android:foreground="?android:attr/selectableItemBackground">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:drawablePadding="12dp"
+            android:drawableLeft="@drawable/ic_refresh"
+            android:gravity="center_vertical"
+            android:paddingBottom="10dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="10dp"
+            android:text="REFRESH"
             android:textColor="@color/primary"
             android:textStyle="bold"/>
 

@@ -2,18 +2,15 @@ package cs446.mezzo.view;
 
 import android.content.Context;
 import android.support.v7.graphics.Palette;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import cs446.mezzo.R;
 import cs446.mezzo.data.Callback;
 import cs446.mezzo.injection.Injector;
 import cs446.mezzo.metadata.art.AlbumArtManager;
 import cs446.mezzo.music.Song;
-import me.grantland.widget.AutofitTextView;
 import roboguice.inject.InjectView;
 
 /**
@@ -48,8 +45,6 @@ public class MezzoImageView extends FrameLayout {
     private void init() {
         inflate(getContext(), R.layout.view_placeholder_imageview, this);
         Injector.injectViews(this, this);
-        //mTextView.enableSizeCache(true);
-        //mTextView.setEllipsize(TextUtils.TruncateAt.END);
     }
 
     public ImageView getImageView() {

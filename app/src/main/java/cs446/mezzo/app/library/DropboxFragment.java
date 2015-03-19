@@ -10,9 +10,7 @@ import java.util.List;
 
 import cs446.mezzo.R;
 import cs446.mezzo.data.Callback;
-import cs446.mezzo.data.ProgressableCallback;
 import cs446.mezzo.injection.Nullable;
-import cs446.mezzo.music.Song;
 import cs446.mezzo.sources.MusicSource;
 import cs446.mezzo.sources.dropbox.DropboxSource;
 import roboguice.inject.InjectView;
@@ -29,8 +27,12 @@ public class DropboxFragment extends MusicSourceFragment {
     View mSignInButton;
 
     @Nullable
-    @InjectView(R.id.download_all)
+    @InjectView(R.id.source_download_all)
     View mDownloadAll;
+
+    @Nullable
+    @InjectView(R.id.source_refresh)
+    View mRefresh;
 
     @Inject
     DropboxSource mDropboxSource;
@@ -62,39 +64,12 @@ public class DropboxFragment extends MusicSourceFragment {
                 }, false);
             }
         });
-    }
-
-    public void downloadAll() {
-        mDropboxSource.searchForSongs(new Callback<List<MusicSource.MusicFile>>() {
+        mRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onSuccess(List<MusicSource.MusicFile> data) {
-                for (MusicSource.MusicFile file : data) {
-                    mDropboxSource.download(getView().getContext(), file, new ProgressableCallback<Song>() {
-                        @Override
-                        public void onProgress(float completion) {
-
-                        }
-
-                        @Override
-                        public void onSuccess(Song data) {
-
-                        }
-
-                        @Override
-                        public void onFailure(Exception e) {
-
-                        }
-                    });
-                }
-
-                mSongsView.invalidateViews();
+            public void onClick(View v) {
+                onSongSearchStart();
             }
-
-            @Override
-            public void onFailure(Exception e) {
-
-            }
-        }, false);
+        });
     }
 
     @Override

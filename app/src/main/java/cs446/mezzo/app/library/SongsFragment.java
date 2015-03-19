@@ -39,7 +39,7 @@ public class SongsFragment extends AbsSongsFragment {
 
     @Subscribe
     public void onFileDownloaded(FileDownloadedEvent event) {
-        updateSongs();
+        getSongs().add(event.getSong());
     }
 
     @Override

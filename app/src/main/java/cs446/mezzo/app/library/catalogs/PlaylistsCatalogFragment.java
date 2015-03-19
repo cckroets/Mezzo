@@ -123,7 +123,11 @@ public class PlaylistsCatalogFragment extends CatalogFragment {
     @Subscribe
     public void onPlaylistsChanged(PlaylistChangedEvent event) {
         if (event.getPlaylist() != null) {
-            getCategories().put(event.getPlaylist().getName(), event.getPlaylist());
+            if (event.isDeleted()) {
+                getCategories().remove(event.getPlaylist().getName());
+            } else {
+                getCategories().put(event.getPlaylist().getName(), event.getPlaylist());
+            }
             updateAdapter();
         }
     }
@@ -157,7 +161,7 @@ public class PlaylistsCatalogFragment extends CatalogFragment {
 
     @Subscribe
     public void onSongDownloaded(FileDownloadedEvent e) {
-        updateContent();
+        // Nothing needs to be done as long as their is no sort of "downloads" playlist
     }
 
     @Override

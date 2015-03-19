@@ -9,7 +9,6 @@ import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -19,8 +18,8 @@ import cs446.mezzo.data.Preferences;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.playlists.PlaylistChangedEvent;
 import cs446.mezzo.events.system.ActivityStoppedEvent;
-import cs446.mezzo.music.FileSong;
 import cs446.mezzo.music.Song;
+import cs446.mezzo.music.SongSerializer;
 import cs446.mezzo.sources.LocalMusicFetcher;
 
 /**
@@ -70,7 +69,7 @@ public class PlaylistManager {
         final Playlist removed = mUserPlaylists.remove(name);
         if (removed != null) {
             mModified = true;
-            EventBus.post(new PlaylistChangedEvent(removed));
+            EventBus.post(new PlaylistChangedEvent(removed, true));
             return true;
         }
         return false;
@@ -163,13 +162,9 @@ public class PlaylistManager {
     }
 
     private Playlist loadPlaylist(String playlistName) {
-        final Set<String> paths = mPreferences.getStrings(KEY_PREFIX_PLAYLIST + playlistName);
-        final Set<Song> songs = new LinkedHashSet<>(paths.size());
-        final Playlist playlist = new Playlist(playlistName, songs);
-        for (String filename : paths) {
-            songs.add(new FileSong(filename));
-        }
-        return playlist;
+        final String key = KEY_PREFIX_PLAYLIST + playlistName;
+        final Collection<Song> songs = SongSerializer.loadAll(mPreferences, key);
+        return new Playlist(playlistName, songs);
     }
 
     private Map<String, Playlist> loadUserPlaylists() {
@@ -192,10 +187,7 @@ public class PlaylistManager {
     }
 
     private void savePlaylist(Playlist playlist) {
-        final Set<String> paths = new HashSet<>(playlist.getSongs().size());
-        for (Song song : playlist.getSongs()) {
-            paths.add(song.getFile().getAbsolutePath());
-        }
-        mPreferences.putNewStrings(KEY_PREFIX_PLAYLIST + playlist.getName(), paths);
+        final String key = KEY_PREFIX_PLAYLIST + playlist.getName();
+        SongSerializer.saveAll(mPreferences, key, playlist.getSongs());
     }
 }

@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.squareup.otto.Subscribe;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -60,25 +61,29 @@ public class SongGroupFragment extends CatalogFragment {
         final List<Song> songList = fetcher.getAllSongs();
 
         for (int i = 0; i < songList.size(); i++) {
-
-            for (String category : mSongGroup.getGroups(getActivity().getResources(), songList.get(i))) {
-                if (category != null) {
-                    if (categories.get(category) == null) {
-                        final List<Song> songs = new ArrayList<>();
-                        songs.add(songList.get(i));
-                        categories.put(category, new Playlist(category, songs));
-                    } else {
-                        categories.get(category).getSongs().add(songList.get(i));
-                    }
-                }
-            }
+            addToCategories(songList.get(i), categories);
         }
         return categories;
     }
 
+    private void addToCategories(Song song, final Map<String, Playlist> categories) {
+        for (String category : mSongGroup.getGroups(getActivity().getResources(), song)) {
+            if (category != null) {
+                if (categories.get(category) == null) {
+                    final List<Song> songs = new ArrayList<>();
+                    songs.add(song);
+                    categories.put(category, new Playlist(category, songs));
+                } else {
+                    categories.get(category).getSongs().add(song);
+                }
+            }
+        }
+    }
+
     @Subscribe
     public void onSongDownloaded(FileDownloadedEvent e) {
-        updateContent();
+        addToCategories(e.getSong(), getCategories());
+        updateAdapter();
     }
 
     @Override

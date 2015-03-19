@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -19,7 +18,6 @@ import java.util.List;
 
 import cs446.mezzo.R;
 import cs446.mezzo.app.BaseMezzoFragment;
-import cs446.mezzo.app.MainActivity;
 import cs446.mezzo.app.library.catalogs.PlaylistsCatalogFragment;
 import cs446.mezzo.app.library.catalogs.SongGroup;
 import cs446.mezzo.app.library.catalogs.SongGroupFragment;
@@ -57,37 +55,6 @@ public class ScreenSlidePageFragment extends BaseMezzoFragment {
         mPager.setAdapter(mPagerAdapter);
         mPager.setOffscreenPageLimit(OFFSCREEN_FRAGMENT_LIMIT);
         mTabs.setViewPager(mPager);
-        mTabs.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                MainActivity activity = (MainActivity) getMezzoActivity();
-                if (position == 2) {
-                    activity.getRefreshButton().setVisible(true);
-                    activity.getRefreshButton().setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            ScreenSlidePagerAdapter adapter = (ScreenSlidePagerAdapter) mPagerAdapter;
-                            DropboxFragment fragment = (DropboxFragment) adapter.getItem(2);
-                            fragment.onSongSearchStart();
-                            return false;
-                        }
-                    });
-                }
-                else {
-                    activity.getRefreshButton().setVisible(false);
-                }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
     }
 
     @Override

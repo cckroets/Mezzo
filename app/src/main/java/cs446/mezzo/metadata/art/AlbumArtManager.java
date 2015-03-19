@@ -32,10 +32,11 @@ public class AlbumArtManager {
     private Picasso mPicasso;
 
     @Inject
-    public AlbumArtManager(Context context, CoverArtRequestHandler requestHandler) {
+    public AlbumArtManager(Context context, ArtCache artCache, CoverArtRequestHandler requestHandler) {
         mPicasso = new Picasso.Builder(context)
                 .addRequestHandler(requestHandler)
-                .indicatorsEnabled(false)
+                .indicatorsEnabled(true)
+                .memoryCache(artCache)
                 .build();
         mContext = context;
         mDefaultCoverArt = createErrorDrawable();

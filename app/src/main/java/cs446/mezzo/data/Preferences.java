@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -58,6 +59,10 @@ public class Preferences {
         mSharedPreferences.edit().putString(key, mGson.toJson(object)).apply();
     }
 
+    public <T> void putObject(String key, Type type, T object) {
+        mSharedPreferences.edit().putString(key, mGson.toJson(object, type)).apply();
+    }
+
     public <T> void putObjects(String key, Collection<T> collection) {
         final Set<String> rawJson = new LinkedHashSet<>(collection.size());
         for (T object : collection) {
@@ -78,6 +83,15 @@ public class Preferences {
     public <T> T getObject(String key, Class<T> klass) {
         final String rawGson = mSharedPreferences.getString(key, null);
         return rawGson == null ? null : mGson.fromJson(rawGson, klass);
+    }
+
+    public <T> T getObject(String key, Type type) {
+        final String rawGson = mSharedPreferences.getString(key, null);
+        if (rawGson == null) {
+            return null;
+        } else {
+            return mGson.fromJson(rawGson, type);
+        }
     }
 
     public Set<String> getStrings(String key) {
