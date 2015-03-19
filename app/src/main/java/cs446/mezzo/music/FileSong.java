@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.io.File;
 import java.util.Arrays;
@@ -84,14 +85,21 @@ public class FileSong implements Song {
     }
 
     private void initFields() {
+        mGenres = new HashSet<String>();
         final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        retriever.setDataSource(mFile.getPath());
+        try {
+            Log.d("MediaMetadataRetriever", "path = " + mFile.getPath());
+            retriever.setDataSource(mFile.getPath());
+        } catch (RuntimeException e) {
+            Log.e("MediaMetadataRetriever", "ERROR");
+            retriever.release();
+            return;
+        }
         mTitle = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
         mArtist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
         mAlbum = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
         final String genre = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE);
         final String rawDuration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-        mGenres = new HashSet<String>();
         if (genre != null) {
             mGenres.add(genre);
         }

@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.graphics.Palette;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -183,6 +184,7 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
 
             @Override
             public void onFailure(Exception e) {
+                Log.e("NOW PLAYING", e == null ? "No exception" : e.getMessage());
                 if (isAdded()) {
                     Toast.makeText(getActivity(), "Lyrics could not be found", Toast.LENGTH_LONG).show();
                     mLyricsMenuItem.setEnabled(false);

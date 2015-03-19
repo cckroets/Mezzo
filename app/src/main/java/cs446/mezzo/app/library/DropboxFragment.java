@@ -10,9 +10,7 @@ import java.util.List;
 
 import cs446.mezzo.R;
 import cs446.mezzo.data.Callback;
-import cs446.mezzo.data.ProgressableCallback;
 import cs446.mezzo.injection.Nullable;
-import cs446.mezzo.music.Song;
 import cs446.mezzo.sources.MusicSource;
 import cs446.mezzo.sources.dropbox.DropboxSource;
 import roboguice.inject.InjectView;
@@ -72,41 +70,6 @@ public class DropboxFragment extends MusicSourceFragment {
                 onSongSearchStart();
             }
         });
-    }
-
-    public void downloadAll() {
-        mDropboxSource.searchForSongs(new Callback<List<MusicSource.MusicFile>>() {
-            @Override
-            public void onSuccess(List<MusicSource.MusicFile> data) {
-                if (!isAdded()) {
-                    return;
-                }
-                for (MusicSource.MusicFile file : data) {
-                    mDropboxSource.download(getActivity(), file, new ProgressableCallback<Song>() {
-                        @Override
-                        public void onProgress(float completion) {
-
-                        }
-
-                        @Override
-                        public void onSuccess(Song data) {
-
-                        }
-
-                        @Override
-                        public void onFailure(Exception e) {
-
-                        }
-                    });
-                }
-                mSongsView.invalidateViews();
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-
-            }
-        }, false);
     }
 
     @Override

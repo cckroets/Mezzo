@@ -189,8 +189,7 @@ public class DropboxSource extends MusicSource {
         @Override
         protected void onPostExecute(Song song) {
             super.onPostExecute(song);
-            if (song != null && mDownloadingCount == 0) {
-                // For some reason this event sometimes fails if there are still unfinished downloads.
+            if (song != null) {
                 EventBus.post(new FileDownloadedEvent(DropboxSource.this, song, mFile));
             }
         }
