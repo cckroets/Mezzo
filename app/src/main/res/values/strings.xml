@@ -31,5 +31,8 @@
     <string name="menu_delete_playlist">Delete Playlist</string>
     <string name="menu_export">Export Stats</string>
     <string name="menu_shuffle_all">Shuffle all</string>
+    <string name ="choose_playlist_songs_title">Add songs to playlist</string>
+    <string name="ok">Ok</string>
+
 
 </resources>

@@ -11,8 +11,11 @@ import android.widget.Toast;
 import com.google.inject.Inject;
 import com.squareup.otto.Subscribe;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import cs446.mezzo.R;
@@ -20,6 +23,7 @@ import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.playlists.PlaylistChangedEvent;
 import cs446.mezzo.events.sources.FileDownloadedEvent;
 import cs446.mezzo.injection.Nullable;
+import cs446.mezzo.music.Song;
 import cs446.mezzo.music.playlists.Playlist;
 import cs446.mezzo.music.playlists.PlaylistManager;
 import cs446.mezzo.sources.LocalMusicFetcher;
@@ -32,6 +36,9 @@ public class PlaylistsCatalogFragment extends CatalogFragment {
 
     @Inject
     PlaylistManager mPlaylistManager;
+
+    @Inject
+    LocalMusicFetcher mMusicFetcher;
 
     @Nullable
     @InjectView(R.id.playlists_create)
@@ -67,6 +74,33 @@ public class PlaylistsCatalogFragment extends CatalogFragment {
         alertDialog.show();
     }
 
+    private void createPlaylistSongPickerDialog() {
+        final List<Song> mAllSongs = mMusicFetcher.getAllSongs();
+        final List<String> mSongsNames = new ArrayList<String>();
+        for (Song song : mAllSongs) {
+            mSongsNames.add(song.getTitle() + " - " + song.getArtist());
+        }
+        final CharSequence[] items = mSongsNames.toArray(new CharSequence[mSongsNames.size()]);
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMultiChoiceItems(items, null,
+                new DialogInterface.OnMultiChoiceClickListener() {
+                    // indexSelected contains the index of item (of which checkbox checked)
+                    @Override
+                    public void onClick(DialogInterface dialog, int indexSelected,
+                                        boolean isChecked) {
+                    }
+                });
+
+        builder.setPositiveButton(R.string.ok, null)
+                .setNegativeButton(R.string.cancel, null);
+        final AlertDialog alertDialog = builder.setCancelable(true)
+                .setTitle(R.string.choose_playlist_songs_title)
+                .create();
+
+        alertDialog.show();
+    }
+
     private void onCreateDialogShow(final AlertDialog alertDialog, final View view) {
         final Button positive = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
         positive.setOnClickListener(new View.OnClickListener() {
@@ -77,6 +111,7 @@ public class PlaylistsCatalogFragment extends CatalogFragment {
                 final boolean created = mPlaylistManager.createPlaylist(playlistName);
                 if (created) {
                     alertDialog.dismiss();
+                    createPlaylistSongPickerDialog();
                 } else {
                     Toast.makeText(getActivity(), R.string.create_playlist_error, Toast.LENGTH_LONG)
                             .show();
