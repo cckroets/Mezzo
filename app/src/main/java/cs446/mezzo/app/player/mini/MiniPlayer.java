@@ -134,7 +134,6 @@ public class MiniPlayer extends Overlay {
 
             @Override
             public void onButtonsClick(View view, MotionEvent event) {
-                Log.d("ACTION_", "event.getRawX" + (int) event.getRawX());
                 final int X = (int) event.getRawX();
                 if (X <= 200) {
                     mPlaying = !mPlaying;
