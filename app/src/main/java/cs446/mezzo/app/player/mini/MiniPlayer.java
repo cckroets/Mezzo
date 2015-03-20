@@ -109,6 +109,42 @@ public class MiniPlayer extends Overlay {
             }
 
             @Override
+            public void onOpenSm(View view, MotionEvent event) {
+                mExpanded = true;
+                mPauseButton.setVisibility(View.VISIBLE);
+                mHomeButton.setVisibility(View.GONE);
+                mNextButton.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onOpenLg(View view, MotionEvent event) {
+                mExpanded = true;
+                mPauseButton.setVisibility(View.VISIBLE);
+                mHomeButton.setVisibility(View.VISIBLE);
+                mNextButton.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onClose(View view, MotionEvent event) {
+                mExpanded = false;
+                mPauseButton.setVisibility(View.GONE);
+                mHomeButton.setVisibility(View.GONE);
+                mNextButton.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onButtonsClick(View view, MotionEvent event) {
+                Log.d("ACTION_", "event.getRawX" + (int) event.getRawX());
+                final int X = (int) event.getRawX();
+                if (X <= 200) {
+                    mPlaying = !mPlaying;
+                    EventBus.post(new PauseToggleEvent());
+                } else {
+                    EventBus.post(new PlayNextEvent());
+                }
+            }
+
+            @Override
             public void onClick(View view, MotionEvent event) {
                 mExpanded = !mExpanded;
                 mPauseButton.setVisibility(mExpanded ? View.VISIBLE : View.GONE);

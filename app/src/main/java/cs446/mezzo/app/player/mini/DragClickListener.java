@@ -14,7 +14,7 @@ import cs446.mezzo.overlay.Overlay;
  */
 public class DragClickListener implements View.OnTouchListener {
 
-    private static final int WIGGLE_ROOM = 25;
+    private static final int BUTTONS_WIDTH = 220;
 
     private Overlay mOverlay;
     private Display mDisplay;
@@ -23,7 +23,9 @@ public class DragClickListener implements View.OnTouchListener {
     private int mDeltaX;
     private int mDeltaY;
     private int mMaxY;
-    private boolean mIsClick;
+    private int mState;
+    private int mDownX;
+    private int mDownY;
 
     private ValueAnimator.AnimatorUpdateListener mMagnetUpdateListener = new ValueAnimator.AnimatorUpdateListener() {
         @Override
@@ -60,24 +62,38 @@ public class DragClickListener implements View.OnTouchListener {
                 mDeltaY = Y - mOverlay.getLayoutParams().y;
                 v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
                 onStartDrag(v, event);
-                mIsClick = true;
+                mDownX = X;
+                mDownY = Y;
+                if (mState == 0) {
+                    mState = 1;
+                    onOpenSm(v, event);
+                }
                 break;
             case MotionEvent.ACTION_UP:
                 moveToSide(v, event);
-                if (mIsClick) {
-                    onClick(v, event);
-                }
                 onStopDrag(v, event);
+                if (mState == 1) {
+                    if (Math.abs(mDownX - X) <= v.getWidth() - 30) {
+                        mState = 2;
+                        onOpenLg(v, event);
+                    } else {
+                        onButtonsClick(v, event);
+                        mState = 0;
+                        onClose(v, event);
+                    }
+                } else if (mState == 2) {
+                    mState = 0;
+                    onClose(v, event);
+                }
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
             case MotionEvent.ACTION_POINTER_UP:
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (mIsClick && (Math.abs(mDeltaX - event.getX()) > WIGGLE_ROOM || Math.abs(mDeltaY - event.getY()) > WIGGLE_ROOM)) {
-                    mIsClick = false;
+                if (Math.abs(mDownX - X) > v.getWidth() + BUTTONS_WIDTH || Math.abs(mDownY - Y) > v.getHeight()) {
+                    moveOverlay(X - mDeltaX, Math.min(Y - mDeltaY, mMaxY));
+                    onDrag(v, event);
                 }
-                moveOverlay(X - mDeltaX, Math.min(Y - mDeltaY, mMaxY));
-                onDrag(v, event);
                 break;
             default:
                 break;
@@ -101,6 +117,22 @@ public class DragClickListener implements View.OnTouchListener {
         final ValueAnimator animator = ValueAnimator.ofInt(xPos, finalPos);
         animator.addUpdateListener(mMagnetUpdateListener);
         animator.start();
+    }
+
+    public void onOpenSm(View view, MotionEvent event) {
+
+    }
+
+    public void onOpenLg(View view, MotionEvent event) {
+
+    }
+
+    public void onClose(View view, MotionEvent event) {
+
+    }
+
+    public void onButtonsClick(View view, MotionEvent event) {
+
     }
 
     public void onStartDrag(View view, MotionEvent event) {
