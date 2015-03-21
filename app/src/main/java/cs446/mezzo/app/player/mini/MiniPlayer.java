@@ -52,6 +52,9 @@ public class MiniPlayer extends Overlay {
     @InjectView(R.id.miniplayer_artwork_border2)
     ImageView mMiniPlayerBorder2;
 
+    @InjectView(R.id.miniplayer_container)
+    LinearLayout mMiniPlayerCont;
+
     @InjectView(R.id.player_title)
     TextView mTextView;
 
@@ -108,9 +111,11 @@ public class MiniPlayer extends Overlay {
         mMiniPlayerBorder2.setVisibility(View.GONE);
         getOverlayManager().add(mDismissal);
 
-        //final LayoutTransition transition = new LayoutTransition();
-        //transition.setStagger(LayoutTransition.APPEARING, 1000);
+        final LayoutTransition transition = new LayoutTransition();
+        transition.setStagger(LayoutTransition.APPEARING, 0);
+        transition.setStartDelay(LayoutTransition.APPEARING, 3000);
         //mControls.setLayoutTransition(transition);
+        mMiniPlayerCont.setLayoutTransition(transition);
 
         mTextView.setOnTouchListener(new DragClickListener(this, view) {
             @Override
@@ -159,12 +164,10 @@ public class MiniPlayer extends Overlay {
             @Override
             public void onButtonsClick(View view, MotionEvent event) {
                 final int X = (int) event.getRawX();
-                if ((X <= 300) && (X > 200)) {
+                if (X <= 200) {
                     mPlaying = !mPlaying;
                     EventBus.post(new PauseToggleEvent());
-                } else if ((X <= 400) && (X > 300)) {
-                    EventBus.post(new PlayNextEvent());
-                }
+                } else EventBus.post(new PlayNextEvent());
             }
 
             @Override
@@ -267,12 +270,12 @@ public class MiniPlayer extends Overlay {
 
     @Override
     protected void onShow(View view) {
-        //view.animate().alpha(1f).start();
+        view.animate().alpha(1f).start();
     }
 
     @Override
     protected void onHide(View view) {
-        //view.animate().alpha(0f).start();
+        view.animate().alpha(0f).start();
     }
 
     @Override

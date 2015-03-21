@@ -79,7 +79,7 @@ public class DragClickListener implements View.OnTouchListener {
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            if (!mIsLgOpen && !mIsSmOpen && mScreenPressed) {
+                            if (!mIsLgOpen && !mIsSmOpen && !mIsDrag && mScreenPressed) {
                                 onOpenSm(v, event);
                                 mIsSmOpen = true;
                             }
