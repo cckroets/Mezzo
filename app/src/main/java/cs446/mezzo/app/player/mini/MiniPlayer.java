@@ -70,9 +70,6 @@ public class MiniPlayer extends Overlay {
     @InjectView(R.id.player_next)
     ImageButton mNextButton;
 
-    @InjectView(R.id.player_control_container)
-    LinearLayout mControls;
-
     @Inject
     AlbumArtManager mArtManager;
 
@@ -163,10 +160,12 @@ public class MiniPlayer extends Overlay {
             @Override
             public void onButtonsClick(View view, MotionEvent event) {
                 final int X = (int) event.getRawX();
-                if (X <= 200) {
+                if ((X <= 325) && (X > 175)) {
                     mPlaying = !mPlaying;
                     EventBus.post(new PauseToggleEvent());
-                } else EventBus.post(new PlayNextEvent());
+                } else if ((X > 325) && (X <= 475)) {
+                    EventBus.post(new PlayNextEvent());
+                }
             }
 
             @Override
