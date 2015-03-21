@@ -9,11 +9,27 @@
     android:orientation="horizontal"
     android:padding="4dp">
 
+    <ImageView
+        android:layout_width="206dp"
+        android:layout_height="45dp"
+        android:id="@+id/miniplayer_artwork_border"
+        android:layout_gravity="center"
+        android:background="@drawable/circular_gradient"
+        android:visibility="visible" />
+
+    <ImageView
+        android:layout_width="160dp"
+        android:layout_height="45dp"
+        android:id="@+id/miniplayer_artwork_border2"
+        android:layout_gravity="center|left"
+        android:background="@drawable/circular_gradient"
+        android:visibility="visible" />
+
     <android.support.v7.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="@dimen/mini_player_size"
         card_view:cardPreventCornerOverlap="true"
-        card_view:cardCornerRadius="5dp"
+        card_view:cardCornerRadius="10dp"
         card_view:elevation="4dp">
 
         <LinearLayout
@@ -23,75 +39,86 @@
             android:orientation="horizontal">
 
             <FrameLayout
-                android:layout_width="wrap_content"
+                android:layout_width="55dp"
                 android:layout_height="match_parent">
 
-                <cs446.mezzo.view.MezzoImageView
-                    android:id="@+id/player_album_art"
-                    android:layout_width="@dimen/mini_player_size"
-                    android:layout_height="match_parent"/>
+                <FrameLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
 
-                <cs446.mezzo.view.MarqueeTextView
-                    android:id="@+id/player_title"
-                    style="@style/AudioFileInfoOverlayText"
-                    android:layout_width="@dimen/mini_player_size"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/black_rounded_gradient"
-                    android:gravity="bottom"
-                    android:paddingBottom="1dp"
-                    android:paddingLeft="2dp"
-                    android:paddingRight="2dp"
-                    android:singleLine="true"
-                    android:textColor="@color/primary_text_default_material_dark"
-                    android:textSize="5pt"
-                    tools:text="Blank Space Space"/>
+                    <cs446.mezzo.view.MezzoImageView
+                        android:id="@+id/player_album_art"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_gravity="center" />
 
+                    <cs446.mezzo.view.MarqueeTextView
+                        android:id="@+id/player_title"
+                        style="@style/AudioFileInfoOverlayText"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:background="@drawable/black_rounded_gradient"
+                        android:gravity="bottom"
+                        android:paddingBottom="1dp"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        android:singleLine="true"
+                        android:textColor="@color/primary_text_default_material_dark"
+                        android:textSize="6pt"
+                        tools:text="Blank Space Space"
+                        android:visibility="visible"
+                        android:layout_gravity="center" />
+                </FrameLayout>
 
-            <LinearLayout
-                android:id="@+id/player_control_container"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="16dp"
-                android:animateLayoutChanges="true"
-                android:orientation="horizontal">
-
-                <Space
-                    android:layout_width="40dp"
-                    android:layout_height="match_parent"/>
-
-                <ImageButton
-                    android:id="@+id/player_to_app"
-                    android:layout_width="@dimen/mini_player_control_size"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/negative_press"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_action_home"
-                    android:tint="@color/primary_dark"/>
-
-                <ImageButton
-                    android:id="@+id/player_pause"
-                    android:layout_width="@dimen/mini_player_control_size"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/negative_press"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_av_pause_circle_fill2"
-                    android:tint="@color/primary_dark"/>
-
-                <ImageButton
-                    android:id="@+id/player_next"
-                    android:layout_width="@dimen/mini_player_control_size"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/negative_press"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_av_skip_next"
-                    android:tint="@color/primary_dark"/>
-
-            </LinearLayout>
 
             </FrameLayout>
 
         </LinearLayout>
 
     </android.support.v7.widget.CardView>
+
+    <LinearLayout
+        android:id="@+id/player_control_container"
+        android:layout_width="190dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:animateLayoutChanges="true"
+        android:orientation="horizontal"
+
+        android:layout_gravity="center_vertical">
+
+        <Space
+            android:layout_width="40dp"
+            android:layout_height="match_parent"/>
+
+        <ImageButton
+            android:id="@+id/player_to_app"
+            android:layout_width="@dimen/mini_player_control_size"
+            android:layout_height="match_parent"
+            android:background="@drawable/negative_press"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_miniplayer_home"
+            android:tint="@color/transparent"/>
+
+        <ImageButton
+            android:id="@+id/player_pause"
+            android:layout_width="@dimen/mini_player_control_size"
+            android:layout_height="match_parent"
+            android:background="@drawable/negative_press"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_miniplayer_pause"
+            android:tint="@color/transparent"
+            android:cropToPadding="false" />
+
+        <ImageButton
+            android:id="@+id/player_next"
+            android:layout_width="@dimen/mini_player_control_size"
+            android:layout_height="match_parent"
+            android:background="@drawable/negative_press"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_miniplayer_skip_next"
+            android:tint="@color/transparent"/>
+
+    </LinearLayout>
 
 </FrameLayout>

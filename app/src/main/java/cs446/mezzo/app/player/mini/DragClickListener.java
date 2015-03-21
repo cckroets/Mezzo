@@ -2,6 +2,7 @@ package cs446.mezzo.app.player.mini;
 
 import android.animation.ValueAnimator;
 import android.graphics.Point;
+import android.os.Handler;
 import android.view.Display;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
@@ -15,6 +16,7 @@ import cs446.mezzo.overlay.Overlay;
 public class DragClickListener implements View.OnTouchListener {
 
     private static final int BUTTONS_WIDTH = 220;
+    private static final double CLICK_THRESHOLD = 200; //ms
 
     private Overlay mOverlay;
     private Display mDisplay;
@@ -23,9 +25,14 @@ public class DragClickListener implements View.OnTouchListener {
     private int mDeltaX;
     private int mDeltaY;
     private int mMaxY;
-    private int mState;
     private int mDownX;
     private int mDownY;
+
+    private boolean mIsDrag;
+    private boolean mIsClick;
+    private boolean mIsLgOpen;
+    private boolean mIsSmOpen;
+    private boolean mScreenPressed;
 
     private ValueAnimator.AnimatorUpdateListener mMagnetUpdateListener = new ValueAnimator.AnimatorUpdateListener() {
         @Override
@@ -52,47 +59,65 @@ public class DragClickListener implements View.OnTouchListener {
     }
 
     @Override
-    public boolean onTouch(View v, MotionEvent event) {
+    public boolean onTouch(final View v, final MotionEvent event) {
         final int X = (int) event.getRawX();
         final int Y = (int) event.getRawY();
 
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
+                mScreenPressed = true;
                 mDeltaX = X - mOverlay.getLayoutParams().x;
                 mDeltaY = Y - mOverlay.getLayoutParams().y;
                 v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-                onStartDrag(v, event);
                 mDownX = X;
                 mDownY = Y;
-                if (mState == 0) {
-                    mState = 1;
-                    onOpenSm(v, event);
+
+                // delay
+                final long threshold = (long) (CLICK_THRESHOLD * .9);
+                if (!mIsLgOpen && !mIsSmOpen) {
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!mIsLgOpen && !mIsSmOpen && mScreenPressed) {
+                                onOpenSm(v, event);
+                                mIsSmOpen = true;
+                            }
+                        }
+                    }, threshold);
                 }
                 break;
             case MotionEvent.ACTION_UP:
+                mScreenPressed = false;
+                final long mTimeUp = event.getEventTime();
+                final long mTimeDown = event.getDownTime();
+                mIsClick = (Math.abs(mTimeUp - mTimeDown) < CLICK_THRESHOLD);
+
                 moveToSide(v, event);
                 onStopDrag(v, event);
-                if (mState == 1) {
-                    if (Math.abs(mDownX - X) <= v.getWidth() - 30) {
-                        mState = 2;
-                        onOpenLg(v, event);
-                    } else {
-                        onButtonsClick(v, event);
-                        mState = 0;
-                        onClose(v, event);
-                    }
-                } else if (mState == 2) {
-                    mState = 0;
+
+                if (mIsLgOpen) {
                     onClose(v, event);
+                    mIsLgOpen = false;
+                } else if (mIsSmOpen) {
+                    onButtonsClick(v, event);
+                    onClose(v, event);
+                    mIsSmOpen = false;
+                } else if (mIsClick && !mIsLgOpen) {
+                    onOpenLg(v, event);
+                    mIsLgOpen = true;
                 }
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
             case MotionEvent.ACTION_POINTER_UP:
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (Math.abs(mDownX - X) > v.getWidth() + BUTTONS_WIDTH || Math.abs(mDownY - Y) > v.getHeight()) {
-                    moveOverlay(X - mDeltaX, Math.min(Y - mDeltaY, mMaxY));
+                mIsDrag = Math.abs(mDownX - X) > v.getWidth() + BUTTONS_WIDTH || Math.abs(mDownY - Y) > v.getHeight();
+                if (mIsDrag) {
+                    onClose(v, event);
+                    onStartDrag(v, event);
                     onDrag(v, event);
+                    moveOverlay(X - mDeltaX, Math.min(Y - mDeltaY, mMaxY));
                 }
                 break;
             default:

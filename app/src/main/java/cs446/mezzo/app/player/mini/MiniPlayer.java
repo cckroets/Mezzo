@@ -1,6 +1,9 @@
 package cs446.mezzo.app.player.mini;
 
 import android.animation.LayoutTransition;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v7.graphics.Palette;
 import android.view.LayoutInflater;
@@ -26,6 +29,7 @@ import cs446.mezzo.events.playback.SongPauseEvent;
 import cs446.mezzo.events.playback.SongPlayEvent;
 import cs446.mezzo.music.Song;
 import cs446.mezzo.overlay.Overlay;
+import cs446.mezzo.view.AutoResizeTextView;
 import cs446.mezzo.view.MezzoImageView;
 import cs446.mezzo.view.ViewUtil;
 import roboguice.inject.InjectResource;
@@ -39,8 +43,20 @@ public class MiniPlayer extends Overlay {
     @InjectView(R.id.player_album_art)
     MezzoImageView mCoverArt;
 
+    @InjectView(R.id.ph_logo)
+    ImageView mLogoView;
+
+    @InjectView(R.id.miniplayer_artwork_border)
+    ImageView mMiniPlayerBorder;
+
+    @InjectView(R.id.miniplayer_artwork_border2)
+    ImageView mMiniPlayerBorder2;
+
     @InjectView(R.id.player_title)
     TextView mTextView;
+
+    @InjectView(R.id.ph_text)
+    AutoResizeTextView mTextView2;
 
     @InjectView(R.id.player_to_app)
     ImageButton mHomeButton;
@@ -57,10 +73,10 @@ public class MiniPlayer extends Overlay {
     @Inject
     AlbumArtManager mArtManager;
 
-    @InjectResource(R.drawable.ic_av_pause_circle_fill2)
+    @InjectResource(R.drawable.ic_miniplayer_pause)
     Drawable mPauseDrawable;
 
-    @InjectResource(R.drawable.ic_av_play_circle_fill2)
+    @InjectResource(R.drawable.ic_miniplayer_play_arrow)
     Drawable mPlayDrawable;
 
     private Song mSong;
@@ -88,11 +104,13 @@ public class MiniPlayer extends Overlay {
         mPauseButton.setVisibility(View.GONE);
         mHomeButton.setVisibility(View.GONE);
         mNextButton.setVisibility(View.GONE);
+        mMiniPlayerBorder.setVisibility(View.GONE);
+        mMiniPlayerBorder2.setVisibility(View.GONE);
         getOverlayManager().add(mDismissal);
 
-        final LayoutTransition transition = new LayoutTransition();
-        transition.setStagger(LayoutTransition.APPEARING, 1000);
-        mControls.setLayoutTransition(transition);
+        //final LayoutTransition transition = new LayoutTransition();
+        //transition.setStagger(LayoutTransition.APPEARING, 1000);
+        //mControls.setLayoutTransition(transition);
 
         mTextView.setOnTouchListener(new DragClickListener(this, view) {
             @Override
@@ -114,6 +132,8 @@ public class MiniPlayer extends Overlay {
                 mPauseButton.setVisibility(View.VISIBLE);
                 mHomeButton.setVisibility(View.GONE);
                 mNextButton.setVisibility(View.VISIBLE);
+                mMiniPlayerBorder2.setVisibility(View.VISIBLE);
+                mMiniPlayerBorder.setVisibility(View.GONE);
             }
 
             @Override
@@ -122,6 +142,8 @@ public class MiniPlayer extends Overlay {
                 mPauseButton.setVisibility(View.VISIBLE);
                 mHomeButton.setVisibility(View.VISIBLE);
                 mNextButton.setVisibility(View.VISIBLE);
+                mMiniPlayerBorder.setVisibility(View.VISIBLE);
+                mMiniPlayerBorder2.setVisibility(View.GONE);
             }
 
             @Override
@@ -130,15 +152,17 @@ public class MiniPlayer extends Overlay {
                 mPauseButton.setVisibility(View.GONE);
                 mHomeButton.setVisibility(View.GONE);
                 mNextButton.setVisibility(View.GONE);
+                mMiniPlayerBorder.setVisibility(View.GONE);
+                mMiniPlayerBorder2.setVisibility(View.GONE);
             }
 
             @Override
             public void onButtonsClick(View view, MotionEvent event) {
                 final int X = (int) event.getRawX();
-                if (X <= 200) {
+                if ((X <= 300) && (X > 200)) {
                     mPlaying = !mPlaying;
                     EventBus.post(new PauseToggleEvent());
-                } else {
+                } else if ((X <= 400) && (X > 300)) {
                     EventBus.post(new PlayNextEvent());
                 }
             }
@@ -149,6 +173,8 @@ public class MiniPlayer extends Overlay {
                 mPauseButton.setVisibility(mExpanded ? View.VISIBLE : View.GONE);
                 mHomeButton.setVisibility(mExpanded ? View.VISIBLE : View.GONE);
                 mNextButton.setVisibility(mExpanded ? View.VISIBLE : View.GONE);
+                mMiniPlayerBorder.setVisibility(mExpanded ? View.VISIBLE : View.GONE);
+                mMiniPlayerBorder2.setVisibility(mExpanded ? View.VISIBLE : View.GONE);
             }
         });
 
@@ -191,17 +217,38 @@ public class MiniPlayer extends Overlay {
     }
 
     private void onPaletteLoaded(Palette palette) {
-        final int defaultColor = getContext().getResources().getColor(R.color.primary_dark);
+        mLogoView.setVisibility(View.INVISIBLE);
+
+        final int defaultColor = getContext().getResources().getColor(R.color.default_muted);
+
         final int tintColor =
                 palette.getDarkVibrantColor(
-                palette.getVibrantColor(
-                palette.getDarkMutedColor(defaultColor)));
-        ViewUtil.tintViews(tintColor, mHomeButton, mPauseButton, mNextButton);
+                        palette.getVibrantColor(
+                                palette.getDarkMutedColor(defaultColor)));
+        final int vibrantColor = palette.getVibrantColor(defaultColor);
+        ViewUtil.tintViews(vibrantColor, mHomeButton, mPauseButton, mNextButton);
+
+        //final int tintColor = palette.getVibrantColor(defaultColor);
+        //mHomeButton.getBackground().setColorFilter(tintColor, PorterDuff.Mode.OVERLAY);
+        //mPauseButton.getBackground().setColorFilter(tintColor, PorterDuff.Mode.OVERLAY);
+        //mNextButton.getBackground().setColorFilter(tintColor, PorterDuff.Mode.OVERLAY);
+
     }
 
     private void onPaletteFailed() {
-        final int defaultColor = getContext().getResources().getColor(R.color.primary_dark);
-        ViewUtil.tintViews(defaultColor, mHomeButton, mPauseButton, mNextButton);
+        final ColorDrawable cd = (ColorDrawable) mTextView2.getBackground();
+        final int backgroundColor = cd.getColor();
+
+        //final int defaultColor = getContext().getResources().getColor(R.color.primary_dark);
+        ViewUtil.tintViews(backgroundColor, mHomeButton, mPauseButton, mNextButton);
+
+        mTextView2.setTextColor(Color.TRANSPARENT);
+        mLogoView.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.OVERLAY);
+        //ViewUtil.tintViews(backgroundColor, mLogoView);
+        mLogoView.setVisibility(View.VISIBLE);
+        //mHomeButton.getBackground().setColorFilter(defaultColor, PorterDuff.Mode.OVERLAY);
+        //mPauseButton.getBackground().setColorFilter(defaultColor, PorterDuff.Mode.OVERLAY);
+        //mNextButton.getBackground().setColorFilter(defaultColor, PorterDuff.Mode.OVERLAY);
     }
 
     @Subscribe
@@ -220,12 +267,12 @@ public class MiniPlayer extends Overlay {
 
     @Override
     protected void onShow(View view) {
-        view.animate().alpha(1f).start();
+        //view.animate().alpha(1f).start();
     }
 
     @Override
     protected void onHide(View view) {
-        view.animate().alpha(0f).start();
+        //view.animate().alpha(0f).start();
     }
 
     @Override
