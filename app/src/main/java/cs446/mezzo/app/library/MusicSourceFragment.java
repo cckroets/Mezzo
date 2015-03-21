@@ -187,7 +187,7 @@ public abstract class MusicSourceFragment extends AbsSongsFragment {
         for (int i = 0; i < mAdapter.getCount(); i++) {
             final MusicSource.MusicFile file = mAdapter.getItem(i);
             if (!mMusicSource.exists(c, file) && !mMusicSource.isDownloading(c, file)) {
-                onDownload(file, new FileDownloadCallback(i, file, true));
+                onDownload(file, new FileDownloadCallback(i, file));
             }
         }
     }
@@ -342,16 +342,10 @@ public abstract class MusicSourceFragment extends AbsSongsFragment {
         MusicSource.MusicFile mMusicFile;
         int mProgress;
         int mPosition;
-        boolean mIsBatch;
 
         public FileDownloadCallback(int position, MusicSource.MusicFile musicFile) {
-            this(position, musicFile, false);
-        }
-
-        public FileDownloadCallback(int position, MusicSource.MusicFile musicFile, boolean isBatch) {
             mMusicFile = musicFile;
             mPosition = position;
-            mIsBatch = isBatch;
         }
 
         @Override
@@ -367,9 +361,7 @@ public abstract class MusicSourceFragment extends AbsSongsFragment {
             Log.d(TAG, "DOWNLOAD SUCCESS " + data.getTitle());
             if (mViewHolder != null) {
                 mViewHolder.mProgressBar.setProgress(MAX_PROGRESS);
-                if (!mIsBatch) {
-                    mAdapter.redrawView(mPosition);
-                }
+                mAdapter.redrawView(mPosition);
             }
             onSongDownloaded(mPosition, data);
             onFinishDownload(mMusicFile);

@@ -1,5 +1,6 @@
 package cs446.mezzo.net.deserializers;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.JsonArray;
@@ -13,7 +14,10 @@ import cs446.mezzo.metadata.Recording;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author curtiskroetsch
@@ -35,7 +39,7 @@ public class RecordingDeserializer implements JsonDeserializer<Recording> {
             final int numRecordings = Math.min(MAX_RECORDS, recordings.size());
             final String mbid = recordings.get(0).getAsJsonObject().get(KEY_MBID).getAsString();
 
-            final List<String> ids = new ArrayList<String>();
+            final Set<String> ids = new LinkedHashSet<>();
             for (int i = 0; i < numRecordings; i++) {
                 final JsonObject recording = recordings.get(i).getAsJsonObject();
                 final int score = recording.get("score").getAsInt();
@@ -47,22 +51,10 @@ public class RecordingDeserializer implements JsonDeserializer<Recording> {
                 for (int j = 0; j < numReleases; j++) {
                     final JsonObject release = releases.get(j).getAsJsonObject().get("release-group").getAsJsonObject();
                     final String releaseId = release.get(KEY_MBID).getAsString();
-                    final JsonElement primType = release.get("primary-type");
-                    final JsonElement secondType = release.get("secondary-types");
-                    boolean isAlbum = false;
-                    if (primType != null && !primType.isJsonNull()) {
-                        isAlbum = "Album".equals(primType.getAsString()) &&
-                                (secondType == null || secondType.isJsonNull());
-
-                    }
-                    if (isAlbum) {
-                        ids.add(0, releaseId);
-                    } else {
-                        ids.add(releaseId);
-                    }
+                    ids.add(releaseId);
                 }
             }
-            return new Recording(mbid, ids);
+            return new Recording(mbid, new ArrayList<>(ids));
 
         } catch (JsonParseException e) {
             Log.e(TAG, e.getMessage());

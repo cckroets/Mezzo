@@ -31,7 +31,7 @@ public class MusicService extends RoboService
     private static final String TAG = MusicService.class.getName();
 
     @Inject
-    SongPlayer mSongPlayer;
+    SongPlayer  mSongPlayer;
 
     @Inject
     AudioManager mAudioManager;
