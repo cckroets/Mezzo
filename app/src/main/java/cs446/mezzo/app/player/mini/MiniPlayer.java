@@ -114,7 +114,6 @@ public class MiniPlayer extends Overlay {
         final LayoutTransition transition = new LayoutTransition();
         transition.setStagger(LayoutTransition.APPEARING, 0);
         transition.setStartDelay(LayoutTransition.APPEARING, 3000);
-        //mControls.setLayoutTransition(transition);
         mMiniPlayerCont.setLayoutTransition(transition);
 
         mTextView.setOnTouchListener(new DragClickListener(this, view) {
@@ -223,35 +222,17 @@ public class MiniPlayer extends Overlay {
         mLogoView.setVisibility(View.INVISIBLE);
 
         final int defaultColor = getContext().getResources().getColor(R.color.default_muted);
-
-        final int tintColor =
-                palette.getDarkVibrantColor(
-                        palette.getVibrantColor(
-                                palette.getDarkMutedColor(defaultColor)));
         final int vibrantColor = palette.getVibrantColor(defaultColor);
         ViewUtil.tintViews(vibrantColor, mHomeButton, mPauseButton, mNextButton);
-
-        //final int tintColor = palette.getVibrantColor(defaultColor);
-        //mHomeButton.getBackground().setColorFilter(tintColor, PorterDuff.Mode.OVERLAY);
-        //mPauseButton.getBackground().setColorFilter(tintColor, PorterDuff.Mode.OVERLAY);
-        //mNextButton.getBackground().setColorFilter(tintColor, PorterDuff.Mode.OVERLAY);
-
     }
 
     private void onPaletteFailed() {
         final ColorDrawable cd = (ColorDrawable) mTextView2.getBackground();
         final int backgroundColor = cd.getColor();
-
-        //final int defaultColor = getContext().getResources().getColor(R.color.primary_dark);
         ViewUtil.tintViews(backgroundColor, mHomeButton, mPauseButton, mNextButton);
-
         mTextView2.setTextColor(Color.TRANSPARENT);
         mLogoView.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.OVERLAY);
-        //ViewUtil.tintViews(backgroundColor, mLogoView);
         mLogoView.setVisibility(View.VISIBLE);
-        //mHomeButton.getBackground().setColorFilter(defaultColor, PorterDuff.Mode.OVERLAY);
-        //mPauseButton.getBackground().setColorFilter(defaultColor, PorterDuff.Mode.OVERLAY);
-        //mNextButton.getBackground().setColorFilter(defaultColor, PorterDuff.Mode.OVERLAY);
     }
 
     @Subscribe
