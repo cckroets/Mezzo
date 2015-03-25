@@ -145,7 +145,7 @@ public class MezzoPlayer implements SongPlayer,
 
     @Override
     public void setSong(int songPos) {
-        mCurrentIndex = songPos;
+        mCurrentIndex = getShuffleMode() ? mShuffle.indexOf(songPos) : songPos;
         mState = new PlaylistState();
         playSong(getCurrentSong());
     }
