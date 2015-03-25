@@ -71,6 +71,11 @@ public interface SongPlayer {
     void setRepeat(boolean shouldRepeat);
 
     /**
+     * Set a timeout value to stop the player after some time.
+     */
+    void setTimeout(long timeout);
+
+    /**
      * Test if the the player is currently paused.
      * @return
      */

@@ -16,6 +16,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.playback.RepeatEvent;
@@ -56,6 +58,8 @@ public class MezzoPlayer implements SongPlayer,
     private boolean mShuffleEnabled;
     private PlayerState mState;
 
+    private Timer mTimer;
+
     public MezzoPlayer(Context context) {
         mHandler = new Handler(Looper.getMainLooper());
         mShuffleEnabled = false;
@@ -63,6 +67,7 @@ public class MezzoPlayer implements SongPlayer,
         mContext = context;
         mQueue = new LinkedList<>();
         mState = new QueueState();
+        mTimer = new Timer();
         acquireResources();
     }
 
@@ -240,6 +245,22 @@ public class MezzoPlayer implements SongPlayer,
     public boolean onError(MediaPlayer mp, int what, int extra) {
         Log.e(TAG, "OnError : what = " + what + ", extra = " + extra + ", mp = " + mp);
         return true;
+    }
+
+    @Override
+    public void setTimeout(long timeout) {
+        Log.d(TAG, "Timer cancelled");
+        mTimer.cancel();
+        mTimer = new Timer();
+        if (timeout > 0) {
+            Log.d(TAG, "Timer set to " + String.valueOf(timeout) + "ms");
+            mTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    mMediaPlayer.pause();
+                }
+            }, timeout);
+        }
     }
 
     void setState(PlayerState state) {

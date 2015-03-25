@@ -12,6 +12,8 @@ import android.widget.TimePicker;
 import java.util.Calendar;
 
 import cs446.mezzo.R;
+import cs446.mezzo.events.EventBus;
+import cs446.mezzo.events.playback.TimeoutSetEvent;
 import roboguice.inject.InjectView;
 
 
@@ -32,6 +34,10 @@ public class TimePickerPreference extends DialogPreference {
         setNegativeButtonText("Cancel");
     }
 
+    public long getInMilliseconds() {
+        return ((mLastHour * 3600) + (mLastMinute * 60)) * 1000;
+    }
+
     public static int getHour(String time) {
         final String[] pieces = time.split(":");
 
@@ -47,9 +53,13 @@ public class TimePickerPreference extends DialogPreference {
     @Override
     protected View onCreateDialogView() {
         mPicker = new TimePicker(getContext());
-        Calendar c = Calendar.getInstance();
-        mPicker.setCurrentHour(c.get(Calendar.HOUR));
-        mPicker.setCurrentMinute(c.get(Calendar.MINUTE));
+        mPicker.setIs24HourView(true);
+        mPicker.setCurrentHour(mLastHour);
+        mPicker.setCurrentMinute(mLastMinute);
+//        // I want to activate minute picker by default. But findViewById() is throwing exception.
+//        int id = Resources.getSystem().getIdentifier("android:id/minutes", null, null);
+//        NumberPicker minutePicker = (NumberPicker) mPicker.findViewById(id);
+//        minutePicker.performClick();
         return mPicker;
     }
 
@@ -71,6 +81,8 @@ public class TimePickerPreference extends DialogPreference {
             if (callChangeListener(time)) {
                 persistString(time);
             }
+
+            EventBus.post(new TimeoutSetEvent(getInMilliseconds()));
         }
     }
 
@@ -81,8 +93,7 @@ public class TimePickerPreference extends DialogPreference {
 
     @Override
     protected void onSetInitialValue(boolean restoreValue, Object defaultValue) {
-        Calendar c = Calendar.getInstance();
-        final String time = getPersistedString(c.get(Calendar.HOUR_OF_DAY)  + ":" + c.get(Calendar.MINUTE));
+        final String time = getPersistedString("00:30");
 
         mLastHour = getHour(time);
         mLastMinute = getMinute(time);

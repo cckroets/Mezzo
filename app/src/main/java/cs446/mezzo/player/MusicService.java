@@ -20,6 +20,7 @@ import cs446.mezzo.events.control.SelectSongEvent;
 import cs446.mezzo.events.control.ShuffleAllEvent;
 import cs446.mezzo.events.control.ShuffleToggleEvent;
 import cs446.mezzo.events.playback.SongPlayEvent;
+import cs446.mezzo.events.playback.TimeoutSetEvent;
 import roboguice.service.RoboService;
 
 /**
@@ -95,6 +96,9 @@ public class MusicService extends RoboService
     public void onEnqueueEvent(EnqueueEvent event) {
         mSongPlayer.enqueueSong(event.getSong());
     }
+
+    @Subscribe
+    public void onTimeoutSetEvent(TimeoutSetEvent event) { mSongPlayer.setTimeout(event.getTimeout()); }
 
     @Subscribe
     public void onShuffleAllEvent(ShuffleAllEvent event) {
