@@ -91,6 +91,9 @@ public class MusicControlFragment extends RoboFragment {
 
     @Subscribe
     public void onSongPlayEvent(SongPlayEvent event) {
+        if (mCurrentSong == null && event.getSong() != null) {
+            EventBus.post(new MusicControlsPressEvent());
+        }
         mCurrentSong = event.getSong();
         if (isAdded() && mCurrentSong != null) {
             mPlayerView.setVisibility(View.VISIBLE);

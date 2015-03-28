@@ -23,6 +23,7 @@ import com.squareup.otto.Subscribe;
 
 import cs446.mezzo.R;
 import cs446.mezzo.app.BaseMezzoFragment;
+import cs446.mezzo.app.MainActivity;
 import cs446.mezzo.data.Callback;
 import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.control.PauseToggleEvent;
@@ -41,6 +42,7 @@ import cs446.mezzo.metadata.lyrics.LyricResult;
 import cs446.mezzo.metadata.lyrics.LyricsManager;
 import cs446.mezzo.music.MusicUtil;
 import cs446.mezzo.music.Song;
+import cs446.mezzo.player.SongPlayer;
 import cs446.mezzo.view.AutoResizeTextView;
 import cs446.mezzo.view.MezzoImageView;
 import cs446.mezzo.view.ViewUtil;
@@ -176,6 +178,10 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
         EventBus.setEventClick(mPrevBtn, new PlayPrevEvent());
         EventBus.setEventClick(mRepeatBtn, new RepeatToggleEvent());
         EventBus.setEventClick(mShuffleBtn, new ShuffleToggleEvent());
+
+        SongPlayer player = ((MainActivity) getMezzoActivity()).getSongPlayer();
+        mRepeatBtn.setSelected(player.getRepeatMode());
+        mShuffleBtn.setSelected(player.getShuffleMode());
     }
 
     private void onGetLyrics() {

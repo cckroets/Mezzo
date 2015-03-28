@@ -21,6 +21,6 @@
     <cs446.mezzo.view.TimePickerPreference
         android:key="pref_setTimer"
         android:dependency="pref_timer"
-        android:summary="Set the time the app should stop processes"/>
+        android:summary="Set sleep timer"/>
 
 </PreferenceScreen>
