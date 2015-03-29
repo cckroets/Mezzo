@@ -25,6 +25,8 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity
 
     Toolbar mToolbar;
 
+    boolean mIsDestroyed;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +36,7 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity
 
     @Override
     protected void onDestroy() {
+        mIsDestroyed = true;
         getSupportFragmentManager().removeOnBackStackChangedListener(this);
         super.onDestroy();
     }
@@ -90,6 +93,9 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity
     }
 
     public void showSecondaryFragment() {
+        if (mIsDestroyed) {
+            return;
+        }
         getSupportFragmentManager()
                 .beginTransaction()
                 .setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom)
@@ -98,6 +104,9 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity
     }
 
     public void hideSecondaryFragment() {
+        if (mIsDestroyed) {
+            return;
+        }
         getSupportFragmentManager()
                 .beginTransaction()
                 .setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom)

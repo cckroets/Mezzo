@@ -137,12 +137,14 @@ public class PlaylistManager {
 
     public void addToFavourites(Song song) {
         ensureLoaded();
+        mModified = true;
         mFavourites.getSongs().add(song);
         EventBus.post(new PlaylistChangedEvent(mFavourites));
     }
 
     public void removeFromFavourites(Song song) {
         mFavourites.getSongs().remove(song);
+        mModified = true;
         EventBus.post(new PlaylistChangedEvent(mFavourites));
     }
 

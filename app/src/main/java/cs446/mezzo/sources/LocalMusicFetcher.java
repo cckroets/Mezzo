@@ -77,7 +77,7 @@ public class LocalMusicFetcher {
         return allSongs;
     }
 
-    public List<Song> getLocalSongs() {
+    private List<Song> getLocalSongs() {
         final ContentResolver musicResolver = mContext.getContentResolver();
 
         final Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
@@ -116,7 +116,7 @@ public class LocalMusicFetcher {
         }
     }
 
-    public List<Song> getAllM3USongs() {
+    private List<Song> getAllM3USongs() {
         final List<Song> m3us = new ArrayList<>();
         final File userDir = Environment.getExternalStorageDirectory();
         final List<File> m3uFiles = new ArrayList<>();
@@ -141,7 +141,7 @@ public class LocalMusicFetcher {
         }
     }
 
-    public List<Song> getAllDownloadedSongs() {
+    private List<Song> getAllDownloadedSongs() {
         return mDownloadManager.getAllDownloadedSongs();
     }
 

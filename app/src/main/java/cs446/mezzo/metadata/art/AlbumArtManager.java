@@ -35,7 +35,7 @@ public class AlbumArtManager {
     public AlbumArtManager(Context context, ArtCache artCache, CoverArtRequestHandler requestHandler) {
         mPicasso = new Picasso.Builder(context)
                 .addRequestHandler(requestHandler)
-                .indicatorsEnabled(true)
+                .indicatorsEnabled(false)
                 .memoryCache(artCache)
                 .build();
         mContext = context;
