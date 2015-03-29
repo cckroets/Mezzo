@@ -2,15 +2,19 @@ package cs446.mezzo.metadata.art;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v7.graphics.Palette;
+import android.util.Log;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.bumptech.glide.load.model.stream.StreamModelLoader;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import cs446.mezzo.R;
 import cs446.mezzo.data.Callback;
@@ -29,77 +33,100 @@ public class AlbumArtManager {
     @Inject
     PaletteCache mPaletteCache;
 
-    private Picasso mPicasso;
+    StreamModelLoader<Song> mCoverArtLoader;
 
     @Inject
-    public AlbumArtManager(Context context, ArtCache artCache, CoverArtRequestHandler requestHandler) {
-        mPicasso = new Picasso.Builder(context)
-                .addRequestHandler(requestHandler)
-                .indicatorsEnabled(false)
-                .memoryCache(artCache)
-                .build();
+    public AlbumArtManager(Context context, CoverArtRequestHandler requestHandler) {
         mContext = context;
         mDefaultCoverArt = createErrorDrawable();
+        mCoverArtLoader = requestHandler;
     }
 
     public void setAlbumArt(final ImageView view, final Song song) {
-        mPicasso.cancelRequest(view);
-        mPicasso.load(song.getDataSource())
-                .placeholder(mDefaultCoverArt)
-                .error(mDefaultCoverArt)
-                .fit().centerCrop()
+        Glide.clear(view);
+        Glide.with(mContext)
+                .using(mCoverArtLoader)
+                .load(song)
+                .fitCenter()
+                .crossFade()
                 .into(view);
     }
 
     public void setAlbumArt(final ImageView view, final Song song, final Callback<Palette> paletteCallback) {
-        mPicasso.cancelRequest(view);
-        mPicasso.load(song.getDataSource())
-                .noPlaceholder()
-                .error(mDefaultCoverArt)
-                .fit().centerCrop()
-                .transform(mPaletteCache)
-                .into(view, createPaletteCallback(view, paletteCallback));
-    }
+        Glide.clear(view);
+        Glide.with(mContext)
+                .using(mCoverArtLoader)
+                .load(song)
+                .fitCenter()
+                .crossFade()
+                .transform(new PaletteTransform(song))
+                .listener(new RequestListener<Song, GlideDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, Song model, com.bumptech.glide.request.target.Target<GlideDrawable> target, boolean isFirstResource) {
+                        paletteCallback.onFailure(e);
+                        return false;
+                    }
 
-    private com.squareup.picasso.Callback createPaletteCallback(final ImageView view, final Callback<Palette> paletteCallback) {
-        return new com.squareup.picasso.Callback() {
-            @Override
-            public void onSuccess() {
-                final Bitmap key = ((BitmapDrawable) view.getDrawable()).getBitmap();
-                final Palette palette = mPaletteCache.getPalette(key);
-                paletteCallback.onSuccess(palette);
-            }
-
-            @Override
-            public void onError() {
-                paletteCallback.onFailure(new RuntimeException());
-            }
-        };
+                    @Override
+                    public boolean onResourceReady(GlideDrawable resource, Song model, com.bumptech.glide.request.target.Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        Log.d("Palette", "onResourceReady " + model.getTitle());
+                        final Palette palette = mPaletteCache.getPalette(model);
+                        if (palette == null) {
+                            paletteCallback.onFailure(new IllegalStateException("Palette wasn't loaded"));
+                        } else {
+                            paletteCallback.onSuccess(palette);
+                        }
+                        return false;
+                    }
+                })
+                .into(view);
     }
 
 
     public void getAlbumArt(final Song song, final Callback<Bitmap> callback) {
-        mPicasso.load(song.getDataSource())
-                .into(new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        callback.onSuccess(bitmap);
-                    }
+        Glide.with(mContext)
+                .using(mCoverArtLoader)
+                .load(song).asBitmap().listener(new RequestListener<Song, Bitmap>() {
+            @Override
+            public boolean onException(Exception e, Song model, com.bumptech.glide.request.target.Target<Bitmap> target, boolean isFirstResource) {
+                callback.onFailure(e);
+                return false;
+            }
 
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-                        callback.onFailure(new RuntimeException("Could not load bitmap"));
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                });
+            @Override
+            public boolean onResourceReady(Bitmap resource, Song model, com.bumptech.glide.request.target.Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                callback.onSuccess(resource);
+                return false;
+            }
+        });
     }
 
     private Drawable createErrorDrawable() {
         return mContext.getResources().getDrawable(R.color.transparent);
+    }
+
+    private class PaletteTransform extends BitmapTransformation {
+
+        private Song mSong;
+
+        public PaletteTransform(Song song) {
+            super(mContext);
+            mSong = song;
+        }
+
+        @Override
+        protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
+            Log.d("Palette", "transforming " + mSong.getTitle());
+            if (mPaletteCache.getPalette(mSong) == null) {
+                mPaletteCache.putPalette(mSong, toTransform);
+            }
+            return toTransform;
+        }
+
+        @Override
+        public String getId() {
+            return "PALETTE_TRANSFORM";
+        }
     }
 
 }

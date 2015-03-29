@@ -1,26 +1,23 @@
 package cs446.mezzo.metadata.art;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.util.Log;
-import android.util.LruCache;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.data.DataFetcher;
+import com.bumptech.glide.load.model.stream.StreamModelLoader;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.squareup.otto.Subscribe;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Request;
-import com.squareup.picasso.RequestHandler;
 
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
@@ -31,26 +28,27 @@ import cs446.mezzo.events.EventBus;
 import cs446.mezzo.events.system.ActivityStoppedEvent;
 import cs446.mezzo.metadata.MusicBrainzManager;
 import cs446.mezzo.metadata.Recording;
+import cs446.mezzo.music.Song;
 import cs446.mezzo.net.CoverArtArchive;
 import retrofit.RetrofitError;
 
 /**
  * A Request Handler for Cover Arts.
- *
+ * <p/>
  * First we check if the file is encoded with album art.
  * If not, we ask MusicBrainz for any associated MBIDs (and cache this).
- *
+ * <p/>
  * We then iterate through the MBIDs and ask the CoverArtArchive API
  * if there is an image for the given MBID. If there is, we have a url
  * to load this image from, and we use vanilla Picasso to load this.
- *
+ * <p/>
  * We also cache the Url from the first url we getImageView, with a key for the song
  * so that we don't need to iterate through the MBID's each time. Note that
  * the Bitmap is not cached since it is recycled.
  *
  * @author curtiskroetsch
  */
-class CoverArtRequestHandler extends RequestHandler {
+class CoverArtRequestHandler implements StreamModelLoader<Song> {
 
     private static final String TAG = CoverArtRequestHandler.class.getName();
     private static final String KEY_CACHE = "image-cache";
@@ -69,7 +67,6 @@ class CoverArtRequestHandler extends RequestHandler {
 
     Preferences mPreferences;
 
-    private Picasso mPicasso;
     private Cache<String, String> mUrlCache;
     private Cache<String, Object> mFailureCache;
 
@@ -92,88 +89,22 @@ class CoverArtRequestHandler extends RequestHandler {
         saveCache();
     }
 
-    @Override
-    public boolean canHandleRequest(Request data) {
-        final Uri uri = data.uri;
-        return ContentResolver.SCHEME_FILE.equals(uri.getScheme()) ||
-                (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())
-                        && MediaStore.AUTHORITY.equals(uri.getAuthority()));
-    }
 
-    @Override
-    public Result load(Request data, int networkPolicy) throws IOException {
-        final String key = data.uri.toString();
-        if (mFailureCache.getIfPresent(key) != null) {
-            Log.d(TAG, "known failure = " + data.uri);
-            return new Result((Bitmap) null, Picasso.LoadedFrom.DISK);
-        }
-        Log.d(TAG, "start load = " + data.uri);
-        final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        retriever.setDataSource(mContext, data.uri);
-        final byte[] bitmapData = retriever.getEmbeddedPicture();
-        Log.d(TAG, "got bitmap for " + data.uri + ": " + bitmapData);
-        final String title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-        final String artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-        retriever.release();
-        Log.d(TAG, "done with " + key);
-        if (bitmapData == null) {
-            return loadFromNetwork(key, title, artist);
-        } else {
-            final Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapData, 0, bitmapData.length);
-            if (bitmap == null) {
-                return loadFromNetwork(key, title, artist);
-            }
-            return new Result(bitmap, Picasso.LoadedFrom.DISK);
-        }
-    }
-
-    private Result loadFromNetwork(String key, String title, String artist) throws IOException {
-        Log.d(TAG, "loadFromNetwork = " + key);
-        final String url = mUrlCache.getIfPresent(key);
-        if (url != null) {
-            return loadImage(url);
-        }
-
-        final Recording recording = mMusicBrainz.getRecordingSync(title, artist);
-        final List<String> mbids = recording.getReleaseMBIDs();
-        Log.d(TAG, "mbids = " + mbids);
-
-        for (String mbid : mbids) {
-            Image image;
-            try {
-                image = mArtArchive.getReleaseGroupImage(mbid);
-                Log.d(TAG, "success mbid = " + mbid);
-            } catch (RetrofitError e) {
-                Log.d(TAG, "failure mbid = " + mbid);
-                continue;
-            }
-            if (image != null) {
-                mUrlCache.put(key, image.getUrl());
-                return loadImage(image.getUrl());
-            }
-        }
-
-        mFailureCache.put(key, NOTHING);
-        return new Result((Bitmap) null, Picasso.LoadedFrom.NETWORK);
-    }
-
-    private Result loadImage(String url) throws IOException {
-        Log.d("RHandler", "loading image " + url);
-        if (mPicasso == null) {
-            mPicasso = Picasso.with(mContext);
-        }
-        final Bitmap bitmap = mPicasso.load(url).get();
-        return new Result(bitmap, Picasso.LoadedFrom.NETWORK);
+    private InputStream loadImage(String url, int w, int h) throws Exception {
+        final byte[] bytes = Glide.with(mContext).load(url).asBitmap().toBytes().into(w, h).get();
+        return new ByteArrayInputStream(bytes);
     }
 
     private void saveCache() {
-        final Type type = new TypeToken<Map<String, String>>(){ }.getType();
+        final Type type = new TypeToken<Map<String, String>>() {
+        }.getType();
         mPreferences.putObject(KEY_CACHE, type, mUrlCache.asMap());
         Log.d(TAG, "saving to cache");
     }
 
     private void loadCache() {
-        final Type type = new TypeToken<Map<String, String>>(){ }.getType();
+        final Type type = new TypeToken<Map<String, String>>() {
+        }.getType();
         final Map<String, String> cache = mPreferences.getObject(KEY_CACHE, type);
         if (cache != null) {
             Log.d(TAG, "Loading from cache success");
@@ -183,4 +114,99 @@ class CoverArtRequestHandler extends RequestHandler {
         }
     }
 
+    @Override
+    public DataFetcher<InputStream> getResourceFetcher(Song model, int width, int height) {
+        return new MezzoDataFetcher(model, width, height);
+    }
+
+    public class MezzoDataFetcher implements DataFetcher<InputStream> {
+
+        private Song mSong;
+        private int mWidth;
+        private int mHeight;
+        private boolean mCancelled;
+
+        public MezzoDataFetcher(Song song, int w, int h) {
+            mSong = song;
+            mWidth = w;
+            mHeight = h;
+            mCancelled = false;
+        }
+
+        @Override
+        public InputStream loadData(Priority priority) throws Exception {
+            final String key = mSong.getDataSource().toString();
+            if (mFailureCache.getIfPresent(key) != null) {
+                return null;
+            }
+            Log.d(TAG, "loading... " + key);
+            final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+            retriever.setDataSource(mContext, mSong.getDataSource());
+            final byte[] bitmapData = retriever.getEmbeddedPicture();
+            Log.d(TAG, "got bitmap for " + mSong.getDataSource() + ": " + bitmapData);
+            final String title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+            final String artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+            retriever.release();
+            Log.d(TAG, "done with " + key);
+            if (bitmapData == null) {
+                return loadFromNetwork(key, title, artist);
+            } else {
+                final Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapData, 0, bitmapData.length);
+                if (bitmap == null) {
+                    return loadFromNetwork(key, title, artist);
+                }
+                return new ByteArrayInputStream(bitmapData);
+            }
+        }
+
+        private InputStream loadFromNetwork(String key, String title, String artist) throws Exception {
+            if (mCancelled) {
+                Log.d(TAG, "cancelling = " + key);
+                return null;
+            }
+            Log.d(TAG, "loadFromNetwork = " + key);
+            final String url = mUrlCache.getIfPresent(key);
+            if (url != null) {
+                return loadImage(url, mWidth, mHeight);
+            }
+
+            final Recording recording = mMusicBrainz.getRecordingSync(title, artist);
+            final List<String> mbids = recording.getReleaseMBIDs();
+            Log.d(TAG, "mbids = " + mbids);
+
+            for (String mbid : mbids) {
+                Image image;
+                try {
+                    image = mArtArchive.getReleaseGroupImage(mbid);
+                    Log.d(TAG, "success mbid = " + mbid);
+                } catch (RetrofitError e) {
+                    Log.d(TAG, "failure mbid = " + mbid);
+                    continue;
+                }
+                if (image != null) {
+                    mUrlCache.put(key, image.getUrl());
+                    return loadImage(image.getUrl(), mWidth, mHeight);
+                }
+            }
+
+            mFailureCache.put(key, NOTHING);
+            return null;
+        }
+
+        @Override
+        public void cleanup() {
+
+        }
+
+        @Override
+        public String getId() {
+            return mSong.getDataSource().toString();
+        }
+
+        @Override
+        public void cancel() {
+            Log.d(TAG, "cancel " + mSong.getDataSource().toString());
+            mCancelled = true;
+        }
+    }
 }

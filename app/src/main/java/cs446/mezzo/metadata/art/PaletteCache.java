@@ -2,46 +2,38 @@ package cs446.mezzo.metadata.art;
 
 import android.graphics.Bitmap;
 import android.support.v7.graphics.Palette;
+import android.util.Log;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.squareup.picasso.Transformation;
+
+import cs446.mezzo.music.Song;
 
 /**
  * @author curtiskroetsch
  */
 @Singleton
-public final class PaletteCache implements Transformation {
+public final class PaletteCache {
 
-    private static final String TRANSFORMATION_NAME = "palette";
-    private static final int CACHE_SIZE = 100;
+    private static final int CACHE_SIZE = 200;
 
-    private final Cache<Bitmap, Palette> mCache;
+    private final Cache<String, Palette> mCache;
 
     @Inject
     public PaletteCache() {
         mCache = CacheBuilder.newBuilder()
-                .weakKeys()
                 .maximumSize(CACHE_SIZE)
                 .build();
     }
 
-    public Palette getPalette(Bitmap bitmap) {
-        return mCache.getIfPresent(bitmap);
+    public Palette getPalette(Song song) {
+        return mCache.getIfPresent(song.getDataSource().toString());
     }
 
-    @Override
-    public Bitmap transform(Bitmap source) {
-        if (mCache.getIfPresent(source) == null) {
-            mCache.put(source, Palette.generate(source));
-        }
-        return source;
-    }
-
-    @Override
-    public String key() {
-        return TRANSFORMATION_NAME;
+    public void putPalette(Song song, Bitmap bitmap) {
+        mCache.put(song.getDataSource().toString(), Palette.generate(bitmap));
+        Log.d("Palette", "Finished " + song.getTitle());
     }
 }

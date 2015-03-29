@@ -72,14 +72,6 @@ public class MezzoImageView extends FrameLayout {
     }
 
     private String shorten(String string) {
-        return string;/*
-        final StringBuilder builder = new StringBuilder();
-        for (String word : string.split(" ")) {
-            final char firstChar = word.charAt(0);
-            if (Character.isUpperCase(firstChar)) {
-                builder.append(firstChar);
-            }
-        }
-        return builder.toString();*/
+        return string;
     }
 }
