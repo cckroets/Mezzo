@@ -15,6 +15,8 @@ import com.bumptech.glide.load.model.stream.StreamModelLoader;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -93,19 +95,19 @@ public class AlbumArtManager {
     public void getAlbumArt(final Song song, final Callback<Bitmap> callback) {
         Glide.with(mContext)
                 .using(mCoverArtLoader)
-                .load(song).asBitmap().listener(new RequestListener<Song, Bitmap>() {
-            @Override
-            public boolean onException(Exception e, Song model, com.bumptech.glide.request.target.Target<Bitmap> target, boolean isFirstResource) {
-                callback.onFailure(e);
-                return false;
-            }
+                .load(song)
+                .asBitmap()
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        callback.onSuccess(resource);
+                    }
 
-            @Override
-            public boolean onResourceReady(Bitmap resource, Song model, com.bumptech.glide.request.target.Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                callback.onSuccess(resource);
-                return false;
-            }
-        });
+                    @Override
+                    public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                        callback.onFailure(e);
+                    }
+                });
     }
 
     private Drawable createErrorDrawable() {

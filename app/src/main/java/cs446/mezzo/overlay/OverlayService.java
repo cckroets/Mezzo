@@ -44,7 +44,7 @@ public class OverlayService extends RoboService implements Application.ActivityL
 
     Overlay mMiniPlayer;
 
-    int mNotificationId = 1;
+    int mNotificationId = 32;
 
     @Override
     public void onCreate() {
@@ -73,6 +73,7 @@ public class OverlayService extends RoboService implements Application.ActivityL
         if (song == null) {
             return;
         }
+        Log.d(TAG, "onSongPlay " + event.getSong().getTitle());
         final Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(Intent.ACTION_MAIN);
