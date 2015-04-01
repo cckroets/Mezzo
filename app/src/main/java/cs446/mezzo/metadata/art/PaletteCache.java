@@ -17,6 +17,7 @@ import cs446.mezzo.music.Song;
 @Singleton
 public final class PaletteCache {
 
+    private static final String TAG = PaletteCache.class.getName();
     private static final int CACHE_SIZE = 200;
 
     private final Cache<String, Palette> mCache;
@@ -28,12 +29,16 @@ public final class PaletteCache {
                 .build();
     }
 
+    private String key(Song song) {
+        return song.getDataSource().toString();
+    }
+
     public Palette getPalette(Song song) {
-        return mCache.getIfPresent(song.getDataSource().toString());
+        return mCache.getIfPresent(key(song));
     }
 
     public void putPalette(Song song, Bitmap bitmap) {
-        mCache.put(song.getDataSource().toString(), Palette.generate(bitmap));
-        Log.d("Palette", "Finished " + song.getTitle());
+        mCache.put(key(song), Palette.generate(bitmap));
+        Log.d(TAG, "Finished generating" + song.getTitle());
     }
 }

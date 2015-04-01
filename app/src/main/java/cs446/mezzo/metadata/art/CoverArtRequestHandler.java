@@ -19,6 +19,7 @@ import com.squareup.otto.Subscribe;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -54,7 +55,7 @@ class CoverArtRequestHandler implements StreamModelLoader<Song> {
     private static final String KEY_CACHE = "image-cache";
     private static final int CACHE_SIZE = 200;
     private static final Object NOTHING = new Object();
-    private static final int FAILURE_EXPIRE_SECONDS = 3;
+    private static final int FAILURE_EXPIRE_SECONDS = 30;
 
     @Inject
     Context mContext;
@@ -89,11 +90,6 @@ class CoverArtRequestHandler implements StreamModelLoader<Song> {
         saveCache();
     }
 
-
-    private InputStream loadImage(String url, int w, int h) throws Exception {
-        final byte[] bytes = Glide.with(mContext).load(url).asBitmap().toBytes().into(w, h).get();
-        return new ByteArrayInputStream(bytes);
-    }
 
     private void saveCache() {
         final Type type = new TypeToken<Map<String, String>>() {
@@ -172,6 +168,7 @@ class CoverArtRequestHandler implements StreamModelLoader<Song> {
 
             final Recording recording = mMusicBrainz.getRecordingSync(title, artist);
             final List<String> mbids = recording.getReleaseMBIDs();
+            final List<String> blacklist = new ArrayList<>();
             Log.d(TAG, "mbids = " + mbids);
 
             for (String mbid : mbids) {
@@ -180,17 +177,26 @@ class CoverArtRequestHandler implements StreamModelLoader<Song> {
                     image = mArtArchive.getReleaseGroupImage(mbid);
                     Log.d(TAG, "success mbid = " + mbid);
                 } catch (RetrofitError e) {
-                    Log.d(TAG, "failure mbid = " + mbid);
+                    if (e.getResponse() != null && e.getResponse().getStatus() == 404) {
+                        blacklist.add(mbid);
+                    }
+                    Log.d(TAG, "failure mbid = " + mbid + (e.getResponse() == null ? " no status" : ", status = " + e.getResponse().getStatus()));
                     continue;
                 }
                 if (image != null) {
                     mUrlCache.put(key, image.getUrl());
+                    mMusicBrainz.removeMbids(title, artist, recording, blacklist);
                     return loadImage(image.getUrl(), mWidth, mHeight);
                 }
             }
 
             mFailureCache.put(key, NOTHING);
             return null;
+        }
+
+        private InputStream loadImage(String url, int w, int h) throws Exception {
+            final byte[] bytes = Glide.with(mContext).load(url).asBitmap().toBytes().into(w, h).get();
+            return new ByteArrayInputStream(bytes);
         }
 
         @Override

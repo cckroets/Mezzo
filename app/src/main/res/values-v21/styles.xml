@@ -31,4 +31,10 @@
         <item name="android:shadowRadius">1</item>
     </style>
 
+    <style name="Transparent" parent="AppTheme">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@color/transparent</item>
+    </style>
+
 </resources>

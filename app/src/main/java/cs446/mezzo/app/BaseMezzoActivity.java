@@ -71,7 +71,7 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(contId, fragment)
-                .setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom)
+                .setCustomAnimations(R.anim.slide_up, R.anim.slide_down)
                 .commit();
     }
 
@@ -82,7 +82,7 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity
         getSupportFragmentManager()
                 .beginTransaction()
                 .addToBackStack(null)
-                .setCustomAnimations(R.anim.abc_slide_in_bottom, 0, 0, R.anim.abc_slide_out_bottom)
+                .setCustomAnimations(R.anim.slide_up, R.anim.slide_down)
                 .add(containerId, fragment, fragment.getTag())
                 .commitAllowingStateLoss();
     }
@@ -98,7 +98,7 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity
         }
         getSupportFragmentManager()
                 .beginTransaction()
-                .setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom)
+                .setCustomAnimations(R.anim.slide_up, R.anim.slide_down)
                 .show(mSecondaryFragment)
                 .commitAllowingStateLoss();
     }
@@ -109,7 +109,7 @@ public abstract class BaseMezzoActivity extends RoboActionBarActivity
         }
         getSupportFragmentManager()
                 .beginTransaction()
-                .setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom)
+                .setCustomAnimations(R.anim.slide_up, R.anim.slide_down)
                 .hide(mSecondaryFragment)
                 .commitAllowingStateLoss();
     }

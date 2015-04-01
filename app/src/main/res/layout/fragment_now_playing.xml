@@ -79,7 +79,7 @@
                 android:paddingLeft="8dp"
                 android:paddingTop="8dp"
                 android:text="Title of Song"
-                android:textColor="@android:color/primary_text_dark"
+                android:textColor="@android:color/white"
                 android:textSize="12pt" />
 
             <cs446.mezzo.view.MarqueeTextView

@@ -7,7 +7,9 @@ import android.support.v7.graphics.Palette;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.MemoryCategory;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.model.stream.StreamModelLoader;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
@@ -26,6 +28,9 @@ import cs446.mezzo.music.Song;
 @Singleton
 public class AlbumArtManager {
 
+    private static final float THUMBNAIL_SCALE = 0.3f;
+    private static final String TAG = AlbumArtManager.class.getName();
+
     Context mContext;
 
     Drawable mDefaultCoverArt;
@@ -40,6 +45,7 @@ public class AlbumArtManager {
         mContext = context;
         mDefaultCoverArt = createErrorDrawable();
         mCoverArtLoader = requestHandler;
+        Glide.get(context).setMemoryCategory(MemoryCategory.HIGH);
     }
 
     public void setAlbumArt(final ImageView view, final Song song) {
@@ -47,39 +53,40 @@ public class AlbumArtManager {
         Glide.with(mContext)
                 .using(mCoverArtLoader)
                 .load(song)
-                .fitCenter()
+                .thumbnail(THUMBNAIL_SCALE)
+                .centerCrop()
                 .crossFade()
                 .into(view);
     }
 
     public void setAlbumArt(final ImageView view, final Song song, final Callback<Palette> paletteCallback) {
         Glide.clear(view);
-        Glide.with(mContext)
+        final DrawableRequestBuilder<Song> builder = Glide.with(mContext)
                 .using(mCoverArtLoader)
                 .load(song)
-                .fitCenter()
-                .crossFade()
-                .transform(new PaletteTransform(song))
-                .listener(new RequestListener<Song, GlideDrawable>() {
-                    @Override
-                    public boolean onException(Exception e, Song model, com.bumptech.glide.request.target.Target<GlideDrawable> target, boolean isFirstResource) {
-                        paletteCallback.onFailure(e);
-                        return false;
-                    }
+                .centerCrop();
+        if (mPaletteCache.getPalette(song) == null) {
+            builder.transform(new PaletteTransform(song));
+        }
+        builder.listener(new RequestListener<Song, GlideDrawable>() {
+            @Override
+            public boolean onException(Exception e, Song model, com.bumptech.glide.request.target.Target<GlideDrawable> target, boolean isFirstResource) {
+                paletteCallback.onFailure(e);
+                return false;
+            }
 
-                    @Override
-                    public boolean onResourceReady(GlideDrawable resource, Song model, com.bumptech.glide.request.target.Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                        Log.d("Palette", "onResourceReady " + model.getTitle());
-                        final Palette palette = mPaletteCache.getPalette(model);
-                        if (palette == null) {
-                            paletteCallback.onFailure(new IllegalStateException("Palette wasn't loaded"));
-                        } else {
-                            paletteCallback.onSuccess(palette);
-                        }
-                        return false;
-                    }
-                })
-                .into(view);
+            @Override
+            public boolean onResourceReady(GlideDrawable resource, Song model, com.bumptech.glide.request.target.Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                Log.d(TAG, "onResourceReady " + model.getTitle());
+                final Palette palette = mPaletteCache.getPalette(model);
+                if (palette == null) {
+                    paletteCallback.onFailure(new IllegalStateException("Palette wasn't loaded"));
+                } else {
+                    paletteCallback.onSuccess(palette);
+                }
+                return false;
+            }
+        }).into(view);
     }
 
 
@@ -116,7 +123,7 @@ public class AlbumArtManager {
 
         @Override
         protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
-            Log.d("Palette", "transforming " + mSong.getTitle());
+            Log.d(TAG, "transforming " + mSong.getTitle());
             if (mPaletteCache.getPalette(mSong) == null) {
                 mPaletteCache.putPalette(mSong, toTransform);
             }
@@ -125,7 +132,7 @@ public class AlbumArtManager {
 
         @Override
         public String getId() {
-            return "PALETTE_TRANSFORM";
+            return "t_" + System.currentTimeMillis();
         }
     }
 

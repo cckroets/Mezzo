@@ -88,10 +88,10 @@ public class FileSong implements Song {
         mGenres = new HashSet<String>();
         final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         try {
-            Log.d("MediaMetadataRetriever", "path = " + mFile.getPath());
+            //Log.d("MediaMetadataRetriever", "path = " + mFile.getPath());
             retriever.setDataSource(mFile.getPath());
         } catch (RuntimeException e) {
-            Log.e("MediaMetadataRetriever", "ERROR");
+            //Log.e("MediaMetadataRetriever", "ERROR");
             retriever.release();
             return;
         }

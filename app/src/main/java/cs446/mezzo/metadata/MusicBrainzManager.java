@@ -4,6 +4,8 @@ import android.util.LruCache;
 
 import com.google.inject.Inject;
 
+import java.util.Collection;
+
 import cs446.mezzo.data.Callback;
 import cs446.mezzo.data.Preferences;
 import cs446.mezzo.metadata.art.Query;
@@ -18,7 +20,7 @@ import retrofit.client.Response;
 public class MusicBrainzManager {
 
     private static final String KEY_RECORDING = "recording-";
-    private static final int CACHE_SIZE = 100;
+    private static final int CACHE_SIZE = 300;
 
     @Inject
     MusicBrainz.API mMBApi;
@@ -49,8 +51,13 @@ public class MusicBrainzManager {
         return recording != null ? recording : mPreferences.getObject(key, Recording.class);
     }
 
+    public void removeMbids(String title, String artist, Recording recording, Collection<String> mbids) {
+        recording.getReleaseMBIDs().removeAll(mbids);
+        saveRecording(title + artist, recording);
+    }
+
     public void getRecording(final Song song, final Callback<Recording> callback) {
-        final Recording recording = loadRecording(generateKey(song.getTitle() + song.getArtist()));
+        final Recording recording = loadRecording(song.getTitle() + song.getArtist());
         if (recording != null) {
             callback.onSuccess(recording);
             return;
@@ -59,7 +66,7 @@ public class MusicBrainzManager {
         mMBApi.getReleaseGroups(query.toString(), new retrofit.Callback<Recording>() {
             @Override
             public void success(Recording recording, Response response) {
-                saveRecording(song.getDataSource().toString(), recording);
+                saveRecording(song.getTitle() + song.getArtist(), recording);
                 callback.onSuccess(recording);
             }
 

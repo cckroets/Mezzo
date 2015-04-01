@@ -212,6 +212,7 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
 
     private void updateSongView() {
         updateCoverArt();
+        mTextView.setVisibility(View.INVISIBLE);
         mTitle.setText(mSong.getTitle());
         final String artist = mSong.getArtist() == null ? getString(R.string.default_artist) : mSong.getArtist();
         final String album = mSong.getAlbum() == null ? getString(R.string.default_album) : mSong.getAlbum();
@@ -229,14 +230,18 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
     }
 
     private void updateCoverArt() {
+        mLogoView.setVisibility(View.INVISIBLE);
+        mTextView.setVisibility(View.INVISIBLE);
         mCovertArt.bindWithSong(mArtManager, mSong, new Callback<Palette>() {
             @Override
             public void onSuccess(Palette palette) {
+                Log.d("Palette", "Loaded successfully");
                 onPaletteLoaded(palette);
             }
 
             @Override
             public void onFailure(Exception e) {
+                Log.d("Palette", "Failed: " + e);
                 onPaletteFailed();
             }
         });
@@ -244,6 +249,7 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
 
     private void onPaletteLoaded(Palette palette) {
         mLogoView.setVisibility(View.INVISIBLE);
+        mTextView.setVisibility(View.INVISIBLE);
         if (!isAdded()) {
             return;
         }
@@ -266,7 +272,6 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
     }
 
     private void onPaletteFailed() {
-
         final ColorDrawable cd = (ColorDrawable) mTextView.getBackground();
         final int backgroundColor = cd.getColor();
 
@@ -291,6 +296,7 @@ public class NowPlayingFragment extends BaseMezzoFragment implements SeekBar.OnS
         mLogoView.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.OVERLAY);
         //ViewUtil.tintViews(backgroundColor, mLogoView);
         mLogoView.setVisibility(View.VISIBLE);
+        mTextView.setVisibility(View.VISIBLE);
         mDecorColor = accentColor;
     }
 
